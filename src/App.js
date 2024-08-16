@@ -23,6 +23,7 @@ import MenuCatalog from "./scenes/settings/menucatalog/MenuCatalog";
 import CatalogForm from "./scenes/settings/menucatalog/CatalogForm";
 import Clients from "./scenes/GavClients/Clients";
 import ClientForm from "./scenes/GavClients/ClientForm";
+import ErrorFallback from "./scenes/ErrorBoundary/ErrorPage";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -42,7 +43,7 @@ function App() {
               <Topbar setIsSidebar={setIsSidebar} />
               <Routes>
 
-                <Route path="/*" element={<Calendar />} />
+                <Route path="/*" element={<ErrorFallback />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/team" element={<Team />} />
                 <Route path="/form" element={<Form />} />
