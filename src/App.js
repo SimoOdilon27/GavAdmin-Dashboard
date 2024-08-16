@@ -22,6 +22,7 @@ import AllAccounts from "./scenes/bankDetails/allAccounts/AllAccounts";
 import MenuCatalog from "./scenes/settings/menucatalog/MenuCatalog";
 import CatalogForm from "./scenes/settings/menucatalog/CatalogForm";
 import Clients from "./scenes/GavClients/Clients";
+import ClientForm from "./scenes/GavClients/ClientForm";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -59,6 +60,7 @@ function App() {
                 <Route path="/menu-catalog/add" element={<CatalogForm />} />
                 <Route path="/menu-catalog/edit/:id" element={<CatalogForm />} />
                 <Route path="/client" element={<Clients />} />
+                {/* <Route path="/client/add-client" element={<ClientForm />} /> */}
               </Routes>
             </main>
           </div>

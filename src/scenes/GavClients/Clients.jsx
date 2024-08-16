@@ -6,12 +6,14 @@ import { useSelector } from 'react-redux';
 import { Add, Delete, EditOutlined } from '@mui/icons-material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../components/Header';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const Clients = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [clientData, setClientData] = useState([]);
     const [loading, setLoading] = useState(false);  // State to handle loading state
+    const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
 
@@ -65,6 +67,14 @@ const Clients = () => {
         return [days, hours].join(' ');
     }
 
+    const handleAddClient = () => {
+        navigate('/client-list/add-client');
+    }
+
+    const handleEdit = (msisdn) => {
+        navigate(`/client-list/edit/${msisdn}`);
+    };
+
     const columns = [
         { field: "name", headerName: "Client Name", flex: 1 },
         { field: "msisdn", headerName: "MSISDN", flex: 1 },
@@ -107,7 +117,7 @@ const Clients = () => {
                             justifyContent="center"
                             backgroundColor={colors.greenAccent[600]}
                             borderRadius="4px"
-                        // onClick={() => handleEdit(row.id)}
+                            onClick={() => handleEdit(row.msisdn)}
                         >
                             <EditOutlined />
                         </Box>
@@ -141,7 +151,7 @@ const Clients = () => {
                         padding: "10px 20px",
                         marginRight: "10px",
                     }}
-                // onClick={handleAddCatalog}
+                    onClick={handleAddClient}
                 >
                     <Add sx={{ mr: "10px" }} />
                     Onboard Client
