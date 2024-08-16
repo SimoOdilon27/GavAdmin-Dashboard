@@ -1,0 +1,15 @@
+const API_SERVICE = "http://34.246.47.181:14001/"
+const API_ENPOINT = "http://34.246.47.181:14006/"
+const API_CHARGES = "http://34.246.47.181:14007/"
+const API_ACCOUNT = "http://34.246.47.181:14012/"
+const API_TRANSACTION = "http://34.246.47.181:14002/"
+const API_GATEWAY = "http://34.246.47.181:14008/"
+
+export const BASE_URL = {
+    'AP': API_SERVICE,
+    'APE': API_ENPOINT,
+    'CH': API_CHARGES,
+    'ACCOUNT': API_ACCOUNT,
+    'TRANSACTION': API_TRANSACTION,
+    'GATEWAY': API_GATEWAY,
+};
