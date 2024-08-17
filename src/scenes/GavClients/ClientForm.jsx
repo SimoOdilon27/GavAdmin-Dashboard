@@ -454,6 +454,8 @@ const ClientForm = () => {
                                             onChange={handleChange}
                                             value={values.initialBalance}
                                             name="initialBalance"
+                                            inputProps={{ readOnly: true }}
+
                                         // error={!!touched.initialBalance && !!errors.initialBalance}
                                         // helperText={touched.initialBalance && errors.initialBalance}
                                         />

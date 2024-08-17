@@ -23,6 +23,7 @@ import CollectionsIcon from "@mui/icons-material/Collections";
 import TagIcon from "@mui/icons-material/Tag";
 import { tokens } from "../../theme";
 import { AccountCircle, MapOutlined, Money } from "@mui/icons-material";
+import { useSelector } from "react-redux";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -47,6 +48,9 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const userData = useSelector((state) => state.users);
+  const userName = userData.userName;
+  const role = userData.roles;
 
   return (
 
@@ -115,10 +119,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Odilon Simo
+                  {userName}
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  Admin
+                  {role}
                 </Typography>
               </Box>
             </Box>
