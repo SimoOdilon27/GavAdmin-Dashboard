@@ -226,13 +226,13 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             /> */}
-            {/* <Item
+            <Item
               title="Cash Payments"
               to="/cashtransactions"
               icon={<WalletIcon />}
               selected={selected}
               setSelected={setSelected}
-            /> */}
+            />
             <Item
               title="View Transactions"
               to="/viewtransactions"

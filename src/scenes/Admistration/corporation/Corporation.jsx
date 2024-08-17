@@ -459,7 +459,7 @@ const Corporation = () => {
                     },
                 }}
             >
-                <DataGrid checkboxSelection rows={filteredCorporation} columns={columns} components={{ Toolbar: GridToolbar }}
+                <DataGrid checkboxSelection rows={filteredCorporation} columns={columns} components={{ Toolbar: GridToolbar }} loading={loading}
                 />
             </Box>
 

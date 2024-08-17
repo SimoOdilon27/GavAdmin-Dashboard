@@ -495,8 +495,8 @@ const Bank = () => {
                     },
                 }}
             >
-                <DataGrid checkboxSelection rows={filteredBanks} columns={columns} components={{ Toolbar: GridToolbar }}
-                />
+                <DataGrid checkboxSelection rows={filteredBanks} columns={columns} components={{ Toolbar: GridToolbar }} loading={loading} />
+
             </Box>
 
 

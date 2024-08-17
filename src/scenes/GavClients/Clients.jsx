@@ -68,11 +68,11 @@ const Clients = () => {
     }
 
     const handleAddClient = () => {
-        navigate('/client-list/add-client');
+        navigate('/client/add-client');
     }
 
     const handleEdit = (msisdn) => {
-        navigate(`/client-list/edit/${msisdn}`);
+        navigate(`/client/edit/${msisdn}`);
     };
 
     const columns = [

@@ -126,19 +126,7 @@ const CatalogForm = () => {
                                 "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
                             }}
                         >
-                            {/* <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Id"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.id}
-                                name="id"
-                                error={!!touched.id && !!errors.id}
-                                helperText={touched.id && errors.id}
-                                sx={{ gridColumn: "span 2" }}
-                            /> */}
+
                             <TextField
                                 fullWidth
                                 variant="filled"
@@ -191,19 +179,7 @@ const CatalogForm = () => {
                                 helperText={touched.endPoint && errors.endPoint}
                                 sx={{ gridColumn: "span 4" }}
                             />
-                            {/* <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Request Type"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.requestType}
-                                name="requestType"
-                                error={!!touched.requestType && !!errors.requestType}
-                                helperText={touched.requestType && errors.requestType}
-                                sx={{ gridColumn: "span 4" }}
-                            /> */}
+
 
                             <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
                                 <InputLabel>Request Type</InputLabel>

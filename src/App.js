@@ -13,17 +13,18 @@ import Calendar from "./scenes/calendar/calendar";
 import Corporation from "./scenes/Admistration/corporation/Corporation";
 import Login from "./scenes/auth/Login";
 import Bank from "./scenes/Admistration/bank/Bank";
-import BankAccounts from "./scenes/bankDetails/BankAccounts";
+import BankAccounts from "./scenes/bankDetails/ViewBankAccounts";
 import BankInvestments from "./scenes/bankDetails/BankInvestments";
 import ViewTransactions from "./scenes/Transactions/ViewTransactions";
 import Branches from "./scenes/Admistration/branches/Branches";
 import BankMapper from "./scenes/Admistration/bankmapper/BankMapper";
-import AllAccounts from "./scenes/bankDetails/allAccounts/AllAccounts";
 import MenuCatalog from "./scenes/settings/menucatalog/MenuCatalog";
 import CatalogForm from "./scenes/settings/menucatalog/CatalogForm";
 import Clients from "./scenes/GavClients/Clients";
 import ClientForm from "./scenes/GavClients/ClientForm";
 import ErrorFallback from "./scenes/ErrorBoundary/ErrorPage";
+import CashOutnIn from "./scenes/Transactions/CashOutnIn";
+import AllAccounts from "./scenes/bankDetails/allAccounts/AllAccounts";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -43,7 +44,7 @@ function App() {
               <Topbar setIsSidebar={setIsSidebar} />
               <Routes>
 
-                <Route path="/*" element={<ErrorFallback />} />
+                {/* <Route path="/*" element={<ErrorFallback />} /> */}
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/team" element={<Team />} />
                 <Route path="/form" element={<Form />} />
@@ -61,7 +62,9 @@ function App() {
                 <Route path="/menu-catalog/add" element={<CatalogForm />} />
                 <Route path="/menu-catalog/edit/:id" element={<CatalogForm />} />
                 <Route path="/client" element={<Clients />} />
-                {/* <Route path="/client/add-client" element={<ClientForm />} /> */}
+                <Route path="/client/add-client" element={<ClientForm />} />
+                <Route path="/client/edit/:msisdn" element={<ClientForm />} />
+                <Route path="/cashtransactions" element={<CashOutnIn />} />
               </Routes>
             </main>
           </div>
