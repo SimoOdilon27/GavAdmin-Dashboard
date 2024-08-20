@@ -236,7 +236,7 @@ const BankAccount = () => {
                     <Switch
                         checked={params.value}
                         onChange={() => handleActivateDeactivate(params.row.accountId, params.value ? 'deactivate' : 'activate')}
-                        color="primary"
+                        color="secondary"
                     />
                     <Typography
                         color={params.value ? colors.greenAccent[500] : colors.redAccent[500]}
@@ -512,10 +512,10 @@ const BankAccount = () => {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={confirmActivateDeactivate} color="primary" disabled={loading}>
+                    <Button onClick={confirmActivateDeactivate} color="secondary" disabled={loading}>
                         {loading ? <CircularProgress animation="border" size="sm" /> : `${action.charAt(0).toUpperCase() + action.slice(1)}`}
                     </Button>
-                    <Button onClick={() => setShowStatusModal(false)} color="secondary">
+                    <Button onClick={() => setShowStatusModal(false)} color="primary">
                         Cancel
                     </Button>
                 </DialogActions>

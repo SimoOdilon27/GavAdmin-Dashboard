@@ -14,18 +14,20 @@ const CashIn = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const [pending, setPending] = useState(false);
     const navigate = useNavigate();
+    const userData = useSelector((state) => state.users);
+    const usertoken = userData.token;
+
     const [initialValues, setInitialValues] = useState({
         amount: 0,
         msisdn: "",
-        teller: "",
+        processingId: "11111",
+        teller: userData?.refId,
         internalId: "",
         bankCode: ""
     });
 
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
-    const userData = useSelector((state) => state.users);
-    const usertoken = userData.token;
 
     // console.log("userdata", userData);
 
@@ -40,16 +42,18 @@ const CashIn = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
-    const handleCashin = async () => {
+    const handleCashin = async (values) => {
 
         setPending(true);
         try {
 
             const payload = {
                 serviceReference: 'CASH_IN',
-                requestBody: JSON.stringify(initialValues)
+                requestBody: JSON.stringify(values)
             }
+            console.log("Values", values);
 
+            console.log("payload", payload);
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
 
             // const response = await CBS_Services('AP', 'api/gav/account/transfer/cash-out', 'POST', updatedCashOutFormData);
@@ -59,9 +63,9 @@ const CashIn = () => {
             if (response && response.body.meta.statusCode === 200) {
                 showSnackbar("Cash In Successfull ", 'success');
 
-            } else if (response && response.status === 401) {
+            } else if (response && response.body.status === 401) {
                 // setErrorMessage(response.body.errors || 'Unauthorized to perform action');
-                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
+                showSnackbar('Unauthorized to perform action', 'error');
 
             }
             else {
@@ -71,7 +75,7 @@ const CashIn = () => {
             }
         } catch (error) {
             console.error('Error:', error);
-            // setErrorMessage('Error adding teller');
+            showSnackbar('Error', 'error');
         }
         setPending(false);
     };
@@ -79,7 +83,7 @@ const CashIn = () => {
     return (
         <Box>
             <Typography variant="h5" color={colors.greenAccent[400]} sx={{ m: "0 10px 15px 5px" }}>
-                Cash In Transaction
+                Cash In Transaction (Teller Id: {userData?.refId})
             </Typography>
 
             <Formik
@@ -132,7 +136,7 @@ const CashIn = () => {
                                 helperText={touched.amount && errors.amount}
                                 sx={{ gridColumn: "span 2" }}
                             />
-
+                            {/* 
                             <TextField
                                 fullWidth
                                 variant="filled"
@@ -145,6 +149,21 @@ const CashIn = () => {
                                 error={!!touched.teller && !!errors.teller}
                                 helperText={touched.teller && errors.teller}
                                 sx={{ gridColumn: "span 2" }}
+                                disabled
+                            /> */}
+
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                type="text"
+                                label="Bank Code"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                value={values.bankCode}
+                                name="bankCode"
+                                error={!!touched.bankCode && !!errors.bankCode}
+                                helperText={touched.bankCode && errors.bankCode}
+                                sx={{ gridColumn: "span 4" }}
                             />
                             <TextField
                                 fullWidth
@@ -157,19 +176,6 @@ const CashIn = () => {
                                 name="internalId"
                                 error={!!touched.internalId && !!errors.internalId}
                                 helperText={touched.internalId && errors.internalId}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Bank Code"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.bankCode}
-                                name="bankCode"
-                                error={!!touched.bankCode && !!errors.bankCode}
-                                helperText={touched.bankCode && errors.bankCode}
                                 sx={{ gridColumn: "span 4" }}
                             />
                         </Box>

@@ -49,8 +49,9 @@ const CatalogForm = () => {
 
                 if (response && response.status === 200) {
                     showSnackbar('Catalog Edited Successfully.', 'success');
-                    // navigate("/menu-catalog"); // Navigate back to the catalog list
-
+                    setTimeout(() => {
+                        navigate('/menu-catalog');
+                    }, 2000);
                 } else {
                     // toast.error(response.body.errors || "Error Editing Catalog");
                     showSnackbar(response.body.errors || 'Error Editing Catalog', 'error');
@@ -63,7 +64,9 @@ const CatalogForm = () => {
                 if (response && response.status === 200) {
                     showSnackbar('Catalog Created Successfully.', 'success');
                     // navigate("/menu-catalog"); // Navigate back to the catalog list
-
+                    setTimeout(() => {
+                        navigate('/menu-catalog');
+                    }, 2000);
                 } else {
                     showSnackbar(response.body.errors || 'Error Adding Catalog', 'error');
                 }
@@ -94,7 +97,7 @@ const CatalogForm = () => {
                     console.error("Error fetching catalog item:", error);
                 });
         }
-    }, [id, token]);
+    }, []);
 
     return (
         <Box m="20px">

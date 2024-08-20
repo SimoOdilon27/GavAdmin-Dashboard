@@ -25,6 +25,12 @@ import ClientForm from "./scenes/GavClients/ClientForm";
 import ErrorFallback from "./scenes/ErrorBoundary/ErrorPage";
 import CashOutnIn from "./scenes/Transactions/CashOutnIn";
 import AllAccounts from "./scenes/bankDetails/allAccounts/AllAccounts";
+import RoleManagement from "./scenes/settings/rolemanagement/RoleManagement";
+import UserManagement from "./scenes/settings/Usermanagement/UserManagement";
+import UserForm from "./scenes/settings/Usermanagement/UserForm";
+import UpdatePassword from "./scenes/auth/UpdatePassword";
+import Tellers from "./scenes/Admistration/tellers/Tellers";
+import TellerForm from "./scenes/Admistration/tellers/TellerForm";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -65,6 +71,12 @@ function App() {
                 <Route path="/client/add-client" element={<ClientForm />} />
                 <Route path="/client/edit/:msisdn" element={<ClientForm />} />
                 <Route path="/cashtransactions" element={<CashOutnIn />} />
+                <Route path="/rolemanagement" element={<RoleManagement />} />
+                <Route path="/usermanagement" element={<UserManagement />} />
+                <Route path="/usermanagement/adduser" element={<UserForm />} />
+                <Route path="/tellers" element={<Tellers />} />
+                <Route path="/tellers/add" element={<TellerForm />} />
+                <Route path="/tellers/edit/:id" element={<TellerForm />} />
               </Routes>
             </main>
           </div>

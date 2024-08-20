@@ -49,9 +49,7 @@ const Branches = () => {
     const [bankID, setBankID] = useState('');
     const [loading, setLoading] = useState(false);
     const [selectedBranch, setSelectedBranch] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
+
     const [corpID, setCorpID] = useState('');
     const [branchID, setBranchID] = useState('');
     const [pending, setPending] = React.useState(true);

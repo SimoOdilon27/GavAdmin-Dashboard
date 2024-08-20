@@ -88,6 +88,9 @@ const ClientForm = () => {
 
                 if (response && response.body.meta.statusCode === 200) {
                     showSnackbar('Client Account Edited Successfully.', 'success');
+                    setTimeout(() => {
+                        navigate('/client');
+                    }, 2000);
                 } else {
                     showSnackbar(response.body.errors || 'Error Editing Client Account', 'error');
                 }
@@ -104,6 +107,9 @@ const ClientForm = () => {
 
                 if (response && response.body.meta.statusCode === 200) {
                     showSnackbar('Client Account Created Successfully.', 'success');
+                    setTimeout(() => {
+                        navigate('/client');
+                    }, 2000);
                 } else {
                     showSnackbar(response.body.errors || 'Error Adding Client Account', 'error');
                 }
@@ -468,6 +474,7 @@ const ClientForm = () => {
                                                     onChange={handleChange}
                                                     name="active"
                                                     color="secondary"
+                                                    disabled={true}
                                                 />
                                             }
                                             label="Active"

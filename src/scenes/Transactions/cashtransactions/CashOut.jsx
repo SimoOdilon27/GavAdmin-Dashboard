@@ -15,10 +15,13 @@ const CashOut = () => {
     const [pending, setPending] = useState(false);
     const navigate = useNavigate();
     const [withdrawWithCni, setWithdrawWithCni] = useState(false); // State to track checkbox
+    const userData = useSelector((state) => state.users);
+    const usertoken = userData.token;
+
     const [initialValues, setInitialValues] = useState({
         amount: 0,
         msisdn: "",
-        teller: "",
+        teller: userData?.refId,
         internalId: "",
         bankCode: "",
         cniNumber: "" // Add cniNumber to initialValues
@@ -30,8 +33,7 @@ const CashOut = () => {
     const [showModal, setShowModal] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
-    const userData = useSelector((state) => state.users);
-    const usertoken = userData.token;
+
 
     const showSnackbar = (message, severity) => {
         setSnackbar({ open: true, message, severity });
@@ -56,22 +58,28 @@ const CashOut = () => {
         setWithdrawWithCni(e.target.checked);
     };
 
-    const handleCashOut = async () => {
+    const handleCashOut = async (values) => {
         setPending(true);
         try {
             const payload = {
                 serviceReference: withdrawWithCni ? 'CASH_OUT_WITH_CNI' : 'CASH_OUT',
-                requestBody: JSON.stringify(initialValues)
+                requestBody: JSON.stringify(values)
             };
 
             console.log("payload", payload);
+            console.log("initialValues", values);
 
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
-            console.log("initialValues", initialValues);
             console.log("addresp", response);
 
             if (response && response.body.meta.statusCode === 200) {
                 if (!withdrawWithCni) {
+                    setConfirmCashOutFormData({
+                        ...ConfirmcashOutFormData,
+                        msisdn: values.msisdn // Set the MSISDN from the initial form
+                    });
+                    console.log("confirmCashOutFormData", ConfirmcashOutFormData);
+
                     handleToggleModal(); // Show modal only for CASH_OUT
                 } else {
                     showSnackbar('Cash Out with CNI successful', 'success');
@@ -81,7 +89,7 @@ const CashOut = () => {
             }
         } catch (error) {
             console.error('Error:', error);
-            showSnackbar('Error adding teller', 'error');
+            showSnackbar('Error During CashOut', 'error');
         }
         setPending(false);
     };
@@ -112,17 +120,13 @@ const CashOut = () => {
     };
 
     const handleToggleModal = () => {
-        setConfirmCashOutFormData({
-            msisdn: initialValues.msisdn,
-            token: ''
-        });
         setShowModal(!showModal);
     };
 
     return (
         <Box>
             <Typography variant="h5" color={colors.greenAccent[400]} sx={{ m: "0 10px 15px 5px" }}>
-                Cash Out Transaction
+                Cash Out Transaction (Teller Id: {userData?.refId})
             </Typography>
             <Formik
                 onSubmit={handleCashOut}
@@ -174,7 +178,7 @@ const CashOut = () => {
                                 sx={{ gridColumn: "span 2" }}
                             />
 
-                            <TextField
+                            {/* <TextField
                                 fullWidth
                                 variant="filled"
                                 type="text"
@@ -186,21 +190,9 @@ const CashOut = () => {
                                 error={!!touched.teller && !!errors.teller}
                                 helperText={touched.teller && errors.teller}
                                 sx={{ gridColumn: "span 2" }}
-                            />
+                                disabled
+                            /> */}
 
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Internal ID"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.internalId}
-                                name="internalId"
-                                error={!!touched.internalId && !!errors.internalId}
-                                helperText={touched.internalId && errors.internalId}
-                                sx={{ gridColumn: "span 2" }}
-                            />
 
                             <TextField
                                 fullWidth
@@ -215,6 +207,21 @@ const CashOut = () => {
                                 helperText={touched.bankCode && errors.bankCode}
                                 sx={{ gridColumn: "span 4" }}
                             />
+
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                type="text"
+                                label="Internal ID"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                value={values.internalId}
+                                name="internalId"
+                                error={!!touched.internalId && !!errors.internalId}
+                                helperText={touched.internalId && errors.internalId}
+                                sx={{ gridColumn: "span 4" }}
+                            />
+
 
                             <FormControlLabel
                                 control={
@@ -268,6 +275,16 @@ const CashOut = () => {
                 <DialogTitle>Enter Token</DialogTitle>
                 <DialogContent>
                     <form noValidate autoComplete="off">
+
+                        {/* <TextField
+                            fullWidth
+                            variant="filled"
+                            type="text"
+                            label="MSISDN"
+                            value={ConfirmcashOutFormData.msisdn}
+                            disabled
+                            sx={{ gridColumn: "span 4", marginBottom: 2 }}
+                        /> */}
                         <TextField
                             fullWidth
                             variant="filled"

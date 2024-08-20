@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, FormControlLabel, Typography, useTheme } from "@mui/material";
+import { Box, Button, Checkbox, FormControlLabel, Snackbar, Typography, useTheme } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../../theme";
 import { mockDataTeam } from "../../../data/mockData";
@@ -12,9 +12,6 @@ import { useSelector } from "react-redux";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Alert, CircularProgress, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { Add, Delete, EditOutlined, PlusOneOutlined } from "@mui/icons-material";
-
-
-
 
 
 
@@ -47,31 +44,35 @@ const Corporation = () => {
     });
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [bankData, setBankData] = useState();
-    const [corporationData, setCorporationData] = useState();
+    const [bankData, setBankData] = useState([]);
+    const [corporationData, setCorporationData] = useState([]);
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [selectedCorporation, setSelectedCorporation] = useState(null);
+    const [selectedCorporation, setSelectedCorporation] = useState([]);
     const [loading, setLoading] = useState(false)
-    const [searchTerm, setSearchTerm] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
-    const [corpID, setCorpID] = useState('');
-    const [bankID, setBankID] = useState('');
-    const [branchID, setBranchID] = useState('');
+    const [corpID, setCorpID] = useState([]);
+    const [bankID, setBankID] = useState([]);
+    const [branchID, setBranchID] = useState([]);
     const [showPendAccModal, setShowPendAccModal] = useState(false);
     const [selectedoption, setselectedoption] = useState('');
     const [pending, setPending] = useState(true);
     const userData = useSelector((state) => state.users)
 
     const token = userData.token
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
-    const filteredCorporation = corporationData ? corporationData.filter((corporation) =>
-        Object.values(corporation).some((field) =>
-            typeof field === 'string' &&
-            field.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    ) : [];
+    const showSnackbar = (message, severity) => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbar({ ...snackbar, open: false });
+    };
+
+
 
     const fetchCorporationData = async () => {
         setPending(true)
@@ -85,11 +86,18 @@ const Corporation = () => {
             console.log("response", response);
 
             if (response && response.body.meta.statusCode === 200) {
-                setCorporationData(response.body.data);
-                setCorpID(response.body.data);
+                setCorporationData(response.body.data || []);
+                setCorpID(response.body.data || []);
 
-            } else {
+            } else if (response && response.body.status === 401) {
+                showSnackbar('Unauthorized', 'error');
+
+            }
+
+            else {
                 console.error('Error fetching data');
+                showSnackbar('Error Fetching data.', 'error');
+
             }
         } catch (error) {
             console.error('Error:', error);
@@ -109,7 +117,7 @@ const Corporation = () => {
             // const response = await CBS_Services('AP', `api/gav/bankBranch/getAll`, 'GET', null);
 
             if (response && response.body.meta.statusCode === 200) {
-                setBranchID(response.body.data);
+                setBranchID(response.body.data || []);
 
             } else {
                 console.error('Error fetching data');
@@ -140,15 +148,17 @@ const Corporation = () => {
                 hidePendAccBank();
                 await fetchCorporationData();
                 setSuccessMessage('Pending Account created successfully.');
-                setErrorMessage('');
+
+                showSnackbar('Pending Account created successfully.', 'success');
+
             } else {
-                setSuccessMessage('');
+                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
                 setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             }
         } catch (error) {
             console.error('Error:', error);
-            setSuccessMessage('Pending Account Created Successfully');
-            setErrorMessage('Error adding Pending Account');
+            showSnackbar('Error adding Pending Account', 'error')
+
         }
         setLoading(false);
     };
@@ -162,16 +172,16 @@ const Corporation = () => {
                 requestBody: JSON.stringify(formData)
             }
 
+            console.log("payload", payload);
+
+
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("editresp", response);
             console.log("editformresp", formData);
-
-
             if (response && response.body.meta.statusCode === 200) {
                 hideEditCorporation();
                 await fetchCorporationData();
-                setSuccessMessage('Corporation updated successfully.');
-                setErrorMessage('');
+                showSnackbar('Corporation updated successfully.', 'success');
                 setFormData({
                     corporationId: '',
                     name: '',
@@ -182,28 +192,23 @@ const Corporation = () => {
                     country: '',
                     corporationAccountThreshold: 0,
                     corporationName: '',
-
-
                 });
             } else {
                 setSuccessMessage('');
                 setErrorMessage(response.body.errors);
+                showSnackbar(response.body.errors || 'Error Updating Data.', 'error');
+
             }
         } catch (error) {
             console.error('Error:', error);
-            setSuccessMessage('Branch Updated Successfully');
-            setErrorMessage('Error updating branch');
+            showSnackbar('Netowrk Error!!!! Try again Later', 'error');
         }
 
         setLoading(false);
     };
 
     const handleConfirmAdd = async () => {
-        // Check if the form is valid
-        // if (!document.querySelector('form').checkValidity()) {
-        //   setErrorMessage('Please fill in the right details');
-        //   return;
-        // }
+
         setLoading(true)
         try {
 
@@ -217,16 +222,15 @@ const Corporation = () => {
             if (response && response.body.meta.statusCode === 200) {
                 hideAddCorporation();
                 await fetchCorporationData();
-                setSuccessMessage('Corporation created successfully.');
-                setErrorMessage('');
+                showSnackbar('Corporation created successfully.', 'success');
             } else {
-                setSuccessMessage('');
-                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
+                // setErrorMessage(response.body.errors || 'Unauthorized to perform action');
             }
         } catch (error) {
             console.error('Error:', error);
-            setSuccessMessage('Corporation Created Successfully');
-            setErrorMessage('Error adding corporation');
+            showSnackbar('Netowrk Error!!!! Try again Later', 'error');
+
         }
         setLoading(false)
     };
@@ -459,7 +463,7 @@ const Corporation = () => {
                     },
                 }}
             >
-                <DataGrid checkboxSelection rows={filteredCorporation} columns={columns} components={{ Toolbar: GridToolbar }} loading={loading}
+                <DataGrid checkboxSelection rows={corporationData} columns={columns} components={{ Toolbar: GridToolbar }} loading={loading}
                 />
             </Box>
 
@@ -787,6 +791,17 @@ const Corporation = () => {
                         </Button>
                     </DialogActions>
                 </Dialog>
+
+                <Snackbar
+                    open={snackbar.open}
+                    autoHideDuration={6000}
+                    onClose={handleSnackbarClose}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                >
+                    <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+                        {snackbar.message}
+                    </Alert>
+                </Snackbar>
 
                 {/* Edit Bank Account Modal */}
                 {/* <Dialog open={showEditAccModal} onClose={handleToggleEditAccBankModal} maxWidth="lg" fullWidth>

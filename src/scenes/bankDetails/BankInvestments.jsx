@@ -91,7 +91,7 @@ const BankInvestments = () => {
 
     const fetchInvestmentData = async () => {
         try {
-            const response = await CBS_Services('AP', 'api/gav/bankAccount/investment/getAll', 'GET', null, token);
+            const response = await CBS_Services('AP', 'api/gav/account/investment/getAll', 'GET', null, token);
 
             if (response && response.status === 200) {
                 setInvestmentData(response.body.data);

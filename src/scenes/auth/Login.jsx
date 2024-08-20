@@ -92,7 +92,20 @@ export default function Login() {
                     users: users
                 };
                 dispatch(action);
-                navigate('/dashboard');
+
+                const loginCount = data.body.data.loginCount || "0";
+
+                if (loginCount === "1") {
+                    // User is logging in for the first time, redirect to "/updatepassword"
+                    navigate('/updatepassword');
+                }
+                else {
+                    // Continue with the login process
+                    // User can navigate freely to the dashboard after authentication
+                    navigate('/dashboard');
+
+                }
+                // navigate('/dashboard');
             } else if (data.status === 401) {
                 setErrors({ isError: true, description: ("Username or password is incorrect" || data.body.message) });
                 setUserCredential({ ...userCredential, password: '', isSubmit: false });

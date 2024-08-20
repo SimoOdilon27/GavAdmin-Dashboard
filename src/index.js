@@ -8,6 +8,7 @@ import { persitor, store } from "./store/configureStore";
 import { PersistGate } from 'redux-persist/integration/react';
 import Login from "./scenes/auth/Login";
 import ErrorBoundary from "./scenes/ErrorBoundary/ErrorBoundary";
+import UpdatePassword from "./scenes/auth/UpdatePassword";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -19,6 +20,8 @@ root.render(
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/*" element={<App />} />
+              <Route path="/updatepassword" element={<UpdatePassword />} />
+
             </Routes>
           </ErrorBoundary>
 

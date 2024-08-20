@@ -26,7 +26,7 @@ const AllAccounts = () => {
                 <Header title="Account Management" subtitle="Manage all Accounts" />
 
                 <Box  >
-                    <Button
+                    {/* <Button
                         sx={{
                             backgroundColor: colors.blueAccent[700],
                             color: colors.grey[100],
@@ -38,7 +38,7 @@ const AllAccounts = () => {
                     >
                         <Add sx={{ mr: "10px" }} />
                         Add
-                    </Button>
+                    </Button> */}
                 </Box>
             </Box>
 

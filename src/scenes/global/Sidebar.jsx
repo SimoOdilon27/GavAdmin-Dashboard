@@ -22,7 +22,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import TagIcon from "@mui/icons-material/Tag";
 import { tokens } from "../../theme";
-import { AccountCircle, MapOutlined, Money } from "@mui/icons-material";
+import { AccountCircle, MapOutlined, Money, SupervisedUserCircleOutlined } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -172,13 +172,13 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            {/* <Item
+            <Item
               title="Teller"
-              to="/teller"
+              to="/tellers"
               icon={<GroupIcon />}
               selected={selected}
               setSelected={setSelected}
-            /> */}
+            />
 
             <Typography
               variant="h6"
@@ -244,6 +244,13 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Item
+              title="Pricing"
+              to="/charges"
+              icon={<TagIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
 
             <Typography
               variant="h6"
@@ -297,17 +304,18 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="Pricing"
-              to="/charges"
-              icon={<TagIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+
             <Item
               title="Role Management"
               to="/rolemanagement"
               icon={<PersonOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="User Management"
+              to="/usermanagement"
+              icon={<SupervisedUserCircleOutlined />}
               selected={selected}
               setSelected={setSelected}
             />

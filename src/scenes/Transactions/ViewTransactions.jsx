@@ -15,17 +15,11 @@ const ViewTransactions = () => {
             message: "",
             description: "",
             status: ""
-
         }
     )
-    const [searchTerm, setSearchTerm] = useState('');
     const [pending, setPending] = React.useState(true);
 
-    const filteredTransactions = transactionData.filter((transaction) =>
-        Object.values(transaction).some((field) =>
-            typeof field === 'string' &&
-            field.toLowerCase().includes(searchTerm.toLowerCase())
-        ));
+
 
     const userData = useSelector((state) => state.users);
     const token = userData.token;
@@ -33,6 +27,7 @@ const ViewTransactions = () => {
     useEffect(() => {
 
         const FetchTransaction = async () => {
+            setPending(true);
             try {
 
                 const payload = {
@@ -41,9 +36,10 @@ const ViewTransactions = () => {
                 }
                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
                 // const response = await CBS_Services('TRANSACTION', 'api/v1/transactions/getAll', 'GET', null);
+                console.log("erer", response);
 
                 if (response && response.status === 200) {
-                    setTransactionData(response.body.data)
+                    setTransactionData(response?.body.data || [])
 
                 } else {
                     setResponseMessage({
@@ -57,6 +53,8 @@ const ViewTransactions = () => {
                 console.log(error);
 
             }
+
+            setPending(false);
 
         }
 
@@ -233,7 +231,7 @@ const ViewTransactions = () => {
                 }}
             >
                 <DataGrid
-                    rows={filteredTransactions}
+                    rows={transactionData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
                     checkboxSelection
