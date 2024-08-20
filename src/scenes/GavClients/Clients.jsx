@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import CBS_Services from '../../services/api/GAV_Sercives';
-import { Box, Button, useTheme } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, TextField, useTheme } from '@mui/material';
 import { tokens } from '../../theme';
 import { useSelector } from 'react-redux';
-import { Add, Delete, EditOutlined } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, NotificationsActiveRounded, SupervisedUserCircle, Verified, VerifiedOutlined } from '@mui/icons-material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../components/Header';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -16,7 +16,26 @@ const Clients = () => {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const [selectedMsisdn, setSelectedMsisdn] = useState('');
+    const [showActivateClientModal, setShowActivateClientModal] = useState(false);
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
+    const showSnackbar = (message, severity) => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbar({ ...snackbar, open: false });
+    };
+
+    const [activateClientFormData, setActivateClientFormData] = useState({
+        msisdn: '',
+        activationCode: '',
+        internalId: 'backOffice',
+    })
 
     const fetchClientData = async () => {
         setLoading(true);
@@ -50,6 +69,64 @@ const Clients = () => {
         fetchClientData();
 
     }, []);
+
+    const handleToggleActivateClientModal = (selectedClient) => {
+        setSelectedMsisdn(selectedClient);
+
+        setActivateClientFormData(prevFormData => ({
+            ...prevFormData,
+            msisdn: selectedClient,
+            activationCode: '',
+
+            // Add other properties you want to update here
+        }));
+
+        setShowActivateClientModal(!showActivateClientModal);
+    };
+
+    const handleConfirmActivate = async () => {
+        setLoading(true)
+        try {
+
+            const payload = {
+                serviceReference: 'ACTIVATE_CLIENT',
+                requestBody: JSON.stringify(activateClientFormData),
+            }
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            // const response = await CBS_Services('AP', 'api/gav/client/activateClient', 'POST', activateClientFormData);
+            console.log("resp", response);
+            console.log("ClientFormData", activateClientFormData);
+            if (response && response.body.meta.statusCode === 200) {
+                handleToggleActivateClientModal();
+                await fetchClientData();
+                // setSuccessMessage('Client Activated successfully.');
+                showSnackbar('Client Activated successfully', 'success');
+            }
+            else if (response && response.body.status === 401) {
+                // setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
+
+            }
+            else {
+                showSnackbar(response.body.errors || 'Error Activating client', 'error');
+
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showSnackbar('Network Error Try Again Later!!!!', 'error');
+
+        }
+
+        setLoading(false);
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setActivateClientFormData({
+            ...activateClientFormData,
+            [name]: value,
+        })
+    };
 
     const formatDate = (date) => {
         const d = new Date(date);
@@ -118,12 +195,26 @@ const Clients = () => {
                             backgroundColor={colors.greenAccent[600]}
                             borderRadius="4px"
                             onClick={() => handleEdit(row.msisdn)}
+
                         >
                             <EditOutlined />
                         </Box>
                         <Box
                             width="30%"
-                            m="0"
+                            m="0 4px"
+                            p="5px"
+                            display="flex"
+                            justifyContent="center"
+                            backgroundColor={row.active ? colors.greenAccent[600] : colors.grey[500]}
+                            borderRadius="4px"
+                            onClick={() => !row.active && handleToggleActivateClientModal(row.msisdn)}
+                            style={{ cursor: row.active ? 'not-allowed' : 'pointer' }}
+                        >
+                            {row.active ? <Verified /> : <VerifiedOutlined />}
+                        </Box>
+                        <Box
+                            width="30%"
+                            m="0 4px"
                             p="5px"
                             display="flex"
                             justifyContent="center"
@@ -198,6 +289,53 @@ const Clients = () => {
                     loading={loading}
                 />
             </Box>
+
+            <Dialog open={showActivateClientModal} onClose={() => handleToggleActivateClientModal(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>Activate Client</DialogTitle>
+                <DialogContent>
+
+                </DialogContent>
+                <Box
+                    display="grid"
+                    gap="30px"
+                    padding="10px"
+                    gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+
+                >
+
+                    <TextField
+                        fullWidth
+                        margin="normal"
+                        label="Activation Code"
+                        value={activateClientFormData.activationCode}
+                        onChange={handleChange}
+                        name="activationCode"
+                        required
+                        sx={{ gridColumn: "span 4" }}
+
+                    />
+                </Box>
+
+                <DialogActions>
+                    <Button onClick={handleConfirmActivate} color="secondary" disabled={loading}>
+                        {loading ? <CircularProgress animation="border" size="sm" /> : "Activate"}
+                    </Button>
+                    <Button onClick={() => handleToggleActivateClientModal(false)} color="primary">
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
 
         </Box>
 
