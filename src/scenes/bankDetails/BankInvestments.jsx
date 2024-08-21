@@ -3,22 +3,19 @@ import { useSelector } from 'react-redux';
 import {
     Box,
     Button,
-    TextField,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
     Typography,
     useTheme,
-    Switch,
     CircularProgress,
-    Alert,
-    Tooltip,
     Tab,
-    Tabs
+    Tabs,
+    Snackbar,
+    Alert
 } from "@mui/material";
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Add, Delete, EditOutlined, Money, MoneyOff, TrendingUp, Visibility } from '@mui/icons-material';
 import { tokens } from '../../theme';
 import CBS_Services from '../../services/api/GAV_Sercives';
 import Header from '../../components/Header';
@@ -27,20 +24,28 @@ const BankInvestments = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
-    const [investmentData, setInvestmentData] = useState([]);
-    const [dailyInvestmentData, setDailyInvestmentData] = useState([]);
-    const [successMessage, setSuccessMessage] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [awaitingApprovalData, setAwaitingApprovalData] = useState([]);
-    const [awaitingDailyApprovalData, setAwaitingDailyApprovalData] = useState([]);
+    const [capitalInvestmentData, setCapitalInvestmentData] = useState([]);
+
+    const [awaitingInvestmentApprovalData, setAwaitingInvestmentApprovalData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingRows, setLoadingRows] = useState([]);
-    const [tabValue, setTabValue] = useState(0);
     const [confirmationModal, setConfirmationModal] = useState({ show: false, investmentId: "" });
-    const [confirmationDailyInvestModal, setConfirmationDailyInvestModal] = useState({ show: false, dailyInvestmentPropositionId: "" });
 
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+
+    const showSnackbar = (message, severity) => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbar({ ...snackbar, open: false });
+    };
 
     const handleShowConfirmationModal = (investmentId) => {
         setConfirmationModal({ show: true, investmentId });
@@ -55,46 +60,22 @@ const BankInvestments = () => {
         handleCloseConfirmationModal();
     };
 
-    const handleShowConfirmationDailyInvestModal = (dailyInvestmentPropositionId) => {
-        setConfirmationDailyInvestModal({ show: true, dailyInvestmentPropositionId });
-    };
 
-    const handleCloseConfirmationDailyInvestModal = () => {
-        setConfirmationDailyInvestModal({ show: false, dailyInvestmentPropositionId: "" });
-    };
 
-    const handleConfirmApproveDailyInvestment = () => {
-        handleApproveDailyInvestment(confirmationDailyInvestModal.dailyInvestmentPropositionId);
-        handleCloseConfirmationDailyInvestModal();
-    };
-
-    const handleDailyInvestment = async () => {
-        try {
-            setLoading(true);
-            const response = await CBS_Services('AP', 'api/gav/bankAccount/dailyInvestment/invest/automatic', 'POST', null, token);
-
-            if (response && response.status === 200) {
-                setSuccessMessage('Daily Investments updated successfully.');
-                setErrorMessage('');
-            } else {
-                setSuccessMessage('');
-                setErrorMessage(response.body.errors || 'Todays Daily Investment Have Already Been Made');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            setSuccessMessage('');
-            setErrorMessage('Error updating investments');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const fetchInvestmentData = async () => {
         try {
-            const response = await CBS_Services('AP', 'api/gav/account/investment/getAll', 'GET', null, token);
 
-            if (response && response.status === 200) {
-                setInvestmentData(response.body.data);
+            const payload = {
+                serviceReference: 'GET_ALL_BANK_INVESTMENTS',
+                requestBody: ''
+            };
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            // const response = await CBS_Services('AP', 'api/gav/account/investment/getAll', 'GET', null, token);
+            console.log("response", response);
+
+            if (response && response.body.meta.statusCode === 200) {
+                setCapitalInvestmentData(response.body.data);
             } else {
                 console.error('Error fetching data');
             }
@@ -103,147 +84,85 @@ const BankInvestments = () => {
         }
     };
 
-    const fetchDailyInvestmentData = async () => {
+
+
+    const handleApproveInvestment = async (id) => {
         try {
-            const response = await CBS_Services('AP', 'api/gav/bankAccount/dailyInvestment/detailInvestmentsApproval/getAll', 'GET', null, token);
+            setLoadingRows((prevLoadingRows) => [...prevLoadingRows, id]);
 
-            if (response && response.status === 200) {
-                setDailyInvestmentData(response.body.data);
-            } else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
+            const payload = {
+                serviceReference: 'APPROVE_INVESTMENTS',
+                requestBody: JSON.stringify({ request: id })
+            };
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
-    const handleApproveInvestment = async (investmentId) => {
-        try {
-            setLoadingRows((prevLoadingRows) => [...prevLoadingRows, investmentId]);
-            const response = await CBS_Services('AP', `api/gav/bankAccount/investment/approval/${investmentId}`, 'PUT', null, token);
+            // const response = await CBS_Services('ACCOUNT', `api/gav/account/investment/approve/${id}`, 'PUT', null, token);
+            console.log("response", response);
+            console.log("id", id);
 
-            if (response && response.status === 200) {
-                setSuccessMessage('Investment approved successfully.');
-                setErrorMessage('');
+            if (response && response.body.meta.statusCode === 200) {
+                showSnackbar('Investment approved successfully.', 'success');
                 await fetchInvestmentData();
-                await fetchAwaitingApprovalData();
+                await fetchAwaitingInvestmentApprovalData();
             } else {
-                setSuccessMessage('');
-                setErrorMessage(response.body.errors);
+                showSnackbar(response.body.errors || 'Approval Investment Failed.', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            setSuccessMessage('');
-            setErrorMessage('Error approving investment');
+            showSnackbar('Network Error!!! Try again Later.', 'error');
+
         } finally {
-            setLoadingRows((prevLoadingRows) => prevLoadingRows.filter((rowId) => rowId !== investmentId));
+            setLoadingRows((prevLoadingRows) => prevLoadingRows.filter((rowId) => rowId !== id));
         }
     };
 
-    const handleApproveDailyInvestment = async (detailInvestmentPropositionId) => {
-        try {
-            setLoadingRows((prevLoadingRows) => [...prevLoadingRows, detailInvestmentPropositionId]);
-            const response = await CBS_Services('AP', `api/gav/bankAccount/dailyInvestment/approve/${detailInvestmentPropositionId}`, 'POST', null, token);
 
-            if (response && response.status === 200) {
-                setSuccessMessage('Daily Investment approved successfully.');
-                setErrorMessage('');
-                fetchDailyInvestmentData();
-                await fetchAwaitingApprovalData();
-            } else {
-                setSuccessMessage('');
-                setErrorMessage(response.body.errors);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            setSuccessMessage('');
-            setErrorMessage('Error approving investment');
-        } finally {
-            setLoadingRows((prevLoadingRows) => prevLoadingRows.filter((rowId) => rowId !== detailInvestmentPropositionId));
-        }
-    };
-
-    const fetchAwaitingDailyApprovalData = async () => {
+    const fetchAwaitingInvestmentApprovalData = async () => {
         try {
-            const response = await CBS_Services('AP', 'api/gav/bankAccount/dailyInvestment/detailInvestmentsAwaitingApproval/getAll', 'GET', null, token);
-            if (response && response.status === 200) {
-                setAwaitingDailyApprovalData(response.body.data);
+
+            const payload = {
+                serviceReference: 'GET_ALL_AWAITING_INVESTMENT_APPROVAL',
+                requestBody: ''
+            };
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+
+            // const response = await CBS_Services('AP', 'api/gav/bankAccount/investment/awaitingApproval/getAll', 'GET', null, token);
+            if (response && response.body.meta.statusCode === 200) {
+                setAwaitingInvestmentApprovalData(response.body.data);
             } else {
                 console.error('Error fetching data');
             }
         } catch (error) {
             console.error('Error:', error);
-        }
-    };
-
-    const fetchAwaitingApprovalData = async () => {
-        try {
-            const response = await CBS_Services('AP', 'api/gav/bankAccount/investment/awaitingApproval/getAll', 'GET', null, token);
-            if (response && response.status === 200) {
-                setAwaitingApprovalData(response.body.data);
-            } else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
+            showSnackbar('Network Error!!! Try again Later.', 'error');
         }
     };
 
     useEffect(() => {
         fetchInvestmentData();
-        fetchDailyInvestmentData();
-        fetchAwaitingApprovalData();
-        fetchAwaitingDailyApprovalData();
+        fetchAwaitingInvestmentApprovalData();
     }, []);
 
-    const investmentColumns = [
-        { field: 'investmentId', headerName: 'Investment ID', flex: 1 },
-        { field: 'bankId', headerName: 'Bank ID', flex: 1 },
+    const InvestmentColumns = [
+        { field: 'id', headerName: ' Investment ID', flex: 1 },
+        { field: 'accountName', headerName: 'Account Name', flex: 1 },
         { field: 'amount', headerName: 'Amount', flex: 1 },
-        { field: 'creatorName', headerName: 'Creator Name', flex: 1 },
+        { field: 'investorName', headerName: 'Investor Name', flex: 1 },
         {
             field: 'approvalStatus',
             headerName: 'Approval Status',
             flex: 1,
             renderCell: (params) => (
-                loadingRows.includes(params.row.investmentId) ? (
+                loadingRows.includes(params.row.id) ? (
                     <CircularProgress size={20} />
                 ) : (
                     <Button
                         variant="contained"
-                        color="primary"
-                        onClick={() => handleShowConfirmationModal(params.row.investmentId)}
-                        disabled={!awaitingApprovalData.some((item) => item.investmentId === params.row.investmentId && !item.approved)}
+                        color="secondary"
+                        onClick={() => handleShowConfirmationModal(params.row.id)}
+                        disabled={!awaitingInvestmentApprovalData.some((item) => item.id === params.row.id && !item.approved)}
                     >
-                        {awaitingApprovalData.some((item) => item.investmentId === params.row.investmentId && !item.approved) ? "Approve" : "Approved"}
-                    </Button>
-                )
-            ),
-        },
-    ];
-
-    const dailyInvestmentColumns = [
-        { field: 'dailyInvestmentPropositionId', headerName: 'Daily Investment ID', flex: 1 },
-        { field: 'bankId', headerName: 'Bank ID', flex: 1 },
-        { field: 'bankName', headerName: 'Bank Name', flex: 1 },
-        { field: 'amount', headerName: 'Amount', flex: 1 },
-        { field: 'totalAmount', headerName: 'Total Amount', flex: 1 },
-        { field: 'creatorName', headerName: 'Creator Name', flex: 1 },
-        {
-            field: 'approvalStatus',
-            headerName: 'Approval Status',
-            flex: 1,
-            renderCell: (params) => (
-                loadingRows.includes(params.row.dailyInvestmentPropositionId) ? (
-                    <CircularProgress size={20} />
-                ) : (
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleShowConfirmationDailyInvestModal(params.row.dailyInvestmentPropositionId)}
-                        disabled={!awaitingDailyApprovalData.some((item) => item.dailyInvestmentPropositionId === params.row.dailyInvestmentPropositionId && !item.approved)}
-                    >
-                        {awaitingDailyApprovalData.some((item) => item.dailyInvestmentPropositionId === params.row.dailyInvestmentPropositionId && !item.approved) ? "Approve" : "Approved"}
+                        {awaitingInvestmentApprovalData.some((item) => item.id === params.row.id && !item.approved) ? "Approve" : "Approved"}
                     </Button>
                 )
             ),
@@ -251,32 +170,23 @@ const BankInvestments = () => {
     ];
 
 
-    const [value, setValue] = React.useState(0);
-
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
 
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Header title="Bank Investments" subtitle="Manage your Bank Investments" />
-                <Button
+                {/* <Button
                     variant="contained"
                     color="secondary"
-                    onClick={handleDailyInvestment}
                     disabled={loading}
                 >
                     {loading ? <CircularProgress size={24} /> : "Update Daily Investments"}
-                </Button>
+                </Button> */}
             </Box>
 
-
-
-
             <Box
-                m="40px 0 0 0"
-                height="75vh"
+                m="40px 15px 15px 15px"
+                height="70vh"
                 sx={{
                     "& .MuiDataGrid-root": {
                         border: "none",
@@ -306,77 +216,43 @@ const BankInvestments = () => {
                     },
                 }}
             >
-
-                {/* <Tabs value={value} onChange={handleChange} aria-label="icon label tabs example">
-                    <Tab icon={<PhoneIcon />} label="RECENTS" />
-                    <Tab icon={<FavoriteIcon />} label="FAVORITES" />
-                    <Tab icon={<PersonPinIcon />} label="NEARBY" />
-                </Tabs>
                 <DataGrid
-                    rows={investmentData}
-                    columns={investmentColumns}
+                    rows={capitalInvestmentData}
+                    columns={InvestmentColumns}
                     components={{ Toolbar: GridToolbar }}
                     checkboxSelection
                     disableSelectionOnClick
-                /> */}
+                />
 
-                <Box mt={2}>
-                    <Tabs value={tabValue} onChange={(event, newValue) => setTabValue(newValue)}>
-                        <Tab label="Capital Investment" />
-                        <Tab label="Daily Investment" />
-                    </Tabs>
 
-                    {tabValue === 0 && (
-                        <DataGrid
-                            rows={investmentData}
-                            columns={investmentColumns}
-                            components={{ Toolbar: GridToolbar }}
-                            checkboxSelection
-                            disableSelectionOnClick
-                        />
-                    )}
-                    {tabValue === 1 && (
-                        <DataGrid
-                            rows={dailyInvestmentData}
-                            columns={dailyInvestmentColumns}
-                            components={{ Toolbar: GridToolbar }}
-                            checkboxSelection
-                            disableSelectionOnClick
-                        />
-                    )}
-                </Box>
             </Box>
-            {/* Confirmation Modal for Investment */}
+            {/* Confirmation Modal for Capital Investment */}
             <Dialog open={confirmationModal.show} onClose={handleCloseConfirmationModal}>
                 <DialogTitle>Confirm Approval</DialogTitle>
                 <DialogContent>
-                    <Typography>Are you sure you want to approve this investment?</Typography>
+                    <Typography>Are you sure you want to approve this capital investment?</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseConfirmationModal} color="primary">
-                        Cancel
-                    </Button>
                     <Button onClick={handleConfirmApproveInvestment} color="secondary" variant="contained">
                         Confirm
                     </Button>
+                    <Button onClick={handleCloseConfirmationModal} color="primary">
+                        Cancel
+                    </Button>
+
                 </DialogActions>
             </Dialog>
 
-            {/* Confirmation Modal for Daily Investment */}
-            <Dialog open={confirmationDailyInvestModal.show} onClose={handleCloseConfirmationDailyInvestModal}>
-                <DialogTitle>Confirm Approval</DialogTitle>
-                <DialogContent>
-                    <Typography>Are you sure you want to approve this daily investment?</Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseConfirmationDailyInvestModal} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleConfirmApproveDailyInvestment} color="secondary" variant="contained">
-                        Confirm
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

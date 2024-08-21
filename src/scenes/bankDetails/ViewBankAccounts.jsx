@@ -16,7 +16,7 @@ const BankAccount = () => {
     const [formData, setFormData] = useState({
         accountId: '',
         amount: 0,
-        creatorName: '',
+        investorName: '',
     });
     const [showModal, setShowModal] = useState(false);
     const [showDailyInvestModal, setShowDailyInvestModal] = useState(false);
@@ -66,25 +66,24 @@ const BankAccount = () => {
         setLoading(true);
         try {
             const payload = {
-                serviceReference: 'GET_ALL_CORPORATIONS',
+                serviceReference: 'CREATE_INVESTMENT',
                 requestBody: JSON.stringify(formData)
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
             if (response && response.status === 200) {
                 setShowModal(false);
-                setSuccessMessage('Investment created successfully.');
-                setErrorMessage('');
+
                 showSnackbar('Investment created successfully.', 'success');
 
             } else {
-                setErrorMessage(response.body.errors);
                 showSnackbar(response.body.errors || 'Error adding investment', 'error');
 
             }
         } catch (error) {
             console.error('Error:', error);
-            setErrorMessage('Error adding investment');
+            showSnackbar('Network Error!!! Try again Later', 'error');
+
         }
         setLoading(false);
     };
@@ -178,31 +177,7 @@ const BankAccount = () => {
         setShowViewModal(true);
     };
 
-    const handleConfirmAddDailyInvestment = async () => {
-        try {
-            const response = await CBS_Services('AP', 'api/gav/bankAccount/dailyInvestment/invest/proposition/manual', 'POST', formData);
 
-            console.log("resp", response);
-
-            if (response && response.status === 200) {
-                handleToggleDailyInvestmentModal();
-
-                setSuccessMessage('Daily Investment created successfully.');
-                setErrorMessage('');
-                showSnackbar('Daily Investment created successfully.', 'success');
-
-            } else {
-                setSuccessMessage('');
-                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
-                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
-
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showSnackbar('Error adding investment', 'error');
-            setErrorMessage('Error adding investment');
-        }
-    };
 
 
     const showSnackbar = (message, severity) => {
@@ -267,21 +242,7 @@ const BankAccount = () => {
                             <MoneyOff style={{ color: '#fff' }} /> {/* Replace MoneyOff with your preferred icon */}
                         </Box>
                     </Tooltip>
-                    <Tooltip title="Daily Investment">
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            onClick={() => handleToggleDailyInvestmentModal(params.row.accountId)}
-                            variant="outlined"
-                            size="small"
-                            style={{ marginRight: '5px', backgroundColor: colors.greenAccent[600] }}
-                        >
-                            <TrendingUp style={{ color: '#fff' }} /> {/* Replace TrendingUp with your preferred icon */}
-                        </Box>
-                    </Tooltip>
+
                     <Tooltip title="View Details">
                         <Box
                             width="30%"
@@ -413,8 +374,8 @@ const BankAccount = () => {
                         fullWidth
                         margin="normal"
                         label="Creator Name"
-                        name="creatorName"
-                        value={formData.creatorName}
+                        name="investorName"
+                        value={formData.investorName}
                         onChange={handleChange}
                     />
                 </DialogContent>
@@ -428,45 +389,7 @@ const BankAccount = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Daily Investment Modal */}
-            <Dialog open={showDailyInvestModal} onClose={() => setShowDailyInvestModal(false)} maxWidth="sm" fullWidth>
-                <DialogContent>
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Account ID"
-                        name="accountId"
-                        value={selectedAccountId}
-                        disabled
-                    />
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Amount"
-                        name="amount"
-                        type="number"
-                        value={formData.amount}
-                        onChange={handleChange}
-                    />
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Creator Name"
-                        name="creatorName"
-                        value={formData.creatorName}
-                        onChange={handleChange}
-                    />
-                </DialogContent>
 
-                <DialogActions>
-                    <Button onClick={handleConfirmAddDailyInvestment} color="primary" disabled={loading}>
-                        {loading ? 'Adding...' : 'Add'}
-                    </Button>
-                    <Button onClick={() => setShowDailyInvestModal(false)} color="secondary">
-                        Cancel
-                    </Button>
-                </DialogActions>
-            </Dialog>
 
             {/* View Modal */}
             <Dialog open={showViewModal} onClose={() => setShowViewModal(false)} maxWidth="md" fullWidth>
