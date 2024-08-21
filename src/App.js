@@ -31,6 +31,12 @@ import UserForm from "./scenes/settings/Usermanagement/UserForm";
 import UpdatePassword from "./scenes/auth/UpdatePassword";
 import Tellers from "./scenes/Admistration/tellers/Tellers";
 import TellerForm from "./scenes/Admistration/tellers/TellerForm";
+import Pricing from "./scenes/Transactions/pricing/Pricing";
+import Charges from "./scenes/Transactions/pricing/Charges";
+import GimacWallets from "./scenes/gimacServices/wallet/GimacWallets";
+import GimacWalletForm from "./scenes/gimacServices/wallet/GimacWalletForm";
+import GimacCountries from "./scenes/gimacServices/countries/GimacCountries";
+import GimacCountriesForm from "./scenes/gimacServices/countries/GimacCountriesForm";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -77,6 +83,14 @@ function App() {
                 <Route path="/tellers" element={<Tellers />} />
                 <Route path="/tellers/add" element={<TellerForm />} />
                 <Route path="/tellers/edit/:id" element={<TellerForm />} />
+                <Route path="/charges" element={<Pricing />} />
+                <Route path="/pricing/configure" element={<Charges />} />
+                <Route path="/gimac-wallets" element={<GimacWallets />} />
+                <Route path="/gimac-wallets/add" element={<GimacWalletForm />} />
+                <Route path="/gimac-wallets/edit/:id" element={<GimacWalletForm />} />
+                <Route path="/gimac-countries" element={<GimacCountries />} />
+                <Route path="/gimac-countries/add" element={<GimacCountriesForm />} />
+                <Route path="/gimac-countries/edit/:id" element={<GimacCountriesForm />} />
               </Routes>
             </main>
           </div>

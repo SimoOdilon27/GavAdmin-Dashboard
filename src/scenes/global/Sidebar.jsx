@@ -261,14 +261,14 @@ const Sidebar = () => {
             </Typography>
             <Item
               title="Wallet"
-              to="/wallet"
+              to="/gimac-wallets"
               icon={<WalletIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Countries"
-              to="/countries"
+              to="/gimac-countries"
               icon={<PublicIcon />}
               selected={selected}
               setSelected={setSelected}
