@@ -73,7 +73,7 @@ const TellerForm = () => {
                 response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
                 // response = await CBS_Services('APE', 'teller/update', 'PUT', values);
-                if (response && response.status === 200) {
+                if (response && response.body.meta.statusCode === 200) {
                     showSnackbar('Teller Updated Successfully.', 'success');
                     setTimeout(() => {
                         navigate(-1);
@@ -92,10 +92,10 @@ const TellerForm = () => {
                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
                 // response = await CBS_Services('APE', 'teller/create', 'POST', values);
-                if (response && response.status === 200) {
+                if (response && response.body.meta.statusCode === 200) {
                     showSnackbar('Teller Created Successfully.', 'success');
                     setTimeout(() => {
-                        navigate('/teller-list');
+                        navigate('/tellers');
                     }, 2000);
                 } else {
                     showSnackbar(response.body.errors || 'Error Adding Teller', 'error');

@@ -446,6 +446,7 @@ const ClientForm = () => {
                                             onChange={handleChange}
                                             value={values.accountId}
                                             name="accountId"
+                                            inputProps={{ readOnly: true }}
                                         // error={!!touched.accountId && !!errors.accountId}
                                         // helperText={touched.accountId && errors.accountId}
                                         />

@@ -154,6 +154,45 @@ const UserForm = () => {
                                 "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
                             }}
                         >
+
+                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
+                                <InputLabel>Role</InputLabel>
+                                <Select
+                                    label="Role"
+                                    onBlur={handleBlur}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setFieldValue("roles", e.target.value);
+                                        setInitialValues(prevValues => ({
+                                            ...prevValues,
+                                            roles: e.target.value,
+                                            refId: "", // Clear refId
+                                        }));
+                                        setSelectedTeller(""); // Clear selected teller
+                                        setFieldValue("refId", ""); // Clear Formik's refId value
+                                        // If "TELLER" is selected, reset tellerId
+                                        if (e.target.value !== "TELLER") {
+                                            setFieldValue("id", "");
+                                        }
+                                    }}
+                                    value={values.roles}
+                                    name="roles"
+                                    error={!!touched.roles && !!errors.roles}
+                                >
+                                    <MenuItem value="" disabled>Select Role</MenuItem>
+                                    {roleData.length > 0
+                                        ? roleData.map((option) => (
+                                            <MenuItem key={option.roleName} value={option.roleName}>
+                                                {option.roleName}
+                                            </MenuItem>
+                                        ))
+                                        : <MenuItem value="">No Roles available</MenuItem>}
+                                </Select>
+                                {touched.roles && errors.roles && (
+                                    <Alert severity="error">{errors.roles}</Alert>
+                                )}
+                            </FormControl>
+
                             <TextField
                                 fullWidth
                                 variant="filled"
@@ -248,43 +287,7 @@ const UserForm = () => {
                                 )}
                             </FormControl>
 
-                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
-                                <InputLabel>Role</InputLabel>
-                                <Select
-                                    label="Role"
-                                    onBlur={handleBlur}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        setFieldValue("roles", e.target.value);
-                                        setInitialValues(prevValues => ({
-                                            ...prevValues,
-                                            roles: e.target.value,
-                                            refId: "", // Clear refId
-                                        }));
-                                        setSelectedTeller(""); // Clear selected teller
-                                        setFieldValue("refId", ""); // Clear Formik's refId value
-                                        // If "TELLER" is selected, reset tellerId
-                                        if (e.target.value !== "TELLER") {
-                                            setFieldValue("id", "");
-                                        }
-                                    }}
-                                    value={values.roles}
-                                    name="roles"
-                                    error={!!touched.roles && !!errors.roles}
-                                >
-                                    <MenuItem value="" disabled>Select Role</MenuItem>
-                                    {roleData.length > 0
-                                        ? roleData.map((option) => (
-                                            <MenuItem key={option.roleName} value={option.roleName}>
-                                                {option.roleName}
-                                            </MenuItem>
-                                        ))
-                                        : <MenuItem value="">No Roles available</MenuItem>}
-                                </Select>
-                                {touched.roles && errors.roles && (
-                                    <Alert severity="error">{errors.roles}</Alert>
-                                )}
-                            </FormControl>
+
 
                             {/* Conditional Teller Dropdown */}
                             {values.roles === "TELLER" && (

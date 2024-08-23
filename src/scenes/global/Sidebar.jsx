@@ -137,188 +137,237 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
 
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Administration
-            </Typography>
-            <Item
-              title="Corporation"
-              to="/corporation"
-              icon={<CorporateFareIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Bank"
-              to="/bank"
-              icon={<AccountBalanceIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Branches"
-              to="/branches"
-              icon={<PlaceIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Bank Mapper"
-              to="/bankmapper"
-              icon={<MapOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Teller"
-              to="/tellers"
-              icon={<GroupIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            {role.includes("ADMIN") && (
 
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Accounts
-            </Typography>
-            <Item
-              title="Account Management"
-              to="/accounts"
-              icon={<Money />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Bank Accounts"
-              to="/bankaccount"
-              icon={<AttachMoneyIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Bank Investment"
-              to="/bankinvestment"
-              icon={<TrendingDownIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+              <>
+                <Typography
+                  variant="h6"
+                  color={colors.grey[300]}
+                  sx={{ m: "15px 0 5px 20px" }}
+                >
+                  Administration
+                </Typography>
+                <Item
+                  title="Corporation"
+                  to="/corporation"
+                  icon={<CorporateFareIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Bank"
+                  to="/bank"
+                  icon={<AccountBalanceIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Branches"
+                  to="/branches"
+                  icon={<PlaceIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Bank Mapper"
+                  to="/bankmapper"
+                  icon={<MapOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Teller"
+                  to="/tellers"
+                  icon={<GroupIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
 
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Transactions
-            </Typography>
-            {/* <Item
+                <Typography
+                  variant="h6"
+                  color={colors.grey[300]}
+                  sx={{ m: "15px 0 5px 20px" }}
+                >
+                  Accounts
+                </Typography>
+                <Item
+                  title="Account Management"
+                  to="/accounts"
+                  icon={<Money />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Bank Accounts"
+                  to="/bankaccount"
+                  icon={<AttachMoneyIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Bank Investment"
+                  to="/bankinvestment"
+                  icon={<TrendingDownIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+
+                <Typography
+                  variant="h6"
+                  color={colors.grey[300]}
+                  sx={{ m: "15px 0 5px 20px" }}
+                >
+                  Transactions
+                </Typography>
+                {/* <Item
               title="Wallet to Wallet"
               to="/wallettowallet"
               icon={<TrendingDownIcon />}
               selected={selected}
               setSelected={setSelected}
             /> */}
-            {/* <Item
+                {/* <Item
               title="Account to Wallet"
               to="/accounttowallet"
               icon={<WalletIcon />}
               selected={selected}
               setSelected={setSelected}
             /> */}
-            <Item
-              title="Cash Payments"
-              to="/cashtransactions"
-              icon={<WalletIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="View Transactions"
-              to="/viewtransactions"
+                <Item
+                  title="Cash Payments"
+                  to="/cashtransactions"
+                  icon={<WalletIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="View Transactions"
+                  to="/viewtransactions"
+                  icon={<TrendingDownIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Pricing"
+                  to="/charges"
+                  icon={<TagIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+
+                <Typography
+                  variant="h6"
+                  color={colors.grey[300]}
+                  sx={{ m: "15px 0 5px 20px" }}
+                >
+                  GIMAC Services
+                </Typography>
+                <Item
+                  title="Wallet"
+                  to="/gimac-wallets"
+                  icon={<WalletIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="Countries"
+                  to="/gimac-countries"
+                  icon={<PublicIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+
+                <Typography
+                  variant="h6"
+                  color={colors.grey[300]}
+                  sx={{ m: "15px 0 5px 20px" }}
+                >
+                  Client Management
+                </Typography>
+
+                <Item
+                  title="Client"
+                  to="/client"
+                  icon={<PersonOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+
+                <Typography
+                  variant="h6"
+                  color={colors.grey[300]}
+                  sx={{ m: "15px 0 5px 20px" }}
+                >
+                  SETTINGS
+                </Typography>
+                <Item
+                  title="Catalog"
+                  to="/menu-catalog"
+                  icon={<CollectionsIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+
+                <Item
+                  title="Role Management"
+                  to="/rolemanagement"
+                  icon={<PersonOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="User Management"
+                  to="/usermanagement"
+                  icon={<SupervisedUserCircleOutlined />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              </>
+            )}
+
+            {role.includes("TELLER") && (
+              <>
+
+                <Typography
+                  variant="h6"
+                  color={colors.grey[300]}
+                  sx={{ m: "15px 0 5px 20px" }}
+                >
+                  Transactions
+                </Typography>
+                {/* <Item
+              title="Wallet to Wallet"
+              to="/wallettowallet"
               icon={<TrendingDownIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
-            <Item
-              title="Pricing"
-              to="/charges"
-              icon={<TagIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              GIMAC Services
-            </Typography>
-            <Item
-              title="Wallet"
-              to="/gimac-wallets"
+            /> */}
+                {/* <Item
+              title="Account to Wallet"
+              to="/accounttowallet"
               icon={<WalletIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
-            <Item
-              title="Countries"
-              to="/gimac-countries"
-              icon={<PublicIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            /> */}
+                <Item
+                  title="Cash Payments"
+                  to="/cashtransactions"
+                  icon={<WalletIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+                <Item
+                  title="View Transactions"
+                  to="/viewtransactions"
+                  icon={<TrendingDownIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              </>
+            )}
 
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              Client Management
-            </Typography>
 
-            <Item
-              title="Client"
-              to="/client"
-              icon={<PersonOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
 
-            <Typography
-              variant="h6"
-              color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
-            >
-              SETTINGS
-            </Typography>
-            <Item
-              title="Catalog"
-              to="/menu-catalog"
-              icon={<CollectionsIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
-            <Item
-              title="Role Management"
-              to="/rolemanagement"
-              icon={<PersonOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="User Management"
-              to="/usermanagement"
-              icon={<SupervisedUserCircleOutlined />}
-              selected={selected}
-              setSelected={setSelected}
-            />
           </Box>
         </Menu>
       </ProSidebar>

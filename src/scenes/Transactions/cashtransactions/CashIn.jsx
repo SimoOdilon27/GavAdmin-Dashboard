@@ -17,10 +17,22 @@ const CashIn = () => {
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
 
+    const generateProcessingId = (msisdn) => {
+        const msisdnSuffix = msisdn.slice(-3); // Last 3 digits of the MSISDN
+        const date = new Date();
+        const formattedDate = date.toISOString().slice(2, 8).replace(/-/g, ''); // yyMMdd
+        const randomNumbers = Math.floor(100 + Math.random() * 900); // Generate 3 random digits
+        const processingId = `${msisdnSuffix}T${formattedDate}${randomNumbers}`;
+        console.log(`Processing ID is: ${processingId}`);
+        return processingId;
+    };
+
+
     const [initialValues, setInitialValues] = useState({
         amount: 0,
         msisdn: "",
-        processingId: "11111",
+        processingId: '',
+        fee: 0,
         teller: userData?.refId,
         internalId: "",
         bankCode: ""
@@ -42,10 +54,13 @@ const CashIn = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
-    const handleCashin = async (values) => {
+    const handleCashin = async (values, { resetForm }) => {
 
         setPending(true);
         try {
+
+            const processingId = generateProcessingId(values.msisdn);
+            values.processingId = processingId;
 
             const payload = {
                 serviceReference: 'CASH_IN',
@@ -62,7 +77,7 @@ const CashIn = () => {
 
             if (response && response.body.meta.statusCode === 200) {
                 showSnackbar("Cash In Successfull ", 'success');
-
+                resetForm()
             } else if (response && response.body.status === 401) {
                 // setErrorMessage(response.body.errors || 'Unauthorized to perform action');
                 showSnackbar('Unauthorized to perform action', 'error');
