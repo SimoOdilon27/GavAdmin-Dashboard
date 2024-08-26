@@ -1,10 +1,7 @@
-import { Box, Button, Checkbox, FormControlLabel, Snackbar, Typography, useTheme } from "@mui/material";
+import { Box, Button, Checkbox, FormControlLabel, Snackbar, useTheme } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../../theme";
-import { mockDataTeam } from "../../../data/mockData";
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
+
 import Header from "../../../components/Header";
 import { useEffect, useState } from "react";
 import CBS_Services from "../../../services/api/GAV_Sercives";
@@ -147,7 +144,6 @@ const Corporation = () => {
             if (response && response.body.meta.statusCode === 200) {
                 hidePendAccBank();
                 await fetchCorporationData();
-                setSuccessMessage('Pending Account created successfully.');
 
                 showSnackbar('Pending Account created successfully.', 'success');
 
@@ -463,7 +459,7 @@ const Corporation = () => {
                     },
                 }}
             >
-                <DataGrid checkboxSelection rows={corporationData} columns={columns} components={{ Toolbar: GridToolbar }} loading={loading}
+                <DataGrid checkboxSelection rows={corporationData} columns={columns} components={{ Toolbar: GridToolbar }} loading={pending}
                 />
             </Box>
 

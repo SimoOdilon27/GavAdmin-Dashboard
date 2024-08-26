@@ -1,5 +1,5 @@
 import { Add, Delete, EditOutlined } from '@mui/icons-material';
-import { Box, Button, Checkbox, FormControl, FormControlLabel, InputLabel, Typography, useTheme } from "@mui/material";
+import { Box, Button, Checkbox, FormControl, FormControlLabel, InputLabel, Snackbar, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import CBS_Services from '../../../services/api/GAV_Sercives';
@@ -46,32 +46,30 @@ const Bank = () => {
     });
     const [showModal, setShowModal] = useState(false);
     const [showPendAccModal, setShowPendAccModal] = useState(false);
-    const [bankData, setBankData] = useState();
+    const [bankData, setBankData] = useState([]);
     const [bankID, setBankID] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+
     const [corpID, setCorpID] = useState('');
     const [branchID, setBranchID] = useState('');
     const [loading, setLoading] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedBank, setSelectedBank] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
     const [selectedoption, setselectedoption] = useState('');
-    const [pending, setPending] = React.useState(true);
     const userData = useSelector((state) => state.users)
 
     const token = userData.token
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
-    console.log("----pending", pending_account);
+    const showSnackbar = (message, severity) => {
+        setSnackbar({ open: true, message, severity });
+    };
 
-    const filteredBanks = bankData ? bankData.filter((bank) =>
-        Object.values(bank).some((field) =>
-            typeof field === 'string' &&
-            field.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    ) : [];
-
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbar({ ...snackbar, open: false });
+    };
 
     const handleToggleBankModal = () => {
         setShowModal(!showModal);
@@ -113,15 +111,13 @@ const Bank = () => {
 
     const hidePendAccBank = () => {
         setShowPendAccModal(false);
-        setSuccessMessage('');
-        setErrorMessage('');
+
     };
 
 
     const hideAddBank = () => {
         setShowModal(false);
-        setSuccessMessage('');
-        setErrorMessage('');
+
     };
 
     const handleEdit = (bank) => {
@@ -157,8 +153,7 @@ const Bank = () => {
     };
     const hideEditBank = () => {
         setShowEditModal(false);
-        setSuccessMessage('');
-        setErrorMessage('');
+
     };
 
     const handleChange = (e) => {
@@ -195,30 +190,34 @@ const Bank = () => {
 
     const handleConfirmAdd = async () => {
 
-
         setLoading(true);
         try {
 
             const payload = {
-                serviceReference: 'ADD_BANK_ACCOUNT',
+                serviceReference: 'ADD_BANK',
                 requestBody: JSON.stringify(formData)
             }
-            const response = await CBS_Services('AP', 'gavClientApiService/request', 'POST', payload, token);
+
+            console.log("formData", formData);
+
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("addresponse", response);
 
             if (response && response.body.meta.statusCode === 200) {
                 hideAddBank();
                 await fetchBankData();
-                setSuccessMessage('Bank created successfully.');
-                setErrorMessage('');
-            } else {
-                setSuccessMessage('');
-                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+                showSnackbar('Bank created successfully.', 'success');
+            } else if (response && response.body.meta.statusCode === 401) {
+                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
+            }
+
+            else {
+                showSnackbar(response.body.errors || 'Failed to create bank', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            setSuccessMessage('Bank Created Successfully');
-            setErrorMessage('Error adding Bank');
+            showSnackbar('Network Error!!! try again later', 'error');
+
         }
         setLoading(false);
     };
@@ -239,16 +238,19 @@ const Bank = () => {
             if (response && response.body.meta.statusCode === 200) {
                 hidePendAccBank();
                 await fetchBankData();
-                setSuccessMessage('Pending Account created successfully.');
-                setErrorMessage('');
-            } else {
-                setSuccessMessage('');
-                setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+                showSnackbar('Pending Account created successfully.', 'success');
+
+            } else if (response && response.body.meta.statusCode === 401) {
+                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
+            }
+            else {
+                showSnackbar(response.body.errors || 'Failed to create pending account', 'error');
+
             }
         } catch (error) {
             console.error('Error:', error);
-            setSuccessMessage('Pending Account Created Successfully');
-            setErrorMessage('Error adding Pending Account');
+            showSnackbar('Network Error!!! try again later', 'error');
+
         }
         setLoading(false);
     };
@@ -269,16 +271,20 @@ const Bank = () => {
             if (response && response.body.meta.statusCode === 200) {
                 hideEditBank();
                 await fetchBankData();
-                setSuccessMessage('Bank updated successfully.');
-                setErrorMessage('');
-            } else {
-                setSuccessMessage('');
-                setErrorMessage(response.body.errors);
+                showSnackbar('Bank updated successfully.', 'success');
+
+            } else if (response && response.body.meta.statusCode === 401) {
+                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
+            }
+
+            else {
+                showSnackbar(response.body.errors || 'Failed to update bank', 'error');
+
             }
         } catch (error) {
             console.error('Error:', error);
-            setSuccessMessage('Bank Updated Successfully');
-            setErrorMessage('Error updating Bank');
+            showSnackbar('Network Error!!! try again later', 'error');
+
         }
         setLoading(false);
     };
@@ -296,11 +302,12 @@ const Bank = () => {
             console.log("fetchresponse", response);
 
             if (response && response.body.meta.statusCode === 200) {
-                setBankData(response.body.data);
+                setBankData(response.body.data || []);
                 setBankID(response.body.data);
 
             } else {
-                setErrorMessage(response.body.errors || 'Error Finding Banks');
+                showSnackbar(response.body.errors || 'Error Finding Banks', 'error');
+
                 console.error('Error fetching data');
             }
         } catch (error) {
@@ -357,7 +364,6 @@ const Bank = () => {
         fetchBankData();
         fetchCorpID();
         fetchBranchID();
-        setSuccessMessage('');
     }, []);
 
 
@@ -394,7 +400,7 @@ const Bank = () => {
             headerName: "Actions",
             flex: 1,
             renderCell: (params) => {
-                const corp = params.row; // Access the current row's data
+                const bank = params.row; // Access the current row's data
                 return (
                     <>
                         <Box
@@ -405,7 +411,7 @@ const Bank = () => {
                             justifyContent="center"
                             backgroundColor={colors.greenAccent[600]}
                             borderRadius="4px"
-                            onClick={() => handleEdit(corp)}
+                            onClick={() => handleEdit(bank)}
                         >
                             <EditOutlined />
                         </Box>
@@ -495,7 +501,7 @@ const Bank = () => {
                     },
                 }}
             >
-                <DataGrid checkboxSelection rows={filteredBanks} columns={columns} components={{ Toolbar: GridToolbar }} loading={loading} />
+                <DataGrid checkboxSelection rows={bankData} columns={columns} components={{ Toolbar: GridToolbar }} loading={loading} />
 
             </Box>
 
@@ -504,12 +510,7 @@ const Bank = () => {
                 <Dialog open={showModal} onClose={handleToggleBankModal} fullWidth maxWidth="lg">
                     <DialogTitle>Add Bank</DialogTitle>
                     <DialogContent>
-                        {successMessage && <Alert severity="success" onClose={() => { /* Close success message */ }}>
-                            {successMessage}
-                        </Alert>}
-                        {errorMessage && <Alert severity="error" onClose={() => { /* Close error message */ }}>
-                            {errorMessage}
-                        </Alert>}
+
                         <form noValidate autoComplete="off">
                             <TextField
                                 fullWidth
@@ -519,6 +520,7 @@ const Bank = () => {
                                 value={formData.corporationId}
                                 onChange={handleChange}
                                 name="corporationId"
+                                required
                             >
                                 <MenuItem value="">Select Corporation</MenuItem>
                                 {Array.isArray(corpID) && corpID.length > 0 ? (
@@ -545,7 +547,7 @@ const Bank = () => {
                             <TextField
                                 fullWidth
                                 margin="normal"
-                                label="Credit Union Id"
+                                label="CBS Bank Id"
                                 value={formData.cbsBankId}
                                 onChange={handleChange}
                                 name="cbsBankId"
@@ -668,12 +670,8 @@ const Bank = () => {
                 <Dialog open={showEditModal} onClose={handleToggleEditBankModal} fullWidth maxWidth="lg">
                     <DialogTitle>Edit Bank</DialogTitle>
                     <DialogContent>
-                        {successMessage && <Alert severity="success" onClose={() => { /* Close success message */ }}>
-                            {successMessage}
-                        </Alert>}
-                        {errorMessage && <Alert severity="error" onClose={() => { /* Close error message */ }}>
-                            {errorMessage}
-                        </Alert>}
+
+
                         <form noValidate autoComplete="off">
                             <TextField
                                 fullWidth
@@ -842,8 +840,6 @@ const Bank = () => {
                 <Dialog open={showPendAccModal} onClose={handleTogglePendingAccBankModal} maxWidth="lg" fullWidth>
                     <DialogTitle>Add Pending Account(Bank)</DialogTitle>
                     <DialogContent>
-                        {successMessage && <Alert severity="success" onClose={() => { }}>{successMessage}</Alert>}
-                        {errorMessage && <Alert severity="error" onClose={() => { }}>{errorMessage}</Alert>}
 
                         <Box component="form" sx={{ mt: 3 }} noValidate>
                             <FormControl fullWidth margin="normal">
@@ -1000,6 +996,17 @@ const Bank = () => {
                     </DialogActions>
                 </Dialog>
             </>
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Box>
     )
 }
