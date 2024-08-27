@@ -18,6 +18,8 @@ const TellerForm = () => {
     const token = userData.token;
     const [branchID, setBranchID] = useState('');
     const [bankID, setBankID] = useState('');
+    const [corpID, setCorpID] = useState('');
+
     const [formData, setFormData] = useState({
         request: id,
         bankCode: "001",
@@ -144,8 +146,32 @@ const TellerForm = () => {
                 setBankID(response.body.data);
 
             } else if (response && response.body.status === 401) {
-                showSnackbar(response.body.errors || 'Error Adding Teller', 'error');
+                showSnackbar(response.body.errors || 'Error fetching Teller', 'error');
 
+            }
+            else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const fetchCorpID = async () => {
+        try {
+
+            const payload = {
+                serviceReference: 'GET_ALL_CORPORATIONS',
+                requestBody: ''
+            }
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            // const response = await CBS_Services('AP', `api/gav/corporation/management/getAll`, 'GET', null);
+
+            if (response && response.status === 200) {
+                setCorpID(response.body.data);
+
+            } else if (response && response.body.status === 401) {
+                showSnackbar(response.body.errors || 'Error fetching Corporation', 'error');
             }
             else {
                 console.error('Error fetching data');
@@ -157,7 +183,8 @@ const TellerForm = () => {
 
     useEffect(() => {
         fetchBranchID();
-        fetchBankID()
+        fetchBankID();
+        fetchCorpID()
     }, [])
 
     useEffect(() => {
@@ -365,19 +392,32 @@ const TellerForm = () => {
                                         helperText={touched.accountId && errors.accountId}
                                         sx={{ gridColumn: "span 2" }}
                                     />
-                                    <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="text"
-                                        label="Corporation"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.corporationId}
-                                        name="corporationId"
-                                        error={!!touched.corporationId && !!errors.corporationId}
-                                        helperText={touched.corporationId && errors.corporationId}
-                                        sx={{ gridColumn: "span 2" }}
-                                    />
+
+
+                                    <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
+                                        <InputLabel>Corporation</InputLabel>
+                                        <Select
+                                            label="Corporation"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.corporationId}
+                                            name="corporationId"
+                                            error={!!touched.corporationId && !!errors.corporationId}
+                                        >
+                                            <MenuItem value="">Select Corporation</MenuItem>
+                                            {Array.isArray(corpID) && corpID.length > 0
+                                                ? corpID.map((option) => (
+                                                    <MenuItem key={option.corporationId} value={option.corporationId}>
+                                                        {option.corporationName}
+                                                    </MenuItem>
+                                                ))
+                                                :
+                                                <MenuItem value="">No Corporatiion available</MenuItem>}
+                                        </Select>
+                                        {touched.language && errors.language && (
+                                            <Alert severity="error">{errors.language}</Alert>
+                                        )}
+                                    </FormControl>
                                     <TextField
                                         fullWidth
                                         variant="filled"
@@ -390,6 +430,7 @@ const TellerForm = () => {
                                         error={!!touched.balance && !!errors.balance}
                                         helperText={touched.balance && errors.balance}
                                         sx={{ gridColumn: "span 2" }}
+                                        disabled
                                     />
                                     <TextField
                                         fullWidth
@@ -403,6 +444,7 @@ const TellerForm = () => {
                                         error={!!touched.virtualBalance && !!errors.virtualBalance}
                                         helperText={touched.virtualBalance && errors.virtualBalance}
                                         sx={{ gridColumn: "span 2" }}
+                                        disabled
                                     />
 
                                     <FormControlLabel
@@ -474,6 +516,7 @@ const TellerForm = () => {
                                         error={!!touched.internalId && !!errors.internalId}
                                         helperText={touched.internalId && errors.internalId}
                                         sx={{ gridColumn: "span 2" }}
+
                                     />
                                     <FormControlLabel
                                         control={

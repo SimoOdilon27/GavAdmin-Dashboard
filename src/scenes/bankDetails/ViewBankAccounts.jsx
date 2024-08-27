@@ -89,7 +89,7 @@ const BankAccount = () => {
     };
 
     const fetchBankAccountData = async () => {
-        setGlobalLoading(true);
+        setLoading(true);
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BANK_ACCOUNT',
@@ -107,7 +107,7 @@ const BankAccount = () => {
             console.error('Error:', error);
             setGlobalMessage({ type: 'error', content: 'Error fetching bank account data' });
         } finally {
-            setGlobalLoading(false);
+            setLoading(false);
         }
     };
 
@@ -176,9 +176,6 @@ const BankAccount = () => {
         setSelectedAccount(account);
         setShowViewModal(true);
     };
-
-
-
 
     const showSnackbar = (message, severity) => {
         setSnackbar({ open: true, message, severity });

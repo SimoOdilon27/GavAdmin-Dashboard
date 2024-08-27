@@ -18,6 +18,7 @@ const MenuCatalog = () => {
     const navigate = useNavigate();
 
     const fetchCatalogData = async () => {
+        setLoading(true);
         try {
             const response = await CBS_Services('APE', 'catalog/get/all', 'GET');
             if (response && response.status === 200) {
@@ -28,6 +29,7 @@ const MenuCatalog = () => {
         } catch (error) {
             console.error('Error:', error);
         }
+        setLoading(false);
     };
 
     useEffect(() => {

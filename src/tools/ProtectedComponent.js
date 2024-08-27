@@ -9,11 +9,6 @@ const ProtectedComponent = () => {
 
     console.log("connectedUsersRoute", connectedUsers);
 
-    // if (connectedUsers.Authenticated) {
-    //     return <ProtectedComponent />
-    // } else {
-    //     return <Navigate to="/login" />
-    // }
 
     return (
         connectedUsers.users.isAuthenticated ? <Outlet /> : <Navigate to="/" />

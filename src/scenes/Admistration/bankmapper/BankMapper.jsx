@@ -243,6 +243,7 @@ const BankMapper = () => {
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
                     getRowId={(row) => row.idGav}
+                    loading={pending}
                 />
             </Box>
 

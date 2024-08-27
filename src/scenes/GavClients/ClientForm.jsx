@@ -279,7 +279,6 @@ const ClientForm = () => {
                                     </Grid>
                                     <Grid item xs={12} sm={6} md={4}>
 
-
                                         <FormControl fullWidth variant="filled">
                                             <InputLabel>Gender</InputLabel>
                                             <Select
@@ -489,7 +488,7 @@ const ClientForm = () => {
                                         <Typography variant="h4">Other Information</Typography>
                                     </Grid>
                                     <Grid item xs={12} sm={6} md={6}>
-                                        <TextField
+                                        {/* <TextField
                                             fullWidth
                                             variant="filled"
                                             type="text"
@@ -500,7 +499,25 @@ const ClientForm = () => {
                                             name="language"
                                             error={!!touched.language && !!errors.language}
                                             helperText={touched.language && errors.language}
-                                        />
+                                        /> */}
+
+                                        <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
+                                            <InputLabel>Language</InputLabel>
+                                            <Select
+                                                label="Language"
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                                value={values.language}
+                                                name="language"
+                                                error={!!touched.language && !!errors.language}
+                                            >
+                                                <MenuItem value="ENGLISH">English</MenuItem>
+                                                <MenuItem value="FRENCH">French</MenuItem>
+                                            </Select>
+                                            {touched.language && errors.language && (
+                                                <Alert severity="error">{errors.language}</Alert>
+                                            )}
+                                        </FormControl>
                                     </Grid>
                                     <Grid item xs={12} sm={6} md={6}>
                                         <TextField

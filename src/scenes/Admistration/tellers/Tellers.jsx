@@ -18,6 +18,7 @@ const Tellers = () => {
     const navigate = useNavigate();
 
     const fetchTellerData = async () => {
+        setLoading(true);
         try {
 
             const payload = {
@@ -36,6 +37,7 @@ const Tellers = () => {
         } catch (error) {
             console.error('Error:', error);
         }
+        setLoading(false);
     };
 
     useEffect(() => {

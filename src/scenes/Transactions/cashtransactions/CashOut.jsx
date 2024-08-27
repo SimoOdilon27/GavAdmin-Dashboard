@@ -1,4 +1,4 @@
-import { MoneyOff, Save } from '@mui/icons-material';
+import { CheckCircleOutline, MoneyOff, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Checkbox, Snackbar, Stack, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Formik } from 'formik';
@@ -17,7 +17,10 @@ const CashOut = () => {
     const [withdrawWithCni, setWithdrawWithCni] = useState(false); // State to track checkbox
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
-
+    const [successDialog, setSuccessDialog] = useState(false);
+    const [transactionDetails, setTransactionDetails] = useState({
+        amount: 0
+    });
     const [initialValues, setInitialValues] = useState({
         amount: 0,
         msisdn: "",
@@ -57,6 +60,9 @@ const CashOut = () => {
     const handleCheckboxChange = (e) => {
         setWithdrawWithCni(e.target.checked);
     };
+    const handleCloseSuccessDialog = () => {
+        setSuccessDialog(false);
+    };
 
     const handleCashOut = async (values) => {
         setPending(true);
@@ -81,8 +87,13 @@ const CashOut = () => {
                     console.log("confirmCashOutFormData", ConfirmcashOutFormData);
 
                     handleToggleModal(); // Show modal only for CASH_OUT
+
                 } else {
-                    showSnackbar('Cash Out with CNI successful', 'success');
+                    // showSnackbar('Cash Out with CNI successful', 'success');
+                    // setTransactionDetails({
+                    //     amount: values.amount
+                    // });
+                    setSuccessDialog(true); // Open the success dialog
                 }
             } else {
                 showSnackbar(response.body.errors || 'Error performing Cash Out', 'error');
@@ -94,7 +105,7 @@ const CashOut = () => {
         setPending(false);
     };
 
-    const handleConfirmCashOut = async () => {
+    const handleConfirmCashOut = async (values) => {
         setPending(true);
         try {
             const payload = {
@@ -109,6 +120,10 @@ const CashOut = () => {
 
             if (response && response.body.meta.statusCode === 200) {
                 showSnackbar('Cash Out successful', 'success');
+                setTransactionDetails({
+                    amount: values.amount
+                });
+                setSuccessDialog(true); // Open the success dialog
             } else {
                 showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
             }
@@ -317,6 +332,52 @@ const CashOut = () => {
                     {snackbar.message}
                 </Alert>
             </Snackbar>
+
+            <Dialog
+                open={successDialog}
+                onClose={handleCloseSuccessDialog}
+                aria-labelledby="success-dialog-title"
+                PaperProps={{
+                    style: {
+                        borderRadius: 15,
+                        padding: 20,
+                        minWidth: 300,
+                        maxWidth: 400,
+                    },
+                }}
+            >
+                <DialogTitle id="success-dialog-title" style={{ textAlign: 'center' }}>
+                    <CheckCircleOutline style={{ fontSize: 60, color: colors.greenAccent[500] }} />
+                </DialogTitle>
+                <DialogContent>
+                    <Typography variant="h5" align="center" gutterBottom>
+                        Transaction Successful!
+                    </Typography>
+                    <Typography variant="body1" align="center">
+                        Your cash-out transaction has been processed successfully.
+                    </Typography>
+                    <Box mt={2}>
+
+                        <Typography variant="body2" align="center" color="textSecondary">
+                            Amount: FCFA{transactionDetails.amount}
+                        </Typography>
+                    </Box>
+                </DialogContent>
+                <DialogActions style={{ justifyContent: 'center' }}>
+                    <Button
+                        onClick={handleCloseSuccessDialog}
+                        variant="contained"
+                        style={{
+                            backgroundColor: colors.greenAccent[500],
+                            color: colors.primary[100],
+                            borderRadius: 20,
+                            padding: '10px 30px',
+                        }}
+                    >
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

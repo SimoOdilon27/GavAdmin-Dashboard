@@ -236,6 +236,7 @@ const ViewTransactions = () => {
                     components={{ Toolbar: GridToolbar }}
                     checkboxSelection
                     disableSelectionOnClick
+                    loading={pending}
                 />
             </Box>
         </Box>

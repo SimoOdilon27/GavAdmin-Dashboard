@@ -1,6 +1,6 @@
-import { AttachMoney, Save } from '@mui/icons-material'
+import { AttachMoney, CheckCircleOutline, Save } from '@mui/icons-material'
 import { LoadingButton } from '@mui/lab'
-import { Alert, Box, Button, Snackbar, Stack, TextField, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, Stack, TextField, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { Formik } from 'formik'
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -16,7 +16,11 @@ const CashIn = () => {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
-
+    const [successDialog, setSuccessDialog] = useState(false);
+    const [transactionDetails, setTransactionDetails] = useState({
+        processingId: '',
+        amount: 0
+    });
     const generateProcessingId = (msisdn) => {
         const msisdnSuffix = msisdn.slice(-3); // Last 3 digits of the MSISDN
         const date = new Date();
@@ -54,6 +58,10 @@ const CashIn = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
+    const handleCloseSuccessDialog = () => {
+        setSuccessDialog(false);
+    };
+
     const handleCashin = async (values, { resetForm }) => {
 
         setPending(true);
@@ -77,6 +85,12 @@ const CashIn = () => {
 
             if (response && response.body.meta.statusCode === 200) {
                 showSnackbar("Cash In Successfull ", 'success');
+                setTransactionDetails({
+                    processingId: values.processingId,
+                    amount: values.amount
+                });
+                setSuccessDialog(true); // Open the success dialog
+
                 resetForm()
             } else if (response && response.body.status === 401) {
                 // setErrorMessage(response.body.errors || 'Unauthorized to perform action');
@@ -151,21 +165,7 @@ const CashIn = () => {
                                 helperText={touched.amount && errors.amount}
                                 sx={{ gridColumn: "span 2" }}
                             />
-                            {/* 
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Teller"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.teller}
-                                name="teller"
-                                error={!!touched.teller && !!errors.teller}
-                                helperText={touched.teller && errors.teller}
-                                sx={{ gridColumn: "span 2" }}
-                                disabled
-                            /> */}
+
 
                             <TextField
                                 fullWidth
@@ -229,6 +229,54 @@ const CashIn = () => {
                     {snackbar.message}
                 </Alert>
             </Snackbar>
+
+            <Dialog
+                open={successDialog}
+                onClose={handleCloseSuccessDialog}
+                aria-labelledby="success-dialog-title"
+                PaperProps={{
+                    style: {
+                        borderRadius: 15,
+                        padding: 20,
+                        minWidth: 300,
+                        maxWidth: 400,
+                    },
+                }}
+            >
+                <DialogTitle id="success-dialog-title" style={{ textAlign: 'center' }}>
+                    <CheckCircleOutline style={{ fontSize: 60, color: colors.greenAccent[500] }} />
+                </DialogTitle>
+                <DialogContent>
+                    <Typography variant="h5" align="center" gutterBottom>
+                        Transaction Successful!
+                    </Typography>
+                    <Typography variant="body1" align="center">
+                        Your cash-in transaction has been processed successfully.
+                    </Typography>
+                    <Box mt={2}>
+                        <Typography variant="body2" align="center" color="textSecondary">
+                            Transaction ID: {transactionDetails.processingId}
+                        </Typography>
+                        <Typography variant="body2" align="center" color="textSecondary">
+                            Amount: FCFA{transactionDetails.amount}
+                        </Typography>
+                    </Box>
+                </DialogContent>
+                <DialogActions style={{ justifyContent: 'center' }}>
+                    <Button
+                        onClick={handleCloseSuccessDialog}
+                        variant="contained"
+                        style={{
+                            backgroundColor: colors.greenAccent[500],
+                            color: colors.primary[100],
+                            borderRadius: 20,
+                            padding: '10px 30px',
+                        }}
+                    >
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
         </Box>
     )

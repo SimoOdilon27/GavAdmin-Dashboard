@@ -8,6 +8,7 @@ import Header from '../../../components/Header';
 import { Add, Delete, EditOutlined } from '@mui/icons-material';
 import { tokens } from '../../../theme';
 
+
 const GimacWallets = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -18,6 +19,7 @@ const GimacWallets = () => {
     const navigate = useNavigate();
 
     const fetchWalletsData = async () => {
+        setLoading(true);
         try {
             const payload = {
                 serviceReference: 'GET_GIMAC_WALLETS',
@@ -32,6 +34,7 @@ const GimacWallets = () => {
         } catch (error) {
             console.error('Error:', error);
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -45,9 +48,7 @@ const GimacWallets = () => {
     const handleEdit = (id) => {
         navigate(`/gimac-wallets/edit/${id}`);
     };
-    //     const handleEdit = (row) => {
-    //     navigate(`/gimac-wallets/edit/${row.id}`, { state: row });
-    // };
+
 
     const columns = [
         { field: "id", headerName: "ID", flex: 1 },

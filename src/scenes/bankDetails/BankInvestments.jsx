@@ -64,6 +64,7 @@ const BankInvestments = () => {
 
 
     const fetchInvestmentData = async () => {
+        setLoading(true);
         try {
 
             const payload = {
@@ -82,6 +83,7 @@ const BankInvestments = () => {
         } catch (error) {
             console.error('Error:', error);
         }
+        setLoading(false);
     };
 
 
@@ -222,6 +224,7 @@ const BankInvestments = () => {
                     components={{ Toolbar: GridToolbar }}
                     checkboxSelection
                     disableSelectionOnClick
+                    loading={loading}
                 />
 
 
@@ -230,7 +233,7 @@ const BankInvestments = () => {
             <Dialog open={confirmationModal.show} onClose={handleCloseConfirmationModal}>
                 <DialogTitle>Confirm Approval</DialogTitle>
                 <DialogContent>
-                    <Typography>Are you sure you want to approve this capital investment?</Typography>
+                    <Typography>Are you sure you want to approve this Investment?</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleConfirmApproveInvestment} color="secondary" variant="contained">
