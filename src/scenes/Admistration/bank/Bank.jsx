@@ -34,27 +34,12 @@ const Bank = () => {
         active: false
     });
 
-    const [pending_account, setpending_account] = useState({
-        bankId: '',
-        sourceCorpIdOrBankIdOrBranchId: '',
-        corporationId: '',
-        branchId: '',
-        sourceCorpOrBankOrBranchName: '',
-        externalCorpOrBankOrBranchName: '',
-        externalCorpIdOrBankIdOrBranchId: '',
-        cbsAccountNumber: '',
-    });
     const [showModal, setShowModal] = useState(false);
-    const [showPendAccModal, setShowPendAccModal] = useState(false);
     const [bankData, setBankData] = useState([]);
-    const [bankID, setBankID] = useState('');
-
     const [corpID, setCorpID] = useState('');
-    const [branchID, setBranchID] = useState('');
     const [loading, setLoading] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedBank, setSelectedBank] = useState(null);
-    const [selectedoption, setselectedoption] = useState('');
     const userData = useSelector((state) => state.users)
 
     const token = userData.token
@@ -95,24 +80,7 @@ const Bank = () => {
             active: false
         })
     };
-    const handleTogglePendingAccBankModal = () => {
-        setShowPendAccModal(!showPendAccModal);
-        setpending_account({
-            bankId: '',
-            sourceCorpIdOrBankIdOrBranchId: '',
-            corporationId: '',
-            branchId: '',
-            sourceCorpOrBankOrBranchName: '',
-            externalCorpOrBankOrBranchName: '',
-            externalCorpIdOrBankIdOrBranchId: '',
-            cbsAccountNumber: '',
-        })
-    };
 
-    const hidePendAccBank = () => {
-        setShowPendAccModal(false);
-
-    };
 
 
     const hideAddBank = () => {
@@ -163,30 +131,8 @@ const Bank = () => {
             [name]: value,
         });
     };
-    const handlePendAccChange = (e) => {
-        const { name, value } = e.target;
-        setpending_account({
-            ...pending_account,
-            [name]: value
-        });
-
-    };
 
 
-    const handleBankChange = (e) => {
-        const { value } = e.target;
-        const selectedBank = bankData.find(b => b.bankId === value);
-        setpending_account(prevState => ({
-            ...prevState,
-            bankId: value,
-            sourceCorpOrBankOrBranchName: selectedBank ? selectedBank.bankName : "",
-            sourceCorpIdOrBankIdOrBranchId: selectedBank ? selectedBank.bankId : ""
-        }));
-    };
-
-    const handleLevelChange = (e) => {
-        setselectedoption(e.target.value);
-    };
 
     const handleConfirmAdd = async () => {
 
@@ -223,37 +169,7 @@ const Bank = () => {
     };
 
 
-    const handleConfirmAddPendingAccount = async () => {
 
-        setLoading(true);
-        try {
-            const payload = {
-                serviceReference: 'ADD_PENDING_ACCOUNT',
-                requestBody: JSON.stringify(pending_account)
-            }
-
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            console.log("addresponse", response);
-
-            if (response && response.body.meta.statusCode === 200) {
-                hidePendAccBank();
-                await fetchBankData();
-                showSnackbar('Pending Account created successfully.', 'success');
-
-            } else if (response && response.body.meta.statusCode === 401) {
-                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
-            }
-            else {
-                showSnackbar(response.body.errors || 'Failed to create pending account', 'error');
-
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showSnackbar('Network Error!!! try again later', 'error');
-
-        }
-        setLoading(false);
-    };
 
     const handleConfirmEdit = async () => {
         setLoading(true);
@@ -303,7 +219,6 @@ const Bank = () => {
 
             if (response && response.body.meta.statusCode === 200) {
                 setBankData(response.body.data || []);
-                setBankID(response.body.data);
 
             } else {
                 showSnackbar(response.body.errors || 'Error Finding Banks', 'error');
@@ -338,32 +253,13 @@ const Bank = () => {
     };
 
 
-    const fetchBranchID = async () => {
-        try {
-
-            const payload = {
-                serviceReference: 'GET_ALL_BRANCHES',
-                requestBody: ''
-            }
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-
-            if (response && response.body.meta.statusCode === 200) {
-                setBranchID(response.body.data);
-
-            } else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
 
 
     useEffect(() => {
         // Fetch Bank data when the component mounts
         fetchBankData();
         fetchCorpID();
-        fetchBranchID();
+
     }, []);
 
 
@@ -454,19 +350,7 @@ const Bank = () => {
                         <Add sx={{ mr: "10px" }} />
                         Add Bank
                     </Button>
-                    <Button
-                        sx={{
-                            backgroundColor: colors.blueAccent[700],
-                            color: colors.grey[100],
-                            fontSize: "14px",
-                            fontWeight: "bold",
-                            padding: "10px 20px",
-                        }}
-                        onClick={handleTogglePendingAccBankModal}
-                    >
-                        <Add sx={{ mr: "10px" }} />
-                        Add Pending Account
-                    </Button>
+
                 </Box>
             </Box>
             <Box
@@ -831,166 +715,6 @@ const Bank = () => {
                             {loading ? <CircularProgress size={24} /> : 'Update'}
                         </Button>
                         <Button onClick={hideEditBank} color="secondary">
-                            Cancel
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-
-                {/* Add Pending Bank Account Modal */}
-                <Dialog open={showPendAccModal} onClose={handleTogglePendingAccBankModal} maxWidth="lg" fullWidth>
-                    <DialogTitle>Add Pending Account(Bank)</DialogTitle>
-                    <DialogContent>
-
-                        <Box component="form" sx={{ mt: 3 }} noValidate>
-                            <FormControl fullWidth margin="normal">
-                                <InputLabel id="bankId-label">Corporation ID</InputLabel>
-                                <Select
-                                    labelId="bankId-label"
-                                    id="bankId"
-                                    name="bankId"
-                                    value={pending_account.bankId}
-                                    onChange={handleBankChange}
-                                >
-                                    <MenuItem value="">Select Credit Union</MenuItem>
-                                    {Array.isArray(corpID) && corpID.length > 0
-                                        ? corpID.map((option) => (
-                                            <MenuItem key={option.bankId} value={option.bankId}>
-                                                {option.bankName}
-                                            </MenuItem>
-                                        ))
-                                        : <MenuItem value="">No Credit Unions available</MenuItem>}
-                                </Select>
-                            </FormControl>
-                            <TextField
-                                fullWidth
-                                label="SourceID"
-                                name="sourceCorpIdOrBankIdOrBranchId"
-                                value={pending_account.sourceCorpIdOrBankIdOrBranchId}
-                                onChange={handlePendAccChange}
-                                required
-                                margin="normal"
-                            />
-                            <TextField
-                                fullWidth
-                                label="Source Name"
-                                name="sourceCorpOrBankOrBranchName"
-                                value={pending_account.sourceCorpOrBankOrBranchName}
-                                onChange={handlePendAccChange}
-                                required
-                                margin="normal"
-                            />
-                            <FormControl fullWidth margin="normal">
-                                <InputLabel id="level-label">Level</InputLabel>
-                                <Select
-                                    labelId="level-label"
-                                    id="selectedoption"
-                                    value={selectedoption}
-                                    onChange={handleLevelChange}
-                                >
-                                    <MenuItem value="" disabled>Select Level</MenuItem>
-                                    <MenuItem value="Corporation">Corporation</MenuItem>
-                                    <MenuItem value="Bank">Credit Union</MenuItem>
-                                </Select>
-                            </FormControl>
-
-                            <FormControl fullWidth margin="normal">
-
-
-                                {selectedoption === "" && (
-                                    <>
-
-                                        <MenuItem value="" disabled>
-                                            External Account <span className="h7 text-danger">(Please select level first)*</span>
-                                        </MenuItem>
-
-                                    </>
-                                )}
-                                {selectedoption === "Corporation" && (
-                                    <>
-
-                                        <Select
-                                            labelId="corporationId-label"
-                                            id="externalCorpIdOrBankIdOrBranchId"
-                                            name="externalCorpIdOrBankIdOrBranchId"
-                                            value={pending_account.externalCorpIdOrBankIdOrBranchId}
-                                            onChange={handlePendAccChange}
-                                        >
-                                            <MenuItem value="" selected>Select Corporation</MenuItem>
-                                            {Array.isArray(corpID) && corpID.length > 0 ? (
-                                                corpID.map((option) => (
-                                                    <MenuItem key={option.corporationId} value={option.corporationId}>
-                                                        {option.corporationName}
-                                                    </MenuItem>
-                                                ))
-                                            ) : (
-                                                <MenuItem value="">No Banks available</MenuItem>
-                                            )}
-                                        </Select>
-                                    </>
-                                )}
-                                {selectedoption === "Bank" && (
-                                    <>
-                                        <Select
-                                            labelId="externalCorpIdOrBankIdOrBranchId"
-                                            id="externalCorpIdOrBankIdOrBranchId"
-                                            name="externalCorpIdOrBankIdOrBranchId"
-                                            value={pending_account.externalCorpIdOrBankIdOrBranchId}
-                                            onChange={handlePendAccChange}
-                                        >
-                                            <MenuItem value="">Select  Credit Union</MenuItem>
-                                            {Array.isArray(bankID) && bankID.length > 0 ? (
-                                                bankID.map((option) => (
-                                                    <option key={option.bankId} value={option.bankId}>
-                                                        {option.bankName}
-                                                    </option>
-                                                ))
-                                            ) : (
-                                                <option value="">No Banks available</option>
-                                            )}
-                                        </Select>
-                                    </>
-                                )}
-                                {selectedoption === "Branch" && (
-                                    <>
-                                        <Select
-                                            labelId="externalCorpIdOrBankIdOrBranchId"
-                                            id="externalCorpIdOrBankIdOrBranchId"
-                                            name="externalCorpIdOrBankIdOrBranchId"
-                                            value={pending_account.externalCorpIdOrBankIdOrBranchId}
-                                            onChange={handlePendAccChange}
-                                        >
-                                            <MenuItem value="">Select Branch</MenuItem>
-                                            {Array.isArray(branchID) && branchID.length > 0 ? (
-                                                branchID.map((option) => (
-                                                    <option key={option.id} value={option.id}>
-                                                        {option.branchName}
-                                                    </option>
-                                                ))
-                                            ) : (
-                                                <option value="">No Bank Branch available</option>
-                                            )}
-                                        </Select>
-                                    </>
-                                )}
-
-                            </FormControl>
-
-                            <TextField
-                                fullWidth
-                                label="CBS Account Number"
-                                name="cbsAccountNumber"
-                                value={pending_account.cbsAccountNumber}
-                                onChange={handlePendAccChange}
-                                required
-                                margin="normal"
-                            />
-                        </Box>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleConfirmAddPendingAccount} variant="contained" color="primary" disabled={loading}>
-                            {loading ? <CircularProgress size={24} /> : "Add"}
-                        </Button>
-                        <Button onClick={handleTogglePendingAccBankModal} variant="outlined" color="secondary">
                             Cancel
                         </Button>
                     </DialogActions>

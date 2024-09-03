@@ -61,14 +61,12 @@ const Charges = () => {
                                 <Tab label="Charges Ranges" value="2" />
                                 <Tab label="Bank Charges" value="3" />
                                 <Tab label="Assign Charges" value="4" />
-                                <Tab label="Configured Charges" value="5" />
                             </TabList>
                         </Box>
                         <TabPanel value="1" ><OtherCharges /></TabPanel>
                         <TabPanel value="2"><ChargesRange /></TabPanel>
                         <TabPanel value="3"><BankCharges /></TabPanel>
                         <TabPanel value="4"><AssignCharges /></TabPanel>
-                        <TabPanel value="5">5</TabPanel>
                     </TabContext>
                 </Box>
             </Box>
