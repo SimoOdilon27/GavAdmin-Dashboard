@@ -17,10 +17,13 @@ const GimacCountriesForm = () => {
     const userData = useSelector((state) => state.users);
     const token = userData.token;
 
+    console.log("id", id);
+
     const [initialValues, setInitialValues] = useState({
         countryCode: "",
         country: "",
         serviceProvider: "",
+        internationalDialingCode: "",
         internalId: ""
     });
 
@@ -49,6 +52,9 @@ const GimacCountriesForm = () => {
                     requestBody: JSON.stringify(values),
                 }
                 response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+
+                console.log("addresponse", response);
+
                 if (response && response.body.meta.statusCode === 200) {
                     showSnackbar('Country Updated Successfully.', 'success');
                     setTimeout(() => {
@@ -86,9 +92,20 @@ const GimacCountriesForm = () => {
     useEffect(() => {
         if (id) {
             // Fetch the existing country by ID to populate the form for editing
-            CBS_Services("GIMAC", `countries/get/${id}`, "GET", null)
+            // const countryId = id;
+            const payload = {
+                serviceReference: 'GET_COUNTRY_BY_ID',
+                requestBody: id,
+            }
+            console.log("payload==", payload)
+
+            // CBS_Services("GIMAC", `wallet/mapper/getCountry/${id}`, "GET", null)
+            CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token)
                 .then((response) => {
+                    console.log("fetch", response);
+
                     if (response && response.body.meta.statusCode === 200) {
+
                         setInitialValues(response.body.data);
                     }
                 })
@@ -171,6 +188,19 @@ const GimacCountriesForm = () => {
                                 fullWidth
                                 variant="filled"
                                 type="text"
+                                label="International Dialing Code"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                value={values.internationalDialingCode}
+                                name="internationalDialingCode"
+                                error={!!touched.internationalDialingCode && !!errors.internationalDialingCode}
+                                helperText={touched.internationalDialingCode && errors.internationalDialingCode}
+                                sx={{ gridColumn: "span 2" }}
+                            />
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                type="text"
                                 label="Internal ID"
                                 onBlur={handleBlur}
                                 onChange={handleChange}
@@ -178,7 +208,7 @@ const GimacCountriesForm = () => {
                                 name="internalId"
                                 error={!!touched.internalId && !!errors.internalId}
                                 helperText={touched.internalId && errors.internalId}
-                                sx={{ gridColumn: "span 4" }}
+                                sx={{ gridColumn: "span 2" }}
                             />
                         </Box>
                         <Box display="flex" justifyContent="end" mt="20px">
@@ -220,7 +250,8 @@ const countrySchema = yup.object().shape({
     countryCode: yup.string().required("required"),
     country: yup.string().required("required"),
     serviceProvider: yup.string().required("required"),
-    internalId: yup.string().required("required"),
+    internalId: yup.string(),
+    internationalDialingCode: yup.string().required("required"),
 });
 
 export default GimacCountriesForm;

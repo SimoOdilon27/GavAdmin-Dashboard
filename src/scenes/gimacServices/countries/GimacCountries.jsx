@@ -36,6 +36,7 @@ const GimacCountries = () => {
                     countryCode: item.countryCode,
                     country: item.country,
                     serviceProvider: item.serviceProvider,
+                    internationalDialingCode: item.internationalDialingCode,
                 }));
                 setCountriesData(data);
             } else {
@@ -68,6 +69,7 @@ const GimacCountries = () => {
         { field: "countryCode", headerName: "Country Code", flex: 1 },
         { field: "country", headerName: "Country", flex: 1 },
         { field: "serviceProvider", headerName: "Service Provider", flex: 1 },
+        { field: "internationalDialingCode", headerName: "Int Dialing Code", flex: 1 },
         {
             field: "actions",
             headerName: "Actions",

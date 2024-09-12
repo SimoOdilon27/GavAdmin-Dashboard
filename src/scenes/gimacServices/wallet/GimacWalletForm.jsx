@@ -97,7 +97,14 @@ const GimacWalletForm = () => {
     useEffect(() => {
         if (id) {
             // Fetch the existing wallet by ID to populate the form for editing
-            CBS_Services("GIMAC", `wallets/get/${id}`, "GET", null)
+            const payload = {
+                serviceReference: 'GET_WALLET_BY_ID',
+                requestBody: id,
+            }
+            console.log("payload==", payload)
+
+            // CBS_Services("GIMAC", `wallet/mapper/getCountry/${id}`, "GET", null)
+            CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token)
                 .then((response) => {
                     if (response && response.body.meta.statusCode === 200) {
                         setInitialValues(response.body.data);
