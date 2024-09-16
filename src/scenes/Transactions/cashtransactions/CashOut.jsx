@@ -1,8 +1,8 @@
 import { CheckCircleOutline, MoneyOff, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Checkbox, Snackbar, Stack, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Checkbox, Snackbar, Stack, TextField, Typography, useMediaQuery, useTheme, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Formik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
@@ -13,10 +13,10 @@ const CashOut = () => {
     const colors = tokens(theme.palette.mode);
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const [pending, setPending] = useState(false);
-    const navigate = useNavigate();
     const [withdrawWithCni, setWithdrawWithCni] = useState(false); // State to track checkbox
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
+    const [bankCode, setBankCode] = useState('');
     const [successDialog, setSuccessDialog] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState({
         amount: 0
@@ -25,9 +25,10 @@ const CashOut = () => {
         amount: 0,
         msisdn: "",
         teller: userData?.refId,
-        internalId: "",
-        bankCode: "",
-        cniNumber: "" // Add cniNumber to initialValues
+        internalId: "1111",
+        cniNumber: "", // Add cniNumber to initialValues
+        clientBankCode: "",
+        tellerBankCode: userData?.bankCode,
     });
     const [ConfirmcashOutFormData, setConfirmCashOutFormData] = useState({
         msisdn: '',
@@ -57,6 +58,7 @@ const CashOut = () => {
         });
     };
 
+
     const handleCheckboxChange = (e) => {
         setWithdrawWithCni(e.target.checked);
     };
@@ -64,7 +66,7 @@ const CashOut = () => {
         setSuccessDialog(false);
     };
 
-    const handleCashOut = async (values) => {
+    const handleCashOut = async (values, { resetForm }) => {
         setPending(true);
         try {
             const payload = {
@@ -90,11 +92,12 @@ const CashOut = () => {
 
                 } else {
                     // showSnackbar('Cash Out with CNI successful', 'success');
-                    // setTransactionDetails({
-                    //     amount: values.amount
-                    // });
+                    setTransactionDetails({
+                        amount: values.amount
+                    });
                     setSuccessDialog(true); // Open the success dialog
                 }
+                resetForm()
             } else {
                 showSnackbar(response.body.errors || 'Error performing Cash Out', 'error');
             }
@@ -105,7 +108,7 @@ const CashOut = () => {
         setPending(false);
     };
 
-    const handleConfirmCashOut = async (values) => {
+    const handleConfirmCashOut = async () => {
         setPending(true);
         try {
             const payload = {
@@ -113,29 +116,68 @@ const CashOut = () => {
                 requestBody: JSON.stringify(ConfirmcashOutFormData)
             };
 
+            console.log("payload", payload);
+
+
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
             handleToggleModal();
             console.log("cashOutFormData", ConfirmcashOutFormData);
-            console.log("addresp", response);
+            console.log("addrespcashOut", response);
 
             if (response && response.body.meta.statusCode === 200) {
                 showSnackbar('Cash Out successful', 'success');
-                setTransactionDetails({
-                    amount: values.amount
-                });
+
                 setSuccessDialog(true); // Open the success dialog
+                setConfirmCashOutFormData({
+                    msisdn: '',
+                    token: ''
+                })
             } else {
                 showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
+
             }
         } catch (error) {
             console.error('Error:', error);
             showSnackbar('Error occurred while confirming cash out. Please try again later.', 'error');
+            setSuccessDialog(true); // Open the success dialog
+
         }
         setPending(false);
     };
 
     const handleToggleModal = () => {
         setShowModal(!showModal);
+
+    };
+
+    useEffect(() => {
+        fetchBankID();
+    }, [])
+
+    const fetchBankID = async () => {
+        try {
+            const payload = {
+                serviceReference: 'GET_ALL_BANKS',
+                requestBody: ''
+            }
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
+
+            // const response = await CBS_Services('AP', `api/gav/bank/getAll`, 'GET', null);
+            console.log("fetchbankid", response);
+
+            if (response && response.status === 200) {
+                setBankCode(response.body.data);
+
+            } else if (response && response.body.status === 401) {
+                showSnackbar("Unauthorized to perform action", 'success');
+
+            }
+            else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     return (
@@ -193,49 +235,32 @@ const CashOut = () => {
                                 sx={{ gridColumn: "span 2" }}
                             />
 
-                            {/* <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Teller"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.teller}
-                                name="teller"
-                                error={!!touched.teller && !!errors.teller}
-                                helperText={touched.teller && errors.teller}
-                                sx={{ gridColumn: "span 2" }}
-                                disabled
-                            /> */}
 
-
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Bank Code"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.bankCode}
-                                name="bankCode"
-                                error={!!touched.bankCode && !!errors.bankCode}
-                                helperText={touched.bankCode && errors.bankCode}
-                                sx={{ gridColumn: "span 4" }}
-                            />
-
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Internal ID"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.internalId}
-                                name="internalId"
-                                error={!!touched.internalId && !!errors.internalId}
-                                helperText={touched.internalId && errors.internalId}
-                                sx={{ gridColumn: "span 4" }}
-                            />
+                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
+                                <InputLabel>Bank</InputLabel>
+                                <Select
+                                    label="Bank"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.clientBankCode}
+                                    name="clientBankCode"
+                                    error={!!touched.clientBankCode && !!errors.clientBankCode}
+                                >
+                                    <MenuItem value="">Select Bank</MenuItem>
+                                    {Array.isArray(bankCode) && bankCode.length > 0 ? (
+                                        bankCode.map(option => (
+                                            <MenuItem key={option.bankCode} value={option.bankCode}>
+                                                {option.bankName}
+                                            </MenuItem>
+                                        ))
+                                    ) : (
+                                        <MenuItem value="">No Banks available</MenuItem>
+                                    )}
+                                </Select>
+                                {touched.clientBankCode && errors.clientBankCode && (
+                                    <Alert severity="error">{errors.clientBankCode}</Alert>
+                                )}
+                            </FormControl>
 
 
                             <FormControlLabel
@@ -356,12 +381,12 @@ const CashOut = () => {
                     <Typography variant="body1" align="center">
                         Your cash-out transaction has been processed successfully.
                     </Typography>
-                    <Box mt={2}>
+                    {/* <Box mt={2}>
 
                         <Typography variant="body2" align="center" color="textSecondary">
                             Amount: FCFA{transactionDetails.amount}
                         </Typography>
-                    </Box>
+                    </Box> */}
                 </DialogContent>
                 <DialogActions style={{ justifyContent: 'center' }}>
                     <Button

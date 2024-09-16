@@ -266,6 +266,7 @@ const Bank = () => {
 
     const columns = [
         { field: "bankName", headerName: "BANK NAME", flex: 1 },
+        { field: "bankCode", headerName: "BANK Code", flex: 1 },
         { field: "cbsBankId", headerName: "CBS BANK ID", flex: 1 },
         { field: "address", headerName: "ADDRESS", flex: 1 },
         { field: "bankEmail", headerName: "Email", flex: 1 },
