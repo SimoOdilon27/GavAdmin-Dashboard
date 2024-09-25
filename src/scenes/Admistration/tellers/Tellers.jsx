@@ -6,7 +6,7 @@ import { Box, Button, useTheme } from '@mui/material';
 import { tokens } from '../../../theme';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../../components/Header';
-import { Add, Delete, EditOutlined } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, RemoveRedEyeRounded } from '@mui/icons-material';
 
 const Tellers = () => {
     const theme = useTheme();
@@ -48,8 +48,13 @@ const Tellers = () => {
         navigate('/tellers/add');
     };
 
-    const handleEdit = (id) => {
-        navigate(`/tellers/edit/${id}`);
+    // const handleEdit = (id) => {
+    //     navigate(`/tellers/edit/${id}`);
+    // };
+
+    const handleEdit = (row) => {
+        // Pass the entire row data to the edit page
+        navigate(`/tellers/edit/${row.id}`, { state: { tellerData: row } });
     };
 
     const columns = [
@@ -76,9 +81,10 @@ const Tellers = () => {
                             justifyContent="center"
                             backgroundColor={colors.greenAccent[600]}
                             borderRadius="4px"
-                            onClick={() => handleEdit(row.id)}
+                            onClick={() => handleEdit(row)}
                         >
-                            <EditOutlined />
+                            {/* <EditOutlined /> */}
+                            <RemoveRedEyeRounded />
                         </Box>
                         <Box
                             width="30%"

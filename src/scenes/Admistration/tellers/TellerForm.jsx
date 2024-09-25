@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../../components/Header";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CBS_Services from "../../../services/api/GAV_Sercives";
@@ -14,15 +14,16 @@ const TellerForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const [branchID, setBranchID] = useState('');
     const [bankID, setBankID] = useState('');
     const [corpID, setCorpID] = useState('');
 
-    const [formData, setFormData] = useState({
+    const [formData] = useState({
         request: id,
-        bankCode: "001",
+        bankCode: '001',
         internalId: "back-office"
     });
     const [initialValues, setInitialValues] = useState({
@@ -187,35 +188,42 @@ const TellerForm = () => {
         fetchCorpID()
     }, [])
 
+    // useEffect(() => {
+    //     const fetchTellerById = async () => {
+    //         if (id) {
+    //             try {
+    //                 const payload = {
+    //                     serviceReference: 'GET_TELLER_BY_ID',
+    //                     requestBody: JSON.stringify(formData)
+    //                 };
+
+    //                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+    //                 // const response = await CBS_Services('CLIENT', 'api/gav/teller/get', 'POST', formData);
+    //                 console.log("fetched teller", response);
+
+    //                 if (response && response.body.meta.statusCode === 200) {
+    //                     setInitialValues(response.body.data);
+    //                     showSnackbar('Fetched Teller Information Successfully', 'success');
+    //                 } else {
+    //                     console.error('Error fetching data');
+    //                     showSnackbar(response.body.errors || 'Error Finding Teller Information', 'error');
+    //                 }
+    //             } catch (error) {
+    //                 console.error('Error:', error);
+    //                 showSnackbar('An error occurred while fetching the teller information', 'error');
+    //             }
+    //         }
+    //     };
+
+    //     fetchTellerById();
+    // }, [id, token]);
+
     useEffect(() => {
-        const fetchTellerById = async () => {
-            if (id) {
-                try {
-                    const payload = {
-                        serviceReference: 'GET_TELLER_BY_ID',
-                        requestBody: JSON.stringify(formData)
-                    };
-
-                    const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-                    // const response = await CBS_Services('CLIENT', 'api/gav/teller/get', 'POST', formData);
-                    console.log("fetched teller", response);
-
-                    if (response && response.body.meta.statusCode === 200) {
-                        setInitialValues(response.body.data);
-                        showSnackbar('Fetched Teller Information Successfully', 'success');
-                    } else {
-                        console.error('Error fetching data');
-                        showSnackbar(response.body.errors || 'Error Finding Teller Information', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showSnackbar('An error occurred while fetching the teller information', 'error');
-                }
-            }
-        };
-
-        fetchTellerById();
-    }, [id, token]);
+        if (id && location.state && location.state.tellerData) {
+            // Use the data passed from the Tellers component
+            setInitialValues(location.state.tellerData);
+        }
+    }, [id, location.state]);
 
     return (
         <Box m="20px">
@@ -340,19 +348,7 @@ const TellerForm = () => {
                             {id ? (
 
                                 <>
-                                    {/* <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="text"
-                                        label="Bank"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.bankId}
-                                        name="bankId"
-                                        error={!!touched.bankId && !!errors.bankId}
-                                        helperText={touched.bankId && errors.bankId}
-                                        sx={{ gridColumn: "span 2" }}
-                                    /> */}
+
 
                                     <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
                                         <InputLabel>Bank</InputLabel>
@@ -537,7 +533,8 @@ const TellerForm = () => {
                         </Box>
                         <Box display="flex" justifyContent="end" mt="20px">
                             <Stack direction="row" spacing={2}>
-                                <LoadingButton
+
+                                {/* <LoadingButton
                                     type="submit"
                                     color="secondary"
                                     variant="contained"
@@ -546,7 +543,20 @@ const TellerForm = () => {
                                     startIcon={<Save />}
                                 >
                                     {id ? "Update Teller" : "Create Teller"}
-                                </LoadingButton>
+                                </LoadingButton> */}
+                                {id ? "" :
+                                    <LoadingButton
+                                        type="submit"
+                                        color="secondary"
+                                        variant="contained"
+                                        loading={pending}
+                                        loadingPosition="start"
+                                        startIcon={<Save />}
+                                    >
+                                        {/* {id ? "Update Teller" : "Create Teller"} */}
+                                        Create Teller
+                                    </LoadingButton>
+                                }
                                 <Button
                                     color="primary"
                                     variant="contained"
@@ -579,7 +589,7 @@ const checkoutSchema = yup.object().shape({
     msisdn: yup.string().required("required"),
     branchId: yup.string().required("required"),
     language: yup.string().required("required"),
-    cbsAccountId: yup.string().required("required"),
+    cbsAccountId: yup.string(),
     tellerName: yup.string().required("required"),
     internalId: yup.string(),
     dailyLimit: yup.number().required("required"),

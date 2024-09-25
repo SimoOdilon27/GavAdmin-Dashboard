@@ -558,6 +558,33 @@ const ClientForm = () => {
                                         helperText={touched.msisdn && errors.msisdn}
                                         sx={{ gridColumn: "span 2" }}
                                     />
+
+                                    <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
+                                        <InputLabel>Bank</InputLabel>
+                                        <Select
+                                            label="Bank"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.bankId}
+                                            name="bankId"
+                                            error={!!touched.bankId && !!errors.bankId}
+                                        >
+                                            <MenuItem value="">Select Bank</MenuItem>
+                                            {Array.isArray(bankID) && bankID.length > 0 ? (
+                                                bankID.map(option => (
+                                                    <MenuItem key={option.bankId} value={option.bankId}>
+                                                        {option.bankName}
+                                                    </MenuItem>
+                                                ))
+                                            ) : (
+                                                <MenuItem value="">No Banks available</MenuItem>
+                                            )}
+                                        </Select>
+                                        {touched.bankId && errors.bankId && (
+                                            <Alert severity="error">{errors.bankId}</Alert>
+                                        )}
+                                    </FormControl>
+
                                     <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
                                         <InputLabel>Branch</InputLabel>
                                         <Select
@@ -585,31 +612,7 @@ const ClientForm = () => {
                                     </FormControl>
 
 
-                                    <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
-                                        <InputLabel>Bank</InputLabel>
-                                        <Select
-                                            label="Bank"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.bankId}
-                                            name="bankId"
-                                            error={!!touched.bankId && !!errors.bankId}
-                                        >
-                                            <MenuItem value="">Select Bank</MenuItem>
-                                            {Array.isArray(bankID) && bankID.length > 0 ? (
-                                                bankID.map(option => (
-                                                    <MenuItem key={option.bankId} value={option.bankId}>
-                                                        {option.bankName}
-                                                    </MenuItem>
-                                                ))
-                                            ) : (
-                                                <MenuItem value="">No Banks available</MenuItem>
-                                            )}
-                                        </Select>
-                                        {touched.bankId && errors.bankId && (
-                                            <Alert severity="error">{errors.bankId}</Alert>
-                                        )}
-                                    </FormControl>
+
                                     <TextField
                                         fullWidth
                                         variant="filled"

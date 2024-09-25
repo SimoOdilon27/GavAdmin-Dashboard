@@ -208,86 +208,8 @@ const UserForm = () => {
                                 name="userName"
                                 error={!!touched.userName && !!errors.userName}
                                 helperText={touched.userName && errors.userName}
-                                sx={{ gridColumn: "span 2" }}
+                                sx={{ gridColumn: "span 4" }}
                             />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="password"
-                                label="Password"
-                                onBlur={handleBlur}
-                                onChange={(e) => {
-                                    handleChange(e);
-                                    setFieldValue("password", e.target.value);
-                                    setInitialValues({ ...initialValues, password: e.target.value });
-                                }}
-                                value={values.password}
-                                name="password"
-                                error={!!touched.password && !!errors.password}
-                                helperText={touched.password && errors.password}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="email"
-                                label="Email"
-                                onBlur={handleBlur}
-                                onChange={(e) => {
-                                    handleChange(e);
-                                    setFieldValue("email", e.target.value);
-                                    setInitialValues({ ...initialValues, email: e.target.value });
-                                }}
-                                value={values.email}
-                                name="email"
-                                error={!!touched.email && !!errors.email}
-                                helperText={touched.email && errors.email}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="tel"
-                                label="Phone Number"
-                                onBlur={handleBlur}
-                                onChange={(e) => {
-                                    handleChange(e);
-                                    setFieldValue("tel", e.target.value);
-                                    setInitialValues({ ...initialValues, tel: e.target.value });
-                                }}
-                                value={values.tel}
-                                name="tel"
-                                error={!!touched.tel && !!errors.tel}
-                                helperText={touched.tel && errors.tel}
-                                sx={{ gridColumn: "span 1" }}
-                            />
-
-
-                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 1" }}>
-                                <InputLabel>Language</InputLabel>
-                                <Select
-                                    label="Language"
-                                    onBlur={handleBlur}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        setFieldValue("language", e.target.value);
-                                        setInitialValues({ ...initialValues, language: e.target.value });
-                                    }}
-                                    value={values.language}
-                                    name="language"
-                                    error={!!touched.language && !!errors.language}
-                                >
-                                    <MenuItem value="" selected>Select Language</MenuItem>
-                                    <MenuItem value="fr">FRENCH</MenuItem>
-                                    <MenuItem value="en">ENGLISH</MenuItem>
-
-                                </Select>
-                                {touched.language && errors.language && (
-                                    <Alert severity="error">{errors.language}</Alert>
-                                )}
-                            </FormControl>
-
-
 
                             {/* Conditional Teller Dropdown */}
                             {values.roles === "TELLER" && (
@@ -335,6 +257,88 @@ const UserForm = () => {
 
 
                             )}
+
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                type="password"
+                                label="Password"
+                                onBlur={handleBlur}
+                                onChange={(e) => {
+                                    handleChange(e);
+                                    setFieldValue("password", e.target.value);
+                                    setInitialValues({ ...initialValues, password: e.target.value });
+                                }}
+                                value={values.password}
+                                name="password"
+                                error={!!touched.password && !!errors.password}
+                                helperText={touched.password && errors.password}
+                                sx={{ gridColumn: "span 2" }}
+                            />
+
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                type="tel"
+                                label="Phone Number"
+                                onBlur={handleBlur}
+                                onChange={(e) => {
+                                    handleChange(e);
+                                    setFieldValue("tel", e.target.value);
+                                    setInitialValues({ ...initialValues, tel: e.target.value });
+                                }}
+                                value={values.tel}
+                                name="tel"
+                                error={!!touched.tel && !!errors.tel}
+                                helperText={touched.tel && errors.tel}
+                                sx={{ gridColumn: "span 2" }}
+                            />
+
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                type="email"
+                                label="Email"
+                                onBlur={handleBlur}
+                                onChange={(e) => {
+                                    handleChange(e);
+                                    setFieldValue("email", e.target.value);
+                                    setInitialValues({ ...initialValues, email: e.target.value });
+                                }}
+                                value={values.email}
+                                name="email"
+                                error={!!touched.email && !!errors.email}
+                                helperText={touched.email && errors.email}
+                                sx={{ gridColumn: "span 3" }}
+                            />
+
+
+                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 1" }}>
+                                <InputLabel>Language</InputLabel>
+                                <Select
+                                    label="Language"
+                                    onBlur={handleBlur}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setFieldValue("language", e.target.value);
+                                        setInitialValues({ ...initialValues, language: e.target.value });
+                                    }}
+                                    value={values.language}
+                                    name="language"
+                                    error={!!touched.language && !!errors.language}
+                                >
+                                    <MenuItem value="" selected>Select Language</MenuItem>
+                                    <MenuItem value="fr">FRENCH</MenuItem>
+                                    <MenuItem value="en">ENGLISH</MenuItem>
+
+                                </Select>
+                                {touched.language && errors.language && (
+                                    <Alert severity="error">{errors.language}</Alert>
+                                )}
+                            </FormControl>
+
+
+
 
 
 
