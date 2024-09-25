@@ -166,7 +166,6 @@ const TellerForm = () => {
                 requestBody: ''
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            // const response = await CBS_Services('AP', `api/gav/corporation/management/getAll`, 'GET', null);
 
             if (response && response.status === 200) {
                 setCorpID(response.body.data);
