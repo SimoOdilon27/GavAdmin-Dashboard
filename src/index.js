@@ -23,10 +23,10 @@ root.render(
               <Route path="/" element={<Login />} />
               {/* <Route path="/*" element={<App />} /> */}
               <Route element={<ProtectedComponent />}>
-
                 <Route path="*" element={<App />} />
                 <Route path="/updatepassword" element={<UpdatePassword />} />
               </Route>
+
 
             </Routes>
           </ErrorBoundary>

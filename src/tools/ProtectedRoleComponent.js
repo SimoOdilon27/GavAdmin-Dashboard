@@ -5,7 +5,11 @@ import { Navigate } from 'react-router-dom';
 const RoleProtectedComponent = ({ allowedRoles, children }) => {
     const connectedUsers = useSelector((state) => state);
 
-    const role = connectedUsers.roles;
+    const role = connectedUsers.users.roles;
+    console.log("connectedUsers", connectedUsers);
+
+    console.log("allowedRoles", role);
+
 
     if (!allowedRoles.some(r => role.includes(r))) {
         // If the user does not have the required role, redirect to error page
