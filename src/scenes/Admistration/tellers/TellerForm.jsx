@@ -1,4 +1,4 @@
-import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, Switch, FormControlLabel } from "@mui/material";
+import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, Switch, FormControlLabel, useTheme } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -13,6 +13,8 @@ import { Save } from "@mui/icons-material";
 const TellerForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const { id } = useParams();
+    const theme = useTheme();
+
     const navigate = useNavigate();
     const location = useLocation();
     const userData = useSelector((state) => state.users);
@@ -228,7 +230,7 @@ const TellerForm = () => {
         <Box m="20px">
             <Header
                 title={id ? "EDIT TELLER" : "ADD TELLER"}
-                subtitle={id ? "Edit the teller" : "Add a new teller"}
+                subtitle={id ? `Edit teller ${initialValues?.msisdn}` : "Add a new teller"}
             />
 
             <Formik
@@ -245,295 +247,485 @@ const TellerForm = () => {
                     handleChange,
                     handleSubmit,
                 }) => (
-                    <form onSubmit={handleSubmit}>
-                        <Box
-                            display="grid"
-                            gap="30px"
-                            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                            sx={{
-                                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                            }}
-                        >
+                    <Box
+                        display="grid"
+                        sx={{
+                            px: 2, // Optional: horizontal padding for the outer container
+                            padding: "10px 100px 20px 100px"
 
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Teller Name"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.tellerName}
-                                name="tellerName"
-                                error={!!touched.tellerName && !!errors.tellerName}
-                                helperText={touched.tellerName && errors.tellerName}
-                                sx={{ gridColumn: "span 4" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="MSISDN"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.msisdn}
-                                name="msisdn"
-                                error={!!touched.msisdn && !!errors.msisdn}
-                                helperText={touched.msisdn && errors.msisdn}
-                                sx={{ gridColumn: "span 2" }}
-                            />
+                        }}
+                    >
 
-                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
-                                <InputLabel>Branch</InputLabel>
-                                <Select
-                                    label="Branch"
+                        <form onSubmit={handleSubmit}>
+                            <Box
+                                display="grid"
+                                gap="30px"
+                                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                                sx={{
+                                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "10px",
+                                    padding: "40px", // Optional: padding for the inner container
+                                    "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                                }}
+                            >
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Teller Name"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    value={values.branchId}
-                                    name="branchId"
-                                    error={!!touched.branchId && !!errors.branchId}
-                                >
-                                    <MenuItem value="">Select Branch</MenuItem>
-                                    {Array.isArray(branchID) && branchID.length > 0 ? (
-                                        branchID.map(option => (
-                                            <MenuItem key={option.id} value={option.id}>
-                                                {option.branchName}
-                                            </MenuItem>
-                                        ))
-                                    ) : (
-                                        <MenuItem value="">No Branch available</MenuItem>
+                                    value={values.tellerName}
+                                    name="tellerName"
+                                    error={!!touched.tellerName && !!errors.tellerName}
+                                    helperText={touched.tellerName && errors.tellerName}
+                                    sx={{
+                                        gridColumn: "span 3",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="MSISDN"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.msisdn}
+                                    name="msisdn"
+                                    error={!!touched.msisdn && !!errors.msisdn}
+                                    helperText={touched.msisdn && errors.msisdn}
+                                    sx={{
+                                        gridColumn: "span 1",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+
+                                <FormControl fullWidth variant="filled" sx={{
+                                    gridColumn: "span 1",
+                                    '& .MuiInputLabel-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                    },
+                                    '& .MuiFilledInput-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                    },
+                                }}>
+                                    <InputLabel>Corporation</InputLabel>
+                                    <Select
+                                        label="Corporation"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.corporationId}
+                                        name="corporationId"
+                                        error={!!touched.corporationId && !!errors.corporationId}
+                                    >
+                                        <MenuItem value="">Select Corporation</MenuItem>
+                                        {Array.isArray(corpID) && corpID.length > 0
+                                            ? corpID.map((option) => (
+                                                <MenuItem key={option.corporationId} value={option.corporationId}>
+                                                    {option.corporationName}
+                                                </MenuItem>
+                                            ))
+                                            :
+                                            <MenuItem value="">No Corporatiion available</MenuItem>}
+                                    </Select>
+                                    {touched.language && errors.language && (
+                                        <Alert severity="error">{errors.language}</Alert>
                                     )}
-                                </Select>
-                                {touched.branchId && errors.branchId && (
-                                    <Alert severity="error">{errors.branchId}</Alert>
-                                )}
-                            </FormControl>
+                                </FormControl>
+
+                                <FormControl fullWidth variant="filled" sx={{
+                                    gridColumn: "span 1",
+                                    '& .MuiInputLabel-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                    },
+                                    '& .MuiFilledInput-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                    },
+                                }}>
+                                    <InputLabel>Bank</InputLabel>
+                                    <Select
+                                        label="Bank"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.bankId}
+                                        name="bankId"
+                                        error={!!touched.bankId && !!errors.bankId}
+                                    >
+                                        <MenuItem value="">Select Bank</MenuItem>
+                                        {Array.isArray(bankID) && bankID.length > 0 ? (
+                                            bankID.map(option => (
+                                                <MenuItem key={option.bankId} value={option.bankId}>
+                                                    {option.bankName}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem value="">No Banks available</MenuItem>
+                                        )}
+                                    </Select>
+                                    {touched.bankId && errors.bankId && (
+                                        <Alert severity="error">{errors.bankId}</Alert>
+                                    )}
+                                </FormControl>
+
+                                <FormControl fullWidth variant="filled" sx={{
+                                    gridColumn: "span 2",
+                                    '& .MuiInputLabel-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                    },
+                                    '& .MuiFilledInput-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                    },
+                                }}>
+                                    <InputLabel>Branch</InputLabel>
+                                    <Select
+                                        label="Branch"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.branchId}
+                                        name="branchId"
+                                        error={!!touched.branchId && !!errors.branchId}
+                                    >
+                                        <MenuItem value="">Select Branch</MenuItem>
+                                        {Array.isArray(branchID) && branchID.length > 0 ? (
+                                            branchID.map(option => (
+                                                <MenuItem key={option.id} value={option.id}>
+                                                    {option.branchName}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem value="">No Branch available</MenuItem>
+                                        )}
+                                    </Select>
+                                    {touched.branchId && errors.branchId && (
+                                        <Alert severity="error">{errors.branchId}</Alert>
+                                    )}
+                                </FormControl>
 
 
-                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 1" }}>
-                                <InputLabel>Language</InputLabel>
-                                <Select
-                                    label="Language"
+
+
+                                <FormControl fullWidth variant="filled" sx={{
+                                    gridColumn: "span 1",
+                                    '& .MuiInputLabel-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                    },
+                                    '& .MuiFilledInput-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                    },
+                                }}>
+                                    <InputLabel>Language</InputLabel>
+                                    <Select
+                                        label="Language"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.language}
+                                        name="language"
+                                        error={!!touched.language && !!errors.language}
+                                    >
+                                        <MenuItem value="" selected>Select Language</MenuItem>
+                                        <MenuItem value="FRENCH">FRENCH</MenuItem>
+                                        <MenuItem value="ENGLISH">ENGLISH</MenuItem>
+
+                                    </Select>
+                                    {touched.language && errors.language && (
+                                        <Alert severity="error">{errors.language}</Alert>
+                                    )}
+                                </FormControl>
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="CBS Account ID"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    value={values.language}
-                                    name="language"
-                                    error={!!touched.language && !!errors.language}
-                                >
-                                    <MenuItem value="" selected>Select Language</MenuItem>
-                                    <MenuItem value="FRENCH">FRENCH</MenuItem>
-                                    <MenuItem value="ENGLISH">ENGLISH</MenuItem>
+                                    value={values.cbsAccountId}
+                                    name="cbsAccountId"
+                                    error={!!touched.cbsAccountId && !!errors.cbsAccountId}
+                                    helperText={touched.cbsAccountId && errors.cbsAccountId}
+                                    sx={{
+                                        gridColumn: "span 3",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
 
-                                </Select>
-                                {touched.language && errors.language && (
-                                    <Alert severity="error">{errors.language}</Alert>
+
+
+                                {id ? (
+
+                                    <>
+
+
+
+                                        <TextField
+                                            fullWidth
+                                            variant="filled"
+                                            type="text"
+                                            label="accountId"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.accountId}
+                                            name="accountId"
+                                            error={!!touched.accountId && !!errors.accountId}
+                                            helperText={touched.accountId && errors.accountId}
+                                            sx={{
+                                                gridColumn: "span 2",
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                                },
+                                                '& .MuiFilledInput-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                                },
+                                                '& .MuiInputLabel-root.Mui-focused': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                                },
+                                            }}
+                                        />
+
+
+
+                                        {/* <TextField
+                                            fullWidth
+                                            variant="filled"
+                                            type="text"
+                                            label="balance"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.balance}
+                                            name="balance"
+                                            error={!!touched.balance && !!errors.balance}
+                                            helperText={touched.balance && errors.balance}
+                                            sx={{ gridColumn: "span 2", 
+                                             '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        }, }}
+                                            disabled
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            variant="filled"
+                                            type="text"
+                                            label="virtualBalance"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.virtualBalance}
+                                            name="virtualBalance"
+                                            error={!!touched.virtualBalance && !!errors.virtualBalance}
+                                            helperText={touched.virtualBalance && errors.virtualBalance}
+                                            sx={{ gridColumn: "span 2", 
+                                             '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        }, }}
+                                            disabled
+                                        /> */}
+
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    checked={values.active}
+                                                    onChange={handleChange}
+                                                    name="active"
+                                                    color="secondary"
+                                                />
+                                            }
+                                            label="Alpha CBS"
+                                            sx={{
+                                                gridColumn: "span 2",
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                                },
+                                                '& .MuiFilledInput-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                                },
+                                                '& .MuiInputLabel-root.Mui-focused': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                                },
+                                            }}
+                                        />
+
+                                    </>) : (
+
+                                    <>
+
+                                        <TextField
+                                            fullWidth
+                                            variant="filled"
+                                            type="number"
+                                            label="Daily Limit"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.dailyLimit}
+                                            name="dailyLimit"
+                                            error={!!touched.dailyLimit && !!errors.dailyLimit}
+                                            helperText={touched.dailyLimit && errors.dailyLimit}
+                                            sx={{
+                                                gridColumn: "span 2",
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                                },
+                                                '& .MuiFilledInput-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                                },
+                                                '& .MuiInputLabel-root.Mui-focused': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                                },
+                                            }}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            variant="filled"
+                                            type="number"
+                                            label="Minimum Account Limit"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.minimumAccountLimit}
+                                            name="minimumAccountLimit"
+                                            error={!!touched.minimumAccountLimit && !!errors.minimumAccountLimit}
+                                            helperText={touched.minimumAccountLimit && errors.minimumAccountLimit}
+                                            sx={{
+                                                gridColumn: "span 1",
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                                },
+                                                '& .MuiFilledInput-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                                },
+                                                '& .MuiInputLabel-root.Mui-focused': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                                },
+                                            }}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            variant="filled"
+                                            type="number"
+                                            label="Maximum Account Limit"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.maximumAccountLimit}
+                                            name="maximumAccountLimit"
+                                            error={!!touched.maximumAccountLimit && !!errors.maximumAccountLimit}
+                                            helperText={touched.maximumAccountLimit && errors.maximumAccountLimit}
+                                            sx={{
+                                                gridColumn: "span 1",
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                                },
+                                                '& .MuiFilledInput-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                                },
+                                                '& .MuiInputLabel-root.Mui-focused': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                                },
+                                            }}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            variant="filled"
+                                            type="text"
+                                            label="Internal ID"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.internalId}
+                                            name="internalId"
+                                            error={!!touched.internalId && !!errors.internalId}
+                                            helperText={touched.internalId && errors.internalId}
+                                            sx={{
+                                                gridColumn: "span 2",
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                                },
+                                                '& .MuiFilledInput-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                                },
+                                                '& .MuiInputLabel-root.Mui-focused': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                                },
+                                            }}
+
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    checked={values.otherCbs}
+                                                    onChange={handleChange}
+                                                    name="otherCbs"
+                                                    color="secondary"
+                                                />
+                                            }
+                                            label="Alpha CBS"
+                                            sx={{
+                                                gridColumn: "span 2",
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                                },
+                                                '& .MuiFilledInput-root': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                                },
+                                                '& .MuiInputLabel-root.Mui-focused': {
+                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                                },
+                                            }}
+                                        />
+                                    </>
                                 )}
-                            </FormControl>
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="CBS Account ID"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.cbsAccountId}
-                                name="cbsAccountId"
-                                error={!!touched.cbsAccountId && !!errors.cbsAccountId}
-                                helperText={touched.cbsAccountId && errors.cbsAccountId}
-                                sx={{ gridColumn: "span 3" }}
-                            />
 
 
+                            </Box>
+                            <Box display="flex" justifyContent="end" mt="20px">
+                                <Stack direction="row" spacing={2}>
 
-                            {id ? (
-
-                                <>
-
-
-                                    <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
-                                        <InputLabel>Bank</InputLabel>
-                                        <Select
-                                            label="Bank"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.bankId}
-                                            name="bankId"
-                                            error={!!touched.bankId && !!errors.bankId}
-                                        >
-                                            <MenuItem value="">Select Bank</MenuItem>
-                                            {Array.isArray(bankID) && bankID.length > 0 ? (
-                                                bankID.map(option => (
-                                                    <MenuItem key={option.bankId} value={option.bankId}>
-                                                        {option.bankName}
-                                                    </MenuItem>
-                                                ))
-                                            ) : (
-                                                <MenuItem value="">No Banks available</MenuItem>
-                                            )}
-                                        </Select>
-                                        {touched.bankId && errors.bankId && (
-                                            <Alert severity="error">{errors.bankId}</Alert>
-                                        )}
-                                    </FormControl>
-                                    <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="text"
-                                        label="accountId"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.accountId}
-                                        name="accountId"
-                                        error={!!touched.accountId && !!errors.accountId}
-                                        helperText={touched.accountId && errors.accountId}
-                                        sx={{ gridColumn: "span 2" }}
-                                    />
-
-
-                                    <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
-                                        <InputLabel>Corporation</InputLabel>
-                                        <Select
-                                            label="Corporation"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.corporationId}
-                                            name="corporationId"
-                                            error={!!touched.corporationId && !!errors.corporationId}
-                                        >
-                                            <MenuItem value="">Select Corporation</MenuItem>
-                                            {Array.isArray(corpID) && corpID.length > 0
-                                                ? corpID.map((option) => (
-                                                    <MenuItem key={option.corporationId} value={option.corporationId}>
-                                                        {option.corporationName}
-                                                    </MenuItem>
-                                                ))
-                                                :
-                                                <MenuItem value="">No Corporatiion available</MenuItem>}
-                                        </Select>
-                                        {touched.language && errors.language && (
-                                            <Alert severity="error">{errors.language}</Alert>
-                                        )}
-                                    </FormControl>
-                                    <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="text"
-                                        label="balance"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.balance}
-                                        name="balance"
-                                        error={!!touched.balance && !!errors.balance}
-                                        helperText={touched.balance && errors.balance}
-                                        sx={{ gridColumn: "span 2" }}
-                                        disabled
-                                    />
-                                    <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="text"
-                                        label="virtualBalance"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.virtualBalance}
-                                        name="virtualBalance"
-                                        error={!!touched.virtualBalance && !!errors.virtualBalance}
-                                        helperText={touched.virtualBalance && errors.virtualBalance}
-                                        sx={{ gridColumn: "span 2" }}
-                                        disabled
-                                    />
-
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={values.active}
-                                                onChange={handleChange}
-                                                name="active"
-                                                color="secondary"
-                                            />
-                                        }
-                                        label="Other CBS"
-                                        sx={{ gridColumn: "span 2" }}
-                                    />
-
-                                </>) : (
-
-                                <>
-
-                                    <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="number"
-                                        label="Daily Limit"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.dailyLimit}
-                                        name="dailyLimit"
-                                        error={!!touched.dailyLimit && !!errors.dailyLimit}
-                                        helperText={touched.dailyLimit && errors.dailyLimit}
-                                        sx={{ gridColumn: "span 2" }}
-                                    />
-                                    <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="number"
-                                        label="Minimum Account Limit"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.minimumAccountLimit}
-                                        name="minimumAccountLimit"
-                                        error={!!touched.minimumAccountLimit && !!errors.minimumAccountLimit}
-                                        helperText={touched.minimumAccountLimit && errors.minimumAccountLimit}
-                                        sx={{ gridColumn: "span 1" }}
-                                    />
-                                    <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="number"
-                                        label="Maximum Account Limit"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.maximumAccountLimit}
-                                        name="maximumAccountLimit"
-                                        error={!!touched.maximumAccountLimit && !!errors.maximumAccountLimit}
-                                        helperText={touched.maximumAccountLimit && errors.maximumAccountLimit}
-                                        sx={{ gridColumn: "span 1" }}
-                                    />
-
-                                    <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="text"
-                                        label="Internal ID"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.internalId}
-                                        name="internalId"
-                                        error={!!touched.internalId && !!errors.internalId}
-                                        helperText={touched.internalId && errors.internalId}
-                                        sx={{ gridColumn: "span 2" }}
-
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={values.otherCbs}
-                                                onChange={handleChange}
-                                                name="otherCbs"
-                                                color="secondary"
-                                            />
-                                        }
-                                        label="Other CBS"
-                                        sx={{ gridColumn: "span 2" }}
-                                    />
-                                </>
-                            )}
-
-
-                        </Box>
-                        <Box display="flex" justifyContent="end" mt="20px">
-                            <Stack direction="row" spacing={2}>
-
-                                {/* <LoadingButton
+                                    {/* <LoadingButton
                                     type="submit"
                                     color="secondary"
                                     variant="contained"
@@ -543,30 +735,31 @@ const TellerForm = () => {
                                 >
                                     {id ? "Update Teller" : "Create Teller"}
                                 </LoadingButton> */}
-                                {id ? "" :
-                                    <LoadingButton
-                                        type="submit"
-                                        color="secondary"
+                                    {id ? "" :
+                                        <LoadingButton
+                                            type="submit"
+                                            color="secondary"
+                                            variant="contained"
+                                            loading={pending}
+                                            loadingPosition="start"
+                                            startIcon={<Save />}
+                                        >
+                                            {/* {id ? "Update Teller" : "Create Teller"} */}
+                                            Create Teller
+                                        </LoadingButton>
+                                    }
+                                    <Button
+                                        color="primary"
                                         variant="contained"
-                                        loading={pending}
-                                        loadingPosition="start"
-                                        startIcon={<Save />}
+                                        disabled={pending}
+                                        onClick={() => navigate(-1)}
                                     >
-                                        {/* {id ? "Update Teller" : "Create Teller"} */}
-                                        Create Teller
-                                    </LoadingButton>
-                                }
-                                <Button
-                                    color="primary"
-                                    variant="contained"
-                                    disabled={pending}
-                                    onClick={() => navigate(-1)}
-                                >
-                                    Cancel
-                                </Button>
-                            </Stack>
-                        </Box>
-                    </form>
+                                        Cancel
+                                    </Button>
+                                </Stack>
+                            </Box>
+                        </form>
+                    </Box>
                 )}
             </Formik>
 

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import CBS_Services from '../../../services/api/GAV_Sercives';
-import { Box, Button, useTheme } from '@mui/material';
+import { Box, Button, IconButton, Menu, MenuItem, useTheme } from '@mui/material';
 import { tokens } from '../../../theme';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../../components/Header';
 import { Add, Delete, EditOutlined } from '@mui/icons-material';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
 
 const MenuCatalog = () => {
     const theme = useTheme();
@@ -16,6 +18,28 @@ const MenuCatalog = () => {
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const navigate = useNavigate();
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentRow, setCurrentRow] = useState(null);
+    const open = Boolean(anchorEl);
+
+    // Define or import the handleEdit and handleDelete functions
+
+
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Your delete logic here
+    };
+
+    const handleClick = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setCurrentRow(row); // Store the current row to pass to actions
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setCurrentRow(null);
+    };
 
     const fetchCatalogData = async () => {
         setLoading(true);
@@ -40,8 +64,8 @@ const MenuCatalog = () => {
         navigate('/menu-catalog/add');
     };
 
-    const handleEdit = (id) => {
-        navigate(`/menu-catalog/edit/${id}`);
+    const handleEdit = (row) => {
+        navigate(`/menu-catalog/edit/${row.id}`);
     };
 
     const columns = [
@@ -54,36 +78,40 @@ const MenuCatalog = () => {
             field: "actions",
             headerName: "Actions",
             flex: 1,
-            renderCell: (params) => {
-                const row = params.row;
-                return (
-                    <>
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.greenAccent[600]}
-                            borderRadius="4px"
-                            onClick={() => handleEdit(row.id)}
-                        >
-                            <EditOutlined />
-                        </Box>
-                        <Box
-                            width="30%"
-                            m="0"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.redAccent[600]}
-                            borderRadius="4px"
-                        >
-                            <Delete />
-                        </Box>
-                    </>
-                );
-            },
+            renderCell: (params) => (
+                <>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, params.row)}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: "20ch",
+                                transform: "translateX(-50%)",
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={() => handleEdit(currentRow)}>
+                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                            Edit
+                        </MenuItem>
+
+                        <MenuItem onClick={() => handleDelete(currentRow)}>
+                            <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                            Delete
+                        </MenuItem>
+                    </Menu>
+                </>
+            ),
         },
     ];
 

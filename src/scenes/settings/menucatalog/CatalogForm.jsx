@@ -9,8 +9,12 @@ import { useSelector } from "react-redux";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
+import { tokens } from "../../../theme";
+import { useTheme } from "@emotion/react";
 
 const CatalogForm = () => {
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const { id } = useParams();
     const navigate = useNavigate();
@@ -120,104 +124,172 @@ const CatalogForm = () => {
                     handleChange,
                     handleSubmit,
                 }) => (
-                    <form onSubmit={handleSubmit}>
-                        <Box
-                            display="grid"
-                            gap="30px"
-                            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                            sx={{
-                                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                            }}
-                        >
 
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Catalog Name"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.id}
-                                name="id"
-                                error={!!touched.id && !!errors.id}
-                                helperText={touched.id && errors.serviceProvider}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Service Provider"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.serviceProvider}
-                                name="serviceProvider"
-                                error={!!touched.serviceProvider && !!errors.serviceProvider}
-                                helperText={touched.serviceProvider && errors.serviceProvider}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Description"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.description}
-                                name="description"
-                                error={!!touched.description && !!errors.description}
-                                helperText={touched.description && errors.description}
-                                sx={{ gridColumn: "span 4" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Endpoint"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.endPoint}
-                                name="endPoint"
-                                error={!!touched.endPoint && !!errors.endPoint}
-                                helperText={touched.endPoint && errors.endPoint}
-                                sx={{ gridColumn: "span 4" }}
-                            />
+                    <Box
+                        display="grid"
+                        sx={{
+                            px: 2, // Optional: horizontal padding for the outer container
+                            padding: "10px 100px 20px 100px"
 
+                        }}
+                    >
+                        <form onSubmit={handleSubmit}>
+                            <Box
+                                display="grid"
+                                gap="30px"
+                                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                                sx={{
+                                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "10px",
+                                    padding: "40px",
+                                    "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                                }}
+                            >
 
-                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
-                                <InputLabel>Request Type</InputLabel>
-                                <Select
-                                    label="Request Type"
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Catalog Name"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    value={values.requestType}
-                                    name="requestType"
-                                    error={!!touched.requestType && !!errors.requestType}
-                                >
-                                    <MenuItem value="POST">POST</MenuItem>
-                                    <MenuItem value="GET">GET</MenuItem>
-                                    <MenuItem value="PUT">PUT</MenuItem>
-                                    <MenuItem value="DELETE">DELETE</MenuItem>
-                                </Select>
-                                {touched.requestType && errors.requestType && (
-                                    <Alert severity="error">{errors.requestType}</Alert>
-                                )}
-                            </FormControl>
-                        </Box>
-                        <Box display="flex" justifyContent="end" mt="20px">
-                            <Stack direction="row" spacing={2}>
+                                    value={values.id}
+                                    name="id"
+                                    error={!!touched.id && !!errors.id}
+                                    helperText={touched.id && errors.serviceProvider}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Service Provider"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.serviceProvider}
+                                    name="serviceProvider"
+                                    error={!!touched.serviceProvider && !!errors.serviceProvider}
+                                    helperText={touched.serviceProvider && errors.serviceProvider}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Description"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.description}
+                                    name="description"
+                                    error={!!touched.description && !!errors.description}
+                                    helperText={touched.description && errors.description}
+                                    sx={{
+                                        gridColumn: "span 4",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Endpoint"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.endPoint}
+                                    name="endPoint"
+                                    error={!!touched.endPoint && !!errors.endPoint}
+                                    helperText={touched.endPoint && errors.endPoint}
+                                    sx={{
+                                        gridColumn: "span 3",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
 
-                                <LoadingButton type="submit" color="secondary" variant="contained" loading={pending} loadingPosition="start"
-                                    startIcon={<Save />}>
-                                    {id ? "Update Catalog" : "Create Catalog"}
-                                </LoadingButton>
 
-                                <Button color="primary" variant="contained" disabled={pending} onClick={() => navigate(-1)}>
-                                    Cancel
-                                </Button>
-                            </Stack>
-                        </Box>
-                    </form>
+                                <FormControl fullWidth variant="filled" sx={{
+                                    gridColumn: "span 1",
+                                    '& .MuiInputLabel-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                    },
+                                    '& .MuiFilledInput-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                    },
+                                }}>
+                                    <InputLabel>Request Type</InputLabel>
+                                    <Select
+                                        label="Request Type"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.requestType}
+                                        name="requestType"
+                                        error={!!touched.requestType && !!errors.requestType}
+                                    >
+                                        <MenuItem value="POST">POST</MenuItem>
+                                        <MenuItem value="GET">GET</MenuItem>
+                                        <MenuItem value="PUT">PUT</MenuItem>
+                                        <MenuItem value="DELETE">DELETE</MenuItem>
+                                    </Select>
+                                    {touched.requestType && errors.requestType && (
+                                        <Alert severity="error">{errors.requestType}</Alert>
+                                    )}
+                                </FormControl>
+                            </Box>
+                            <Box display="flex" justifyContent="end" mt="20px">
+                                <Stack direction="row" spacing={2}>
+
+                                    <LoadingButton type="submit" color="secondary" variant="contained" loading={pending} loadingPosition="start"
+                                        startIcon={<Save />}>
+                                        {id ? "Update Catalog" : "Create Catalog"}
+                                    </LoadingButton>
+
+                                    <Button color="primary" variant="contained" disabled={pending} onClick={() => navigate(-1)}>
+                                        Cancel
+                                    </Button>
+                                </Stack>
+                            </Box>
+                        </form>
+                    </Box>
                 )}
             </Formik>
 

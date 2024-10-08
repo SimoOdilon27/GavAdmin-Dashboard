@@ -38,8 +38,23 @@ const CashOutnIn = () => {
                             fontSize: "14px",
                             fontWeight: "bold",
                             // padding: "10px 20px 0px 0px",
-                            marginRight: "10px",
+                            marginRight: "60px",
+                            marginLeft: "60px",
                             borderRadius: "10px",
+                            // '& .MuiTabs-indicator': {
+                            //     backgroundColor: colors.greenAccent[500],
+                            //     height: 3,
+                            // },
+                            '& .MuiTab-root': {
+                                backgroundColor: colors.blueAccent[700],
+                                borderRadius: '8px 8px 0 0',
+                                margin: '0 5px',
+                                '&.Mui-selected': {
+                                    // backgroundColor: colors.blueAccent[500],
+                                    color: theme.palette.mode === 'light' ? 'black' : `${colors.greenAccent[400]}`, // Dark label for light mode, white for dark mode
+
+                                },
+                            },
                         }}>
                             <TabList onChange={handleChange} aria-label="lab API tabs example" centered>
                                 <Tab label="Cash In" value="1" icon={<AttachMoney />} iconPosition="start" />

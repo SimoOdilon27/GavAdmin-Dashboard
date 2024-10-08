@@ -136,99 +136,112 @@ const GimacCountriesForm = () => {
                     handleChange,
                     handleSubmit,
                 }) => (
-                    <form onSubmit={handleSubmit}>
-                        <Box
-                            display="grid"
-                            gap="30px"
-                            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                            sx={{
-                                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                            }}
-                        >
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Country Code"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.countryCode}
-                                name="countryCode"
-                                error={!!touched.countryCode && !!errors.countryCode}
-                                helperText={touched.countryCode && errors.countryCode}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Country"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.country}
-                                name="country"
-                                error={!!touched.country && !!errors.country}
-                                helperText={touched.country && errors.country}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Service Provider"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.serviceProvider}
-                                name="serviceProvider"
-                                error={!!touched.serviceProvider && !!errors.serviceProvider}
-                                helperText={touched.serviceProvider && errors.serviceProvider}
-                                sx={{ gridColumn: "span 4" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="International Dialing Code"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.internationalDialingCode}
-                                name="internationalDialingCode"
-                                error={!!touched.internationalDialingCode && !!errors.internationalDialingCode}
-                                helperText={touched.internationalDialingCode && errors.internationalDialingCode}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Internal ID"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.internalId}
-                                name="internalId"
-                                error={!!touched.internalId && !!errors.internalId}
-                                helperText={touched.internalId && errors.internalId}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                        </Box>
-                        <Box display="flex" justifyContent="end" mt="20px">
-                            <Stack direction="row" spacing={2}>
-                                <LoadingButton
-                                    type="submit"
-                                    color="secondary"
-                                    variant="contained"
-                                    loading={pending}
-                                    loadingPosition="start"
-                                    startIcon={<Save />}
-                                >
-                                    {id ? "Update Country" : "Create Country"}
-                                </LoadingButton>
-                                <Button color="primary" variant="contained" disabled={pending} onClick={() => navigate(-1)}>
-                                    Cancel
-                                </Button>
-                            </Stack>
-                        </Box>
-                    </form>
+
+                    <Box
+                        display="grid"
+                        sx={{
+                            px: 2, // Optional: horizontal padding for the outer container
+                            padding: "10px 100px 20px 100px"
+
+                        }}
+                    >
+                        <form onSubmit={handleSubmit}>
+                            <Box
+                                display="grid"
+                                gap="30px"
+                                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                                sx={{
+                                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "10px",
+                                    padding: "40px",
+                                    "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                                }}
+                            >
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Country Code"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.countryCode}
+                                    name="countryCode"
+                                    error={!!touched.countryCode && !!errors.countryCode}
+                                    helperText={touched.countryCode && errors.countryCode}
+                                    sx={{ gridColumn: "span 2" }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Country"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.country}
+                                    name="country"
+                                    error={!!touched.country && !!errors.country}
+                                    helperText={touched.country && errors.country}
+                                    sx={{ gridColumn: "span 2" }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Service Provider"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.serviceProvider}
+                                    name="serviceProvider"
+                                    error={!!touched.serviceProvider && !!errors.serviceProvider}
+                                    helperText={touched.serviceProvider && errors.serviceProvider}
+                                    sx={{ gridColumn: "span 4" }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="International Dialing Code"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.internationalDialingCode}
+                                    name="internationalDialingCode"
+                                    error={!!touched.internationalDialingCode && !!errors.internationalDialingCode}
+                                    helperText={touched.internationalDialingCode && errors.internationalDialingCode}
+                                    sx={{ gridColumn: "span 2" }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Internal ID"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.internalId}
+                                    name="internalId"
+                                    error={!!touched.internalId && !!errors.internalId}
+                                    helperText={touched.internalId && errors.internalId}
+                                    sx={{ gridColumn: "span 2" }}
+                                />
+                            </Box>
+                            <Box display="flex" justifyContent="end" mt="20px">
+                                <Stack direction="row" spacing={2}>
+                                    <LoadingButton
+                                        type="submit"
+                                        color="secondary"
+                                        variant="contained"
+                                        loading={pending}
+                                        loadingPosition="start"
+                                        startIcon={<Save />}
+                                    >
+                                        {id ? "Update Country" : "Create Country"}
+                                    </LoadingButton>
+                                    <Button color="primary" variant="contained" disabled={pending} onClick={() => navigate(-1)}>
+                                        Cancel
+                                    </Button>
+                                </Stack>
+                            </Box>
+                        </form>
+                    </Box>
                 )}
             </Formik>
 

@@ -145,11 +145,16 @@ const BankInvestments = () => {
         fetchAwaitingInvestmentApprovalData();
     }, []);
 
+    const toSentenceCase = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
+
     const InvestmentColumns = [
-        { field: 'id', headerName: ' Investment ID', flex: 1 },
-        { field: 'accountName', headerName: 'Account Name', flex: 1 },
-        { field: 'amount', headerName: 'Amount', flex: 1 },
-        { field: 'investorName', headerName: 'Investor Name', flex: 1 },
+        // { field: 'id', headerName: ' Investment ID', flex: 1 },
+        { field: 'accountName', headerName: 'Account Name', flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: 'amount', headerName: 'Amount', flex: 1, },
+        { field: 'investorName', headerName: 'Investor Name', flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
         {
             field: 'approvalStatus',
             headerName: 'Approval Status',
@@ -236,10 +241,10 @@ const BankInvestments = () => {
                     <Typography>Are you sure you want to approve this Investment?</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleConfirmApproveInvestment} color="secondary" variant="contained">
+                    <Button onClick={handleConfirmApproveInvestment} color="primary" variant="contained">
                         Confirm
                     </Button>
-                    <Button onClick={handleCloseConfirmationModal} color="primary">
+                    <Button onClick={handleCloseConfirmationModal} color="secondary">
                         Cancel
                     </Button>
 

@@ -1,4 +1,4 @@
-import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputAdornment, InputLabel, ListSubheader, MenuItem, Select, Snackbar, Stack, TextField, useMediaQuery, useTheme } from '@mui/material'
+import { Alert, Box, Button, Checkbox, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputAdornment, InputLabel, List, ListItem, ListItemIcon, ListItemText, ListSubheader, MenuItem, Select, Snackbar, Stack, TextField, useMediaQuery, useTheme } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import Header from '../../../components/Header'
 import { tokens } from '../../../theme';
@@ -28,7 +28,7 @@ const RoleManagement = () => {
     const [assignRoleData, setAssignRoleData] = React.useState(
         {
             id: 0,
-            tagName: '',
+            tagNames: [],
             roleName: '',
             creationDate: '',
             serviceTags: ''
@@ -47,6 +47,23 @@ const RoleManagement = () => {
 
     console.log("yserss", userData);
 
+    const handleToggle = (value) => () => {
+        const currentIndex = assignRoleData.tagNames.indexOf(value);
+        const newChecked = [...assignRoleData.tagNames];
+
+        if (currentIndex === -1) {
+            newChecked.push(value);
+        } else {
+            newChecked.splice(currentIndex, 1);
+        }
+
+        setAssignRoleData({
+            ...assignRoleData,
+            tagNames: newChecked
+        });
+    };
+
+
     const handleToggleRoleModal = () => {
         setFormData({
             id: 0,
@@ -59,7 +76,15 @@ const RoleManagement = () => {
 
     console.log("form", formData);
 
-    const handleToggleAssignRoleModal = () => {
+    const handleToggleAssignRoleModal = (assignrole) => {
+        setSelectedRow(assignrole);
+        setAssignRoleData({
+            id: 0,
+            tagNames: [], // Reset to empty array
+            roleName: assignrole,
+            creationDate: '',
+            serviceTags: ''
+        });
 
         setShowAssignRoleModal(!showAssignRoleModal);
     };
@@ -136,25 +161,68 @@ const RoleManagement = () => {
     };
 
 
+
+    //     setLoading(true);
+    //     try {
+    //         const payload = {
+    //             tagName: assignRoleData.tagName,
+    //             roleName: selectedRow,
+    //         };
+
+    //         const response = await CBS_Services('GATEWAY', `role/addRoleToService`, 'POST', payload, token);
+    //         console.log("assignroleform", payload);
+    //         console.log("responseassign", response);
+
+    //         if (response && response.status === 200) {
+    //             showSnackbar('Role assigned successfully.', 'success');
+    //             handleToggleAssignRoleModal();
+    //             await fetchRoleData();
+    //         } else {
+    //             showSnackbar(response.body.errors || 'Error assigning role', 'error');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error:', error);
+    //         showSnackbar('Network Error! Try again later.', 'error');
+    //     }
+
+    //     setLoading(false);
+    // };
+
+
+    // Function to fetch Catalog data
+
     const handleConfirmAssignRole = async () => {
         setLoading(true);
+        const results = [];
+        let hasError = false;
+
         try {
-            const payload = {
-                tagName: assignRoleData.tagName,
-                roleName: selectedRow,
-            };
+            // Process each tag sequentially
+            for (const tagName of assignRoleData.tagNames) {
+                const payload = {
+                    tagName: tagName,
+                    roleName: selectedRow,
+                };
 
-            const response = await CBS_Services('GATEWAY', `role/addRoleToService`, 'POST', payload, token);
-            console.log("assignroleform", payload);
-            console.log("responseassign", response);
+                const response = await CBS_Services('GATEWAY', `role/addRoleToService`, 'POST', payload, token);
 
-            if (response && response.status === 200) {
-                showSnackbar('Role assigned successfully.', 'success');
-                handleToggleAssignRoleModal();
-                await fetchRoleData();
-            } else {
-                showSnackbar(response.body.errors || 'Error assigning role', 'error');
+                if (response && response.status === 200) {
+                    results.push(`Success: ${tagName}`);
+                } else {
+                    results.push(`Failed: ${tagName} - ${response.body.errors || 'Unknown error'}`);
+                    hasError = true;
+                }
             }
+
+            if (hasError) {
+                showSnackbar(`Some role assignments failed. ${results.join(', ')}`, 'warning');
+            } else {
+                showSnackbar('All roles assigned successfully.', 'success');
+            }
+
+            handleToggleAssignRoleModal();
+            await fetchRoleData();
+
         } catch (error) {
             console.error('Error:', error);
             showSnackbar('Network Error! Try again later.', 'error');
@@ -163,8 +231,6 @@ const RoleManagement = () => {
         setLoading(false);
     };
 
-
-    // Function to fetch Catalog data
     const fetchCatalogData = async () => {
         try {
 
@@ -401,7 +467,7 @@ const RoleManagement = () => {
             </Dialog>
             <Dialog open={showAssignRoleModal} onClose={handleToggleAssignRoleModal} fullWidth >
                 <DialogTitle>Assign Role</DialogTitle>
-                <DialogContent>
+                {/* <DialogContent>
 
                     <Formik
                         onSubmit={handleConfirmAssignRole}
@@ -496,7 +562,107 @@ const RoleManagement = () => {
                     </Formik>
 
 
-                </DialogContent>
+                </DialogContent> */}
+
+                <Dialog
+                    open={showAssignRoleModal}
+                    onClose={handleToggleAssignRoleModal}
+                    fullWidth
+                    maxWidth="md" // Increased width for better visibility
+                >
+                    <DialogTitle>Assign Role to Multiple Menus</DialogTitle>
+                    <DialogContent>
+                        <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                            <TextField
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                placeholder="Search menus..."
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Search />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            <List sx={{
+                                width: '100%',
+                                bgcolor: 'background.paper',
+                                maxHeight: 300,
+                                overflow: 'auto'
+                            }}>
+                                {Array.isArray(CatalogData) && CatalogData.length > 0 ? (
+                                    CatalogData
+                                        .filter(option =>
+                                            option.id.toLowerCase().includes(searchTerm.toLowerCase())
+                                        )
+                                        .map((option) => {
+                                            const labelId = `checkbox-list-label-${option.id}`;
+
+                                            return (
+                                                <ListItem
+                                                    key={option.id}
+                                                    dense
+                                                    button
+                                                    onClick={handleToggle(option.id)}
+                                                >
+                                                    <ListItemIcon>
+                                                        <Checkbox
+                                                            edge="start"
+                                                            checked={assignRoleData.tagNames.indexOf(option.id) !== -1}
+                                                            tabIndex={-1}
+                                                            disableRipple
+                                                            inputProps={{ 'aria-labelledby': labelId }}
+                                                            color='secondary'
+                                                        />
+                                                    </ListItemIcon>
+                                                    <ListItemText id={labelId} primary={option.id} />
+                                                </ListItem>
+                                            );
+                                        })
+                                ) : (
+                                    <ListItem>
+                                        <ListItemText primary="No menus available" />
+                                    </ListItem>
+                                )}
+                            </List>
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Box display="flex" justifyContent="space-between" width="100%" px={2}>
+                            <Box>
+                                {assignRoleData.tagNames.length > 0 && (
+                                    <Alert severity="info" sx={{ mr: 2 }}>
+                                        {assignRoleData.tagNames.length} menu(s) selected
+                                    </Alert>
+                                )}
+                            </Box>
+                            <Stack direction="row" spacing={2}>
+                                <LoadingButton
+                                    type="submit"
+                                    color="secondary"
+                                    variant="contained"
+                                    loading={loading}
+                                    loadingPosition="start"
+                                    startIcon={<VerifiedUser />}
+                                    onClick={handleConfirmAssignRole}
+                                    disabled={assignRoleData.tagNames.length === 0}
+                                >
+                                    Assign
+                                </LoadingButton>
+                                <Button
+                                    color="primary"
+                                    variant="contained"
+                                    disabled={loading}
+                                    onClick={handleToggleAssignRoleModal}
+                                >
+                                    Cancel
+                                </Button>
+                            </Stack>
+                        </Box>
+                    </DialogActions>
+                </Dialog>
                 <DialogActions>
                     <Box display="flex" justifyContent="end" mt="20px">
                         <Stack direction="row" spacing={2}>

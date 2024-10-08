@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import CBS_Services from '../../services/api/GAV_Sercives';
-import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, TextField, useTheme } from '@mui/material';
+import { Alert, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Menu, MenuItem, Snackbar, TextField, useTheme } from '@mui/material';
 import { tokens } from '../../theme';
 import { useSelector } from 'react-redux';
-import { Add, Delete, EditOutlined, NotificationsActiveRounded, SupervisedUserCircle, Verified, VerifiedOutlined } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, NotificationsActiveRounded, RemoveRedEyeSharp, SupervisedUserCircle, Verified, VerifiedOutlined } from '@mui/icons-material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../components/Header';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
 
 const Clients = () => {
     const theme = useTheme();
@@ -19,6 +21,29 @@ const Clients = () => {
     const [selectedMsisdn, setSelectedMsisdn] = useState('');
     const [showActivateClientModal, setShowActivateClientModal] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentRow, setCurrentRow] = useState(null);
+    const open = Boolean(anchorEl);
+
+    // Define or import the handleEdit and handleDelete functions
+
+
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Your delete logic here
+    };
+    const handleClick = (event, row) => {
+        event.stopPropagation();
+        setAnchorEl(event.currentTarget);
+        setCurrentRow(row);
+    };
+
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setCurrentRow(null);
+    };
 
     const showSnackbar = (message, severity) => {
         setSnackbar({ open: true, message, severity });
@@ -148,85 +173,180 @@ const Clients = () => {
         navigate('/client/add-client');
     }
 
-    const handleEdit = (msisdn) => {
-        navigate(`/client/edit/${msisdn}`);
+    const handleEdit = (row) => {
+        navigate(`/client/edit/${row.msisdn}`);
     };
 
+    const handleView = (row) => {
+        // Pass the entire row data to the edit page
+        navigate(`/client/view/${row.msisdn}`, { state: { clientData: row } });
+    };
+
+    const toSentenceCase = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
+
+    console.log("current Row+++", currentRow);
+
+
     const columns = [
-        { field: "name", headerName: "Client Name", flex: 1 },
+        { field: "name", headerName: "Client Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
         { field: "msisdn", headerName: "MSISDN", flex: 1 },
-        { field: "language", headerName: "Language", flex: 1 },
+        { field: "language", headerName: "Language", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
         { field: "dateOfBirth", headerName: "Date of Birth", flex: 1 },
         { field: "cniNumber", headerName: "Cni", flex: 1 },
         { field: "initialBalance", headerName: "Initial Balance", flex: 1 },
         { field: "email", headerName: "Email", flex: 1 },
-        { field: "address", headerName: "Address", flex: 1 },
+        { field: "address", headerName: "Address", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
         // { field: "email", headerName: "Email", flex: 1 },
         {
-            field: "active", headerName: "STATUS", flex: 1,
+            field: "status",
+            headerName: "Status",
+            flex: 1,
             renderCell: (params) => {
-                const row = params.row;
+                const isActive = params.row.active; // Access the "active" field from the row data
                 return (
-                    <>
-                        {row.active ? (
-                            <span className="text-success">Active</span>
-                        ) : (
-                            <span className="text-danger">Inactive</span>
-                        )}
-                    </>
+                    <Chip
+                        label={isActive ? "Active" : "Inactive"}
+                        style={{
+                            backgroundColor: isActive ? "green" : "red",
+                            color: "white",
+                            padding: "1px 1px 1px 1px",
+                        }}
+                    />
                 );
-
-            }
+            },
         },
         {
             field: "actions",
             headerName: "Actions",
             flex: 1,
             renderCell: (params) => {
-                const row = params.row;
+                const isActive = params.row.active;
+
                 return (
                     <>
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.greenAccent[600]}
-                            borderRadius="4px"
-                            onClick={() => handleEdit(row.msisdn)}
-
+                        <IconButton
+                            aria-label="more"
+                            aria-controls={`actions-menu-${params.row.msisdn}`}
+                            aria-haspopup="true"
+                            onClick={(event) => handleClick(event, params.row)}
                         >
-                            <EditOutlined />
-                        </Box>
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={row.active ? colors.greenAccent[600] : colors.grey[500]}
-                            borderRadius="4px"
-                            onClick={() => !row.active && handleToggleActivateClientModal(row.msisdn)}
-                            style={{ cursor: row.active ? 'not-allowed' : 'pointer' }}
+                            <MoreVertIcon />
+                        </IconButton>
+                        <Menu
+                            id={`actions-menu-${params.row.msisdn}`}
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl) && currentRow?.msisdn === params.row.msisdn}
+                            onClose={handleClose}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 48 * 4.5,
+                                    width: "20ch",
+                                    transform: "translateX(-50%)",
+                                },
+                            }}
                         >
-                            {row.active ? <Verified /> : <VerifiedOutlined />}
-                        </Box>
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.redAccent[600]}
-                            borderRadius="4px"
-                        >
-                            <Delete />
-                        </Box>
+                            <MenuItem onClick={() => {
+                                handleEdit(currentRow);
+                                handleClose();
+                            }}>
+                                <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                                Edit
+                            </MenuItem>
+                            <MenuItem onClick={() => {
+                                handleView(currentRow);
+                                handleClose();
+                            }}>
+                                <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
+                                View
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    if (!currentRow.active) {
+                                        handleToggleActivateClientModal(currentRow.msisdn);
+                                    }
+                                    handleClose();
+                                }}
+                                disabled={currentRow?.active}
+                                style={{
+                                    color: currentRow?.active ? colors.greenAccent[500] : 'inherit',
+                                }}
+                            >
+                                {currentRow?.active ? (
+                                    <>
+                                        <Verified style={{ marginRight: "8px", color: colors.greenAccent[500] }} />
+                                        Already Active
+                                    </>
+                                ) : (
+                                    <>
+                                        <VerifiedOutlined style={{ marginRight: "8px" }} />
+                                        Activate
+                                    </>
+                                )}
+                            </MenuItem>
+                            <MenuItem onClick={() => {
+                                handleDelete(currentRow);
+                                handleClose();
+                            }}>
+                                <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                                Delete
+                            </MenuItem>
+                        </Menu>
                     </>
                 );
             },
-        },
+        }
+        // {
+        //     field: "actions",
+        //     headerName: "Actions",
+        //     flex: 1,
+        //     renderCell: (params) => {
+        //         const row = params.row;
+        //         return (
+        //             <>
+        //                 <Box
+        //                     width="30%"
+        //                     m="0 4px"
+        //                     p="5px"
+        //                     display="flex"
+        //                     justifyContent="center"
+        //                     backgroundColor={colors.greenAccent[600]}
+        //                     borderRadius="4px"
+        //                     onClick={() => handleEdit(row.msisdn)}
+
+        //                 >
+        //                     <EditOutlined />
+        //                 </Box>
+        //                 <Box
+        //                     width="30%"
+        //                     m="0 4px"
+        //                     p="5px"
+        //                     display="flex"
+        //                     justifyContent="center"
+        //                     backgroundColor={row.active ? colors.greenAccent[600] : colors.grey[500]}
+        //                     borderRadius="4px"
+        //                     onClick={() => !row.active && handleToggleActivateClientModal(row.msisdn)}
+        //                     style={{ cursor: row.active ? 'not-allowed' : 'pointer' }}
+        //                 >
+        //                     {row.active ? <Verified /> : <VerifiedOutlined />}
+        //                 </Box>
+        //                 <Box
+        //                     width="30%"
+        //                     m="0 4px"
+        //                     p="5px"
+        //                     display="flex"
+        //                     justifyContent="center"
+        //                     backgroundColor={colors.redAccent[600]}
+        //                     borderRadius="4px"
+        //                 >
+        //                     <Delete />
+        //                 </Box>
+        //             </>
+        //         );
+        //     },
+        // },
     ];
 
     return (

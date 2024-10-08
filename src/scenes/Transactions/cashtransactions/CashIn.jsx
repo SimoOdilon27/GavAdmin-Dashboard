@@ -131,9 +131,12 @@ const CashIn = () => {
 
     return (
         <Box>
-            <Typography variant="h5" color={colors.greenAccent[400]} sx={{ m: "0 10px 15px 5px" }}>
-                Cash In Transaction (Teller Id: {userData?.refId})
-            </Typography>
+            <Box sx={{ marginLeft: '100px', marginBottom: '10px' }}>
+                <Typography variant="h5" color={colors.greenAccent[400]} >
+                    Cash In Transaction (Teller Id: {userData?.refId})
+                </Typography>
+            </Box>
+
 
             <Formik
                 innerRef={formikRef}
@@ -152,83 +155,129 @@ const CashIn = () => {
                     handleChange,
                     handleSubmit,
                 }) => (
-                    <form onSubmit={handleSubmit}>
-                        <Box
-                            display="grid"
-                            gap="30px"
-                            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                            sx={{
-                                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                            }}
-                        >
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="MSISDN"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.msisdn}
-                                name="msisdn"
-                                error={!!touched.msisdn && !!errors.msisdn}
-                                helperText={touched.msisdn && errors.msisdn}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="number"
-                                label="Amount"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.amount}
-                                name="amount"
-                                error={!!touched.amount && !!errors.amount}
-                                helperText={touched.amount && errors.amount}
-                                sx={{ gridColumn: "span 2" }}
-                            />
+                    <Box
+                        display="grid"
+                        sx={{
+                            px: 2, // Optional: horizontal padding for the outer container
+                            padding: "10px 100px 20px 100px"
 
+                        }}
+                    >
 
-                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
-                                <InputLabel>Bank</InputLabel>
-                                <Select
-                                    label="Bank"
+                        <form onSubmit={handleSubmit}>
+                            <Box
+                                display="grid"
+                                gap="30px"
+                                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                                sx={{
+                                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "10px",
+                                    padding: "40px",
+                                    "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                                }}
+                            >
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="MSISDN"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    value={values.clientBankCode}
-                                    name="clientBankCode"
-                                    error={!!touched.clientBankCode && !!errors.clientBankCode}
-                                >
-                                    <MenuItem value="">Select Bank</MenuItem>
-                                    {Array.isArray(bankCode) && bankCode.length > 0 ? (
-                                        bankCode.map(option => (
-                                            <MenuItem key={option.bankCode} value={option.bankCode}>
-                                                {option.bankName}
-                                            </MenuItem>
-                                        ))
-                                    ) : (
-                                        <MenuItem value="">No Banks available</MenuItem>
-                                    )}
-                                </Select>
-                                {touched.clientBankCode && errors.clientBankCode && (
-                                    <Alert severity="error">{errors.clientBankCode}</Alert>
-                                )}
-                            </FormControl>
+                                    value={values.msisdn}
+                                    name="msisdn"
+                                    error={!!touched.msisdn && !!errors.msisdn}
+                                    helperText={touched.msisdn && errors.msisdn}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="number"
+                                    label="Amount"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.amount}
+                                    name="amount"
+                                    error={!!touched.amount && !!errors.amount}
+                                    helperText={touched.amount && errors.amount}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
 
-                        </Box>
-                        <Box display="flex" justifyContent="end" mt="20px">
-                            <LoadingButton
-                                type="submit"
-                                color="secondary"
-                                variant="contained"
-                                loading={pending}
-                                loadingPosition="start"
-                                startIcon={<AttachMoney />}
-                            >
-                                Proceed
-                            </LoadingButton>
-                        </Box>
-                    </form>
+
+                                <FormControl fullWidth variant="filled" sx={{
+                                    gridColumn: "span 4",
+                                    '& .MuiInputLabel-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                    },
+                                    '& .MuiFilledInput-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                    },
+                                }}>
+                                    <InputLabel>Bank</InputLabel>
+                                    <Select
+                                        label="Bank"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.clientBankCode}
+                                        name="clientBankCode"
+                                        error={!!touched.clientBankCode && !!errors.clientBankCode}
+                                    >
+                                        <MenuItem value="">Select Bank</MenuItem>
+                                        {Array.isArray(bankCode) && bankCode.length > 0 ? (
+                                            bankCode.map(option => (
+                                                <MenuItem key={option.bankCode} value={option.bankCode}>
+                                                    {option.bankName}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem value="">No Banks available</MenuItem>
+                                        )}
+                                    </Select>
+                                    {touched.clientBankCode && errors.clientBankCode && (
+                                        <Alert severity="error">{errors.clientBankCode}</Alert>
+                                    )}
+                                </FormControl>
+
+                            </Box>
+                            <Box display="flex" justifyContent="end" mt="20px">
+                                <LoadingButton
+                                    type="submit"
+                                    color="secondary"
+                                    variant="contained"
+                                    loading={pending}
+                                    loadingPosition="start"
+                                    startIcon={<AttachMoney />}
+                                >
+                                    Proceed
+                                </LoadingButton>
+                            </Box>
+                        </form>
+                    </Box>
                 )}
             </Formik>
 

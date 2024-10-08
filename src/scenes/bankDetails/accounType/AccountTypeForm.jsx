@@ -8,10 +8,13 @@ import { useSelector } from "react-redux";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
-import { Alert, Box, Button, Snackbar, Stack, TextField } from "@mui/material";
+import { Alert, Box, Button, Snackbar, Stack, TextField, useTheme } from "@mui/material";
+import { tokens } from "../../../theme";
 
 
 const AccountTypeForm = () => {
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const { id } = useParams();
     const navigate = useNavigate();
@@ -97,8 +100,8 @@ const AccountTypeForm = () => {
     return (
         <Box m="20px">
             <Header
-                title={id ? "EDIT TELLER" : "ADD TELLER"}
-                subtitle={id ? "Edit the teller" : "Add a new teller"}
+                title={id ? "EDIT ACCOUNT TYPE" : "ADD ACCOUNT TYPE"}
+                subtitle={id ? "Edit the  Account Type" : "Add a new  Account Type"}
             />
 
             <Formik
@@ -115,84 +118,130 @@ const AccountTypeForm = () => {
                     handleChange,
                     handleSubmit,
                 }) => (
-                    <form onSubmit={handleSubmit}>
-                        <Box
-                            display="grid"
-                            gap="30px"
-                            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                            sx={{
-                                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                            }}
-                        >
 
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="idTag"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.idTag}
-                                name="idTag"
-                                error={!!touched.idTag && !!errors.idTag}
-                                helperText={touched.idTag && errors.idTag}
-                                sx={{ gridColumn: "span 2" }}
-                            />
+                    <Box
+                        display="grid"
+                        sx={{
+                            px: 2, // Optional: horizontal padding for the outer container
+                            padding: "10px 100px 20px 100px"
 
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Type Name"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.type}
-                                name="type"
-                                error={!!touched.type && !!errors.type}
-                                helperText={touched.type && errors.type}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Description"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.description}
-                                name="description"
-                                error={!!touched.description && !!errors.description}
-                                helperText={touched.description && errors.description}
-                                sx={{ gridColumn: "span 4" }}
-                            />
+                        }}
+                    >
+                        <form onSubmit={handleSubmit}>
+                            <Box
+                                display="grid"
+                                gap="30px"
+                                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                                sx={{
+                                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "10px",
+                                    padding: "40px", // Optional: padding for the inner container
+                                    "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                                }}
+                            >
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Tag"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.idTag}
+                                    name="idTag"
+                                    error={!!touched.idTag && !!errors.idTag}
+                                    helperText={touched.idTag && errors.idTag}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Type Name"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.type}
+                                    name="type"
+                                    error={!!touched.type && !!errors.type}
+                                    helperText={touched.type && errors.type}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Description"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.description}
+                                    name="description"
+                                    error={!!touched.description && !!errors.description}
+                                    helperText={touched.description && errors.description}
+                                    sx={{
+                                        gridColumn: "span 4",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
 
 
-                        </Box>
-                        <Box display="flex" justifyContent="end" mt="20px">
-                            <Stack direction="row" spacing={2}>
+                            </Box>
+                            <Box display="flex" justifyContent="end" mt="20px">
+                                <Stack direction="row" spacing={2}>
 
-                                <LoadingButton
-                                    type="submit"
-                                    color="secondary"
-                                    variant="contained"
-                                    loading={pending}
-                                    loadingPosition="start"
-                                    startIcon={<Save />}
-                                >
-                                    {id ? "Update Teller" : "Create Teller"}
-                                </LoadingButton>
+                                    <LoadingButton
+                                        type="submit"
+                                        color="secondary"
+                                        variant="contained"
+                                        loading={pending}
+                                        loadingPosition="start"
+                                        startIcon={<Save />}
+                                    >
+                                        {id ? "Update Teller" : "Create Teller"}
+                                    </LoadingButton>
 
-                                <Button
-                                    color="primary"
-                                    variant="contained"
-                                    disabled={pending}
-                                    onClick={() => navigate(-1)}
-                                >
-                                    Cancel
-                                </Button>
-                            </Stack>
-                        </Box>
-                    </form>
+                                    <Button
+                                        color="primary"
+                                        variant="contained"
+                                        disabled={pending}
+                                        onClick={() => navigate(-1)}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </Stack>
+                            </Box>
+                        </form>
+                    </Box>
                 )}
             </Formik>
 

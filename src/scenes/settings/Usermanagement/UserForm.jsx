@@ -145,197 +145,209 @@ const UserForm = () => {
                     handleSubmit,
                     setFieldValue,
                 }) => (
-                    <form onSubmit={handleSubmit}>
-                        <Box
-                            display="grid"
-                            gap="30px"
-                            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                            sx={{
-                                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                            }}
-                        >
 
-                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
-                                <InputLabel>Role</InputLabel>
-                                <Select
-                                    label="Role"
+                    <Box
+                        display="grid"
+                        sx={{
+                            px: 2, // Optional: horizontal padding for the outer container
+                            padding: "10px 100px 20px 100px"
+
+                        }}
+                    >
+                        <form onSubmit={handleSubmit}>
+                            <Box
+                                display="grid"
+                                gap="30px"
+                                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                                sx={{
+                                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "10px",
+                                    padding: "40px", // Optional: padding for the inner container
+                                    "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                                }}
+                            >
+
+                                <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
+                                    <InputLabel>Role</InputLabel>
+                                    <Select
+                                        label="Role"
+                                        onBlur={handleBlur}
+                                        onChange={(e) => {
+                                            handleChange(e);
+                                            setFieldValue("roles", e.target.value);
+                                            setInitialValues(prevValues => ({
+                                                ...prevValues,
+                                                roles: e.target.value,
+                                                refId: "", // Clear refId
+                                            }));
+                                            setSelectedTeller(""); // Clear selected teller
+                                            setFieldValue("refId", ""); // Clear Formik's refId value
+                                            // If "TELLER" is selected, reset tellerId
+                                            if (e.target.value !== "TELLER") {
+                                                setFieldValue("id", "");
+                                            }
+                                        }}
+                                        value={values.roles}
+                                        name="roles"
+                                        error={!!touched.roles && !!errors.roles}
+                                    >
+                                        <MenuItem value="" disabled>Select Role</MenuItem>
+                                        {roleData.length > 0
+                                            ? roleData.map((option) => (
+                                                <MenuItem key={option.roleName} value={option.roleName}>
+                                                    {option.roleName}
+                                                </MenuItem>
+                                            ))
+                                            : <MenuItem value="">No Roles available</MenuItem>}
+                                    </Select>
+                                    {touched.roles && errors.roles && (
+                                        <Alert severity="error">{errors.roles}</Alert>
+                                    )}
+                                </FormControl>
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Username"
                                     onBlur={handleBlur}
                                     onChange={(e) => {
                                         handleChange(e);
-                                        setFieldValue("roles", e.target.value);
-                                        setInitialValues(prevValues => ({
-                                            ...prevValues,
-                                            roles: e.target.value,
-                                            refId: "", // Clear refId
-                                        }));
-                                        setSelectedTeller(""); // Clear selected teller
-                                        setFieldValue("refId", ""); // Clear Formik's refId value
-                                        // If "TELLER" is selected, reset tellerId
-                                        if (e.target.value !== "TELLER") {
-                                            setFieldValue("id", "");
-                                        }
+                                        setFieldValue("userName", e.target.value);
+                                        setInitialValues({ ...initialValues, userName: e.target.value });
                                     }}
-                                    value={values.roles}
-                                    name="roles"
-                                    error={!!touched.roles && !!errors.roles}
-                                >
-                                    <MenuItem value="" disabled>Select Role</MenuItem>
-                                    {roleData.length > 0
-                                        ? roleData.map((option) => (
-                                            <MenuItem key={option.roleName} value={option.roleName}>
-                                                {option.roleName}
-                                            </MenuItem>
-                                        ))
-                                        : <MenuItem value="">No Roles available</MenuItem>}
-                                </Select>
-                                {touched.roles && errors.roles && (
-                                    <Alert severity="error">{errors.roles}</Alert>
-                                )}
-                            </FormControl>
+                                    value={values.userName}
+                                    name="userName"
+                                    error={!!touched.userName && !!errors.userName}
+                                    helperText={touched.userName && errors.userName}
+                                    sx={{ gridColumn: "span 4" }}
+                                />
 
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="text"
-                                label="Username"
-                                onBlur={handleBlur}
-                                onChange={(e) => {
-                                    handleChange(e);
-                                    setFieldValue("userName", e.target.value);
-                                    setInitialValues({ ...initialValues, userName: e.target.value });
-                                }}
-                                value={values.userName}
-                                name="userName"
-                                error={!!touched.userName && !!errors.userName}
-                                helperText={touched.userName && errors.userName}
-                                sx={{ gridColumn: "span 4" }}
-                            />
+                                {/* Conditional Teller Dropdown */}
+                                {values.roles === "TELLER" && (
+                                    <>
+                                        <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
+                                            <InputLabel>Teller</InputLabel>
+                                            <Select
+                                                label="Teller"
+                                                onBlur={handleBlur}
+                                                onChange={handleChangeValues}
+                                                value={selectedTeller}
+                                                name="selectedTeller"
+                                                error={!!touched.selectedTeller && !!errors.selectedTeller}
+                                            >
+                                                <MenuItem value="" disabled>Select Teller</MenuItem>
+                                                {Array.isArray(tellerData) && tellerData.length > 0
+                                                    ? tellerData.map((teller) => (
+                                                        <MenuItem key={teller.id} value={teller.id}>
+                                                            {teller.tellerName}
+                                                        </MenuItem>
+                                                    ))
+                                                    : <MenuItem value="">No Tellers available</MenuItem>}
+                                            </Select>
+                                            {touched.selectedTeller && errors.selectedTeller && (
+                                                <Alert severity="error">{errors.selectedTeller}</Alert>
+                                            )}
+                                        </FormControl>
 
-                            {/* Conditional Teller Dropdown */}
-                            {values.roles === "TELLER" && (
-                                <>
-                                    <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
-                                        <InputLabel>Teller</InputLabel>
-                                        <Select
-                                            label="Teller"
+                                        <TextField
+                                            fullWidth
+                                            variant="filled"
+                                            type="text"
+                                            label="Reference ID"
                                             onBlur={handleBlur}
                                             onChange={handleChangeValues}
-                                            value={selectedTeller}
-                                            name="selectedTeller"
-                                            error={!!touched.selectedTeller && !!errors.selectedTeller}
-                                        >
-                                            <MenuItem value="" disabled>Select Teller</MenuItem>
-                                            {Array.isArray(tellerData) && tellerData.length > 0
-                                                ? tellerData.map((teller) => (
-                                                    <MenuItem key={teller.id} value={teller.id}>
-                                                        {teller.tellerName}
-                                                    </MenuItem>
-                                                ))
-                                                : <MenuItem value="">No Tellers available</MenuItem>}
-                                        </Select>
-                                        {touched.selectedTeller && errors.selectedTeller && (
-                                            <Alert severity="error">{errors.selectedTeller}</Alert>
-                                        )}
-                                    </FormControl>
-
-                                    <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="text"
-                                        label="Reference ID"
-                                        onBlur={handleBlur}
-                                        onChange={handleChangeValues}
-                                        value={initialValues.refId}
-                                        name="refId"
-                                        error={!!touched.refId && !!errors.refId}
-                                        helperText={touched.refId && errors.refId}
-                                        sx={{ gridColumn: "span 4" }}
-                                        disabled
-                                    />
-                                </>
+                                            value={initialValues.refId}
+                                            name="refId"
+                                            error={!!touched.refId && !!errors.refId}
+                                            helperText={touched.refId && errors.refId}
+                                            sx={{ gridColumn: "span 4" }}
+                                            disabled
+                                        />
+                                    </>
 
 
 
-                            )}
+                                )}
 
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="password"
-                                label="Password"
-                                onBlur={handleBlur}
-                                onChange={(e) => {
-                                    handleChange(e);
-                                    setFieldValue("password", e.target.value);
-                                    setInitialValues({ ...initialValues, password: e.target.value });
-                                }}
-                                value={values.password}
-                                name="password"
-                                error={!!touched.password && !!errors.password}
-                                helperText={touched.password && errors.password}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="tel"
-                                label="Phone Number"
-                                onBlur={handleBlur}
-                                onChange={(e) => {
-                                    handleChange(e);
-                                    setFieldValue("tel", e.target.value);
-                                    setInitialValues({ ...initialValues, tel: e.target.value });
-                                }}
-                                value={values.tel}
-                                name="tel"
-                                error={!!touched.tel && !!errors.tel}
-                                helperText={touched.tel && errors.tel}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="email"
-                                label="Email"
-                                onBlur={handleBlur}
-                                onChange={(e) => {
-                                    handleChange(e);
-                                    setFieldValue("email", e.target.value);
-                                    setInitialValues({ ...initialValues, email: e.target.value });
-                                }}
-                                value={values.email}
-                                name="email"
-                                error={!!touched.email && !!errors.email}
-                                helperText={touched.email && errors.email}
-                                sx={{ gridColumn: "span 3" }}
-                            />
-
-
-                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 1" }}>
-                                <InputLabel>Language</InputLabel>
-                                <Select
-                                    label="Language"
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="password"
+                                    label="Password"
                                     onBlur={handleBlur}
                                     onChange={(e) => {
                                         handleChange(e);
-                                        setFieldValue("language", e.target.value);
-                                        setInitialValues({ ...initialValues, language: e.target.value });
+                                        setFieldValue("password", e.target.value);
+                                        setInitialValues({ ...initialValues, password: e.target.value });
                                     }}
-                                    value={values.language}
-                                    name="language"
-                                    error={!!touched.language && !!errors.language}
-                                >
-                                    <MenuItem value="" selected>Select Language</MenuItem>
-                                    <MenuItem value="fr">FRENCH</MenuItem>
-                                    <MenuItem value="en">ENGLISH</MenuItem>
+                                    value={values.password}
+                                    name="password"
+                                    error={!!touched.password && !!errors.password}
+                                    helperText={touched.password && errors.password}
+                                    sx={{ gridColumn: "span 2" }}
+                                />
 
-                                </Select>
-                                {touched.language && errors.language && (
-                                    <Alert severity="error">{errors.language}</Alert>
-                                )}
-                            </FormControl>
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="tel"
+                                    label="Phone Number"
+                                    onBlur={handleBlur}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setFieldValue("tel", e.target.value);
+                                        setInitialValues({ ...initialValues, tel: e.target.value });
+                                    }}
+                                    value={values.tel}
+                                    name="tel"
+                                    error={!!touched.tel && !!errors.tel}
+                                    helperText={touched.tel && errors.tel}
+                                    sx={{ gridColumn: "span 2" }}
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="email"
+                                    label="Email"
+                                    onBlur={handleBlur}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setFieldValue("email", e.target.value);
+                                        setInitialValues({ ...initialValues, email: e.target.value });
+                                    }}
+                                    value={values.email}
+                                    name="email"
+                                    error={!!touched.email && !!errors.email}
+                                    helperText={touched.email && errors.email}
+                                    sx={{ gridColumn: "span 3" }}
+                                />
+
+
+                                <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 1" }}>
+                                    <InputLabel>Language</InputLabel>
+                                    <Select
+                                        label="Language"
+                                        onBlur={handleBlur}
+                                        onChange={(e) => {
+                                            handleChange(e);
+                                            setFieldValue("language", e.target.value);
+                                            setInitialValues({ ...initialValues, language: e.target.value });
+                                        }}
+                                        value={values.language}
+                                        name="language"
+                                        error={!!touched.language && !!errors.language}
+                                    >
+                                        <MenuItem value="" selected>Select Language</MenuItem>
+                                        <MenuItem value="fr">FRENCH</MenuItem>
+                                        <MenuItem value="en">ENGLISH</MenuItem>
+
+                                    </Select>
+                                    {touched.language && errors.language && (
+                                        <Alert severity="error">{errors.language}</Alert>
+                                    )}
+                                </FormControl>
 
 
 
@@ -345,17 +357,18 @@ const UserForm = () => {
 
 
 
-                        </Box>
-                        <Box display="flex" justifyContent="end" mt="20px">
-                            <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
-                                startIcon={<Save />} >
-                                {loading ? 'Creating User...' : 'Create User'}
-                            </LoadingButton>
-                            <Button color="primary" variant="contained" disabled={loading} onClick={() => navigate(-1)}>
-                                Cancel
-                            </Button>
-                        </Box>
-                    </form>
+                            </Box>
+                            <Box display="flex" justifyContent="end" mt="20px">
+                                <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
+                                    startIcon={<Save />} >
+                                    {loading ? 'Creating User...' : 'Create User'}
+                                </LoadingButton>
+                                <Button color="primary" variant="contained" disabled={loading} onClick={() => navigate(-1)}>
+                                    Cancel
+                                </Button>
+                            </Box>
+                        </form>
+                    </Box>
                 )}
             </Formik>
 

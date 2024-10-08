@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography, useTheme, Switch, Grid, Paper, Divider, Alert, Tooltip, Snackbar, CircularProgress } from "@mui/material";
+import { Box, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography, useTheme, Switch, Grid, Paper, Divider, Alert, Tooltip, Snackbar, CircularProgress, MenuItem, Menu, IconButton } from "@mui/material";
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Add, Delete, EditOutlined, Money, MoneyOff, TrendingUp, Visibility } from '@mui/icons-material';
 import { tokens } from '../../../theme';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import Header from '../../../components/Header';
 import { useNavigate } from 'react-router-dom';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
 
 const AccountType = () => {
 
@@ -20,6 +22,28 @@ const AccountType = () => {
     const [globalMessage, setGlobalMessage] = useState({ type: '', content: '' });
     const navigate = useNavigate();
     const token = userData.token;
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentRow, setCurrentRow] = useState(null);
+    const open = Boolean(anchorEl);
+
+    // Define or import the handleEdit and handleDelete functions
+
+
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Your delete logic here
+    };
+
+    const handleClick = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setCurrentRow(row); // Store the current row to pass to actions
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setCurrentRow(null);
+    };
 
     const fetchAccountType = async () => {
         setLoading(true);
@@ -67,11 +91,16 @@ const AccountType = () => {
         navigate('/accounttype/add');
     };
 
+    const toSentenceCase = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
+
 
     const columns = [
-        { field: "type", headerName: "Account type", flex: 1 },
-        { field: "description", headerName: "Description", flex: 1 },
-        { field: "idTag", headerName: "Id Tag", flex: 1 },
+        { field: "type", headerName: "Account type", flex: 1, valueGetter: (params) => toSentenceCase(params.value) },
+        { field: "description", headerName: "Description", flex: 1, valueGetter: (params) => toSentenceCase(params.value) },
+        { field: "idTag", headerName: " Tag", flex: 1, },
 
 
         {
@@ -80,26 +109,39 @@ const AccountType = () => {
             flex: 1,
             renderCell: (params) => (
                 <>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, params.row)}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: "20ch",
+                                transform: "translateX(-50%)",
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={() => handleEdit(currentRow)}>
+                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                            Edit
+                        </MenuItem>
 
-
-                    <Tooltip title="Edit">
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            onClick={() => handleEdit(params.row)}
-                            variant="outlined"
-                            size="small"
-                            style={{ marginRight: '5px', backgroundColor: colors.greenAccent[600] }}
-                        >
-                            <EditOutlined style={{ color: '#fff' }} /> {/* Replace Visibility with your preferred icon */}
-                        </Box>
-                    </Tooltip>
+                        <MenuItem onClick={() => handleDelete(currentRow)}>
+                            <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                            Delete
+                        </MenuItem>
+                    </Menu>
                 </>
             ),
-        }
+        },
     ];
 
 

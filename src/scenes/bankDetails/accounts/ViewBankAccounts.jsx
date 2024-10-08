@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography, useTheme, Switch, Grid, Paper, Divider, Alert, Tooltip, Snackbar, CircularProgress } from "@mui/material";
+import { Box, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography, useTheme, Switch, Grid, Paper, Divider, Alert, Tooltip, Snackbar, CircularProgress, MenuItem, Menu, IconButton } from "@mui/material";
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Add, Delete, EditOutlined, Money, MoneyOff, TrendingUp, Visibility } from '@mui/icons-material';
-import { tokens } from '../../theme';
-import CBS_Services from '../../services/api/GAV_Sercives';
-import Header from '../../components/Header';
+import { Add, Delete, EditOutlined, Money, MoneyOff, RemoveRedEyeSharp, TrendingUp, Visibility } from '@mui/icons-material';
+import { tokens } from '../../../theme';
+import CBS_Services from '../../../services/api/GAV_Sercives';
+import Header from '../../../components/Header';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useNavigate } from 'react-router-dom';
+
 
 
 const BankAccount = () => {
@@ -13,16 +16,20 @@ const BankAccount = () => {
     const colors = tokens(theme.palette.mode);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const navigate = useNavigate();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentRow, setCurrentRow] = useState(null);
+    const open = Boolean(anchorEl);
+
+
 
     const [bankAccountData, setBankAccountData] = useState([]);
     const [formData, setFormData] = useState({
         accountId: '',
         amount: 0,
-        investorName: userData?.userName
-        ,
+        investorName: userData?.userName,
     });
     const [showModal, setShowModal] = useState(false);
-    const [showDailyInvestModal, setShowDailyInvestModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
     const [selectedAccount, setSelectedAccount] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
@@ -30,7 +37,6 @@ const BankAccount = () => {
     const [loading, setLoading] = useState(false);
 
     const [globalMessage, setGlobalMessage] = useState({ type: '', content: '' });
-    const [selectedAccountId, setSelectedAccountId] = useState('');
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
     const [action, setAction] = useState('activate');
     const [showStatusModal, setShowStatusModal] = useState(false);
@@ -45,48 +51,10 @@ const BankAccount = () => {
         setShowModal(!showModal);
     };
 
-    const handleToggleDailyInvestmentModal = (accountId) => {
-        setSelectedAccountId(accountId);
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            accountId: accountId,
-        }));
-        setShowDailyInvestModal(!showDailyInvestModal);
-    };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
 
-    const handleConfirmAdd = async () => {
-        setLoading(true);
-        try {
-            const payload = {
-                serviceReference: 'CREATE_INVESTMENT',
-                requestBody: JSON.stringify(formData)
-            };
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
-            if (response && response.status === 200) {
-                setShowModal(false);
 
-                showSnackbar('Investment created successfully.', 'success');
-
-            } else {
-                showSnackbar(response.body.errors || 'Error adding investment', 'error');
-
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showSnackbar('Network Error!!! Try again Later', 'error');
-
-        }
-        setLoading(false);
-    };
 
     const fetchBankAccountData = async () => {
         setLoading(true);
@@ -188,17 +156,41 @@ const BankAccount = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Your delete logic here
+    };
 
+    const handleClick = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setCurrentRow(row); // Store the current row to pass to actions
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setCurrentRow(null);
+    };
+
+    const toSentenceCase = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
+
+
+    const handleViewAccount = (row) => {
+        // Pass the entire row data to the edit page
+        navigate(`/bankaccount/view/${row.accountId}`, { state: { accountData: row } });
+    };
 
     const columns = [
-        { field: "name", headerName: "Account Name", flex: 1 },
-        // { field: "externalCorpOrBankOrBranchName", headerName: "External Acc Name", flex: 1 },
-        { field: "type", headerName: "Account Type", flex: 1 },
-        { field: "totalCapitalInvested", headerName: "Total Capital Invested", flex: 1 },
-        // { field: "totalDebitBalance", headerName: "Total Debit Balance", flex: 1 },
-        { field: "totalCreditBalance", headerName: "Total Credit Balance", flex: 1 },
-        { field: "balance", headerName: "Account Balance", flex: 1 },
-        // { field: "dailyAccountThreshold", headerName: "Daily Account Threshold", flex: 1 },
+        { field: "name", headerName: "Account Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        // { field: "externalCorpOrBankOrBranchName", headerName: "External Acc Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "type", headerName: "Account Type", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "totalCapitalInvested", headerName: "Total Capital Invested", flex: 1, },
+        // { field: "totalDebitBalance", headerName: "Total Debit Balance", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "totalCreditBalance", headerName: "Total Credit Balance", flex: 1, },
+        { field: "balance", headerName: "Account Balance", flex: 1, },
+        // { field: "dailyAccountThreshold", headerName: "Daily Account Threshold", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
         {
             field: "active",
             headerName: "Status",
@@ -218,46 +210,46 @@ const BankAccount = () => {
                 </Box>
             ),
         },
+
+
         {
             field: "actions",
             headerName: "Actions",
             flex: 1,
             renderCell: (params) => (
                 <>
-                    <Tooltip title="Investment">
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            onClick={() => handleToggleInvestmentModal(params.row.accountId)}
-                            variant="outlined"
-                            size="small"
-                            style={{ marginRight: '5px', backgroundColor: colors.greenAccent[600] }}
-                        >
-                            <MoneyOff style={{ color: '#fff' }} /> {/* Replace MoneyOff with your preferred icon */}
-                        </Box>
-                    </Tooltip>
-
-                    <Tooltip title="View Details">
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            onClick={() => handleView(params.row)}
-                            variant="outlined"
-                            size="small"
-                            style={{ marginRight: '5px', backgroundColor: colors.greenAccent[600] }}
-                        >
-                            <Visibility style={{ color: '#fff' }} /> {/* Replace Visibility with your preferred icon */}
-                        </Box>
-                    </Tooltip>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, params.row)}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: "20ch",
+                                transform: "translateX(-50%)",
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={() => handleViewAccount(currentRow)}>
+                            <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
+                            View More
+                        </MenuItem>
+                        <MenuItem onClick={() => handleDelete(currentRow)}>
+                            <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                            Delete
+                        </MenuItem>
+                    </Menu>
                 </>
             ),
-        }
+        },
     ];
 
     const formatValue = (value) => {
@@ -271,29 +263,6 @@ const BankAccount = () => {
             return value.toLocaleString(); // Format numbers with commas
         }
         return value.toString();
-    };
-
-    const groupData = (data) => {
-        const groups = {
-            'Account Info': ['name', 'accountId', 'type', 'active'],
-            'Balance Info': ['balance', 'totalCapitalInvested', 'totalDebitBalance', 'totalCreditBalance'],
-            'Other Details': ['externalCorpOrBankOrBranchName', 'dailyAccountThreshold'],
-        };
-
-        const groupedData = {};
-        Object.entries(data).forEach(([key, value]) => {
-            for (const [groupName, fields] of Object.entries(groups)) {
-                if (fields.includes(key)) {
-                    if (!groupedData[groupName]) groupedData[groupName] = {};
-                    groupedData[groupName][key] = value;
-                    return;
-                }
-            }
-            if (!groupedData['Other']) groupedData['Other'] = {};
-            groupedData['Other'][key] = value;
-        });
-
-        return groupedData;
     };
 
     return (
@@ -345,82 +314,6 @@ const BankAccount = () => {
 
                 />
             </Box>
-
-            {/* Investment Modal */}
-            <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>Add Investment</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Account ID"
-                        name="accountId"
-                        value={formData.accountId}
-                        disabled
-                    />
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Amount"
-                        name="amount"
-                        type="number"
-                        value={formData.amount}
-                        onChange={handleChange}
-                    />
-                    {/* <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Creator Name"
-                        name="investorName"
-                        value={formData.investorName}
-                        onChange={handleChange}
-                    /> */}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleConfirmAdd} color="primary" disabled={loading}>
-                        {loading ? 'Adding...' : 'Add'}
-                    </Button>
-                    <Button onClick={() => setShowModal(false)} color="secondary">
-                        Cancel
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-
-
-            {/* View Modal */}
-            <Dialog open={showViewModal} onClose={() => setShowViewModal(false)} maxWidth="md" fullWidth>
-                <DialogTitle>Bank Account Details</DialogTitle>
-                <DialogContent>
-                    {selectedAccount && (
-                        <Grid container spacing={3}>
-                            {Object.entries(groupData(selectedAccount)).map(([groupName, groupData]) => (
-                                <Grid item xs={12} key={groupName}>
-                                    <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
-                                        <Typography variant="h6" gutterBottom>{groupName}</Typography>
-                                        <Divider sx={{ mb: 2 }} />
-                                        <Grid container spacing={2}>
-                                            {Object.entries(groupData).map(([key, value]) => (
-                                                <Grid item xs={6} key={key}>
-                                                    <Typography variant="subtitle2" color="text.secondary">
-                                                        {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim()}:
-                                                    </Typography>
-                                                    <Typography variant="body1">{formatValue(value)}</Typography>
-                                                </Grid>
-                                            ))}
-                                        </Grid>
-                                    </Paper>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setShowViewModal(false)} color="primary">
-                        Close
-                    </Button>
-                </DialogActions>
-            </Dialog>
 
 
 

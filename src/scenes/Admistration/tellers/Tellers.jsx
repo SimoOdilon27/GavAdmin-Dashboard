@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import CBS_Services from '../../../services/api/GAV_Sercives';
-import { Box, Button, useTheme } from '@mui/material';
+import { Box, Button, Chip, IconButton, Menu, MenuItem, useTheme } from '@mui/material';
 import { tokens } from '../../../theme';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../../components/Header';
-import { Add, Delete, EditOutlined, RemoveRedEyeRounded } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, RemoveRedEyeRounded, RemoveRedEyeSharp } from '@mui/icons-material';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
 
 const Tellers = () => {
     const theme = useTheme();
@@ -16,6 +18,9 @@ const Tellers = () => {
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const navigate = useNavigate();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentRow, setCurrentRow] = useState(null);
+    const open = Boolean(anchorEl);
 
     const fetchTellerData = async () => {
         setLoading(true);
@@ -47,66 +52,112 @@ const Tellers = () => {
     const handleAddTeller = () => {
         navigate('/tellers/add');
     };
-
-    // const handleEdit = (id) => {
-    //     navigate(`/tellers/edit/${id}`);
-    // };
-
     const handleEdit = (row) => {
         // Pass the entire row data to the edit page
         navigate(`/tellers/edit/${row.id}`, { state: { tellerData: row } });
     };
 
+    const handleView = (row) => {
+        // Pass the entire row data to the edit page
+        navigate(`/tellers/view/${row.accountId}`, { state: { tellerData: row } });
+    };
+
+
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Your delete logic here
+    };
+
+    const handleClick = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setCurrentRow(row); // Store the current row to pass to actions
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setCurrentRow(null);
+    };
+
+
+
+    const toSentenceCase = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
+
     const columns = [
-        { field: "id", headerName: "Teller ID", flex: 1 },
-        { field: "tellerName", headerName: "Teller Name", flex: 1 },
-        { field: "branchName", headerName: "Branch Name", flex: 1 },
-        { field: "balance", headerName: "Balance", flex: 1 },
-        { field: "virtualBalance", headerName: "Virtual Balance", flex: 1 },
-        { field: "language", headerName: "Language", flex: 1 },
-        { field: "active", headerName: "Active", flex: 1, type: 'boolean' },
+        { field: "id", headerName: "Teller ID", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "tellerName", headerName: "Teller Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "branchName", headerName: "Branch Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "balance", headerName: "Balance", flex: 1, },
+        { field: "virtualBalance", headerName: "Virtual Balance", flex: 1, },
+        { field: "language", headerName: "Language", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        {
+            field: "status",
+            headerName: "Status",
+            flex: 1,
+            renderCell: (params) => {
+                const isActive = params.row.active; // Access the "active" field from the row data
+                return (
+                    <Chip
+                        label={isActive ? "Active" : "Inactive"}
+                        style={{
+                            backgroundColor: isActive ? "green" : "red",
+                            color: "white",
+                            padding: "1px 1px 1px 1px",
+                        }}
+                    />
+                );
+            },
+        },
         {
             field: "actions",
             headerName: "Actions",
             flex: 1,
-            renderCell: (params) => {
-                const row = params.row;
-                return (
-                    <>
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.greenAccent[600]}
-                            borderRadius="4px"
-                            onClick={() => handleEdit(row)}
-                        >
-                            {/* <EditOutlined /> */}
-                            <RemoveRedEyeRounded />
-                        </Box>
-                        <Box
-                            width="30%"
-                            m="0"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.redAccent[600]}
-                            borderRadius="4px"
-                        >
-                            <Delete />
-                        </Box>
-                    </>
-                );
-            },
+            renderCell: (params) => (
+                <>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, params.row)}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: "20ch",
+                                transform: "translateX(-50%)",
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={() => handleEdit(currentRow)}>
+                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                            Edit
+                        </MenuItem>
+                        <MenuItem onClick={() => handleView(currentRow)}>
+                            <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
+                            View
+                        </MenuItem>
+                        <MenuItem onClick={() => handleDelete(currentRow)}>
+                            <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                            Delete
+                        </MenuItem>
+                    </Menu>
+                </>
+            ),
         },
     ];
 
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Tellers" subtitle="Manage your tellers" />
+                <Header title="TELLERS" subtitle="Manage your tellers" />
                 <Button
                     sx={{
                         backgroundColor: colors.blueAccent[700],

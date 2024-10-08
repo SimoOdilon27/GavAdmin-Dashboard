@@ -13,7 +13,7 @@ import Calendar from "./scenes/calendar/calendar";
 import Corporation from "./scenes/Admistration/corporation/Corporation";
 import Login from "./scenes/auth/Login";
 import Bank from "./scenes/Admistration/bank/Bank";
-import BankAccounts from "./scenes/bankDetails/ViewBankAccounts";
+import BankAccounts from "./scenes/bankDetails/accounts/ViewBankAccounts";
 import BankInvestments from "./scenes/bankDetails/BankInvestments";
 import ViewTransactions from "./scenes/Transactions/ViewTransactions";
 import Branches from "./scenes/Admistration/branches/Branches";
@@ -45,6 +45,9 @@ import BankForm from "./scenes/Admistration/bank/BankForm";
 import ViewBankDetails from "./scenes/Admistration/bank/ViewBankDetails";
 import ViewBranchesDetails from "./scenes/Admistration/branches/ViewBranchesDetails";
 import BranchesForm from "./scenes/Admistration/branches/BranchesForm";
+import ViewTellerDetails from "./scenes/Admistration/tellers/ViewTellerDetails";
+import ViewAccountDetails from "./scenes/bankDetails/accounts/ViewAccountDetails";
+import ViewClientDetails from "./scenes/GavClients/ViewClientDetails";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -152,6 +155,15 @@ function App() {
                     </RoleProtectedComponent>
                   }
                 />
+
+                <Route
+                  path="/bankaccount/view/:accountId"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <ViewAccountDetails />
+                    </RoleProtectedComponent>
+                  }
+                />
                 <Route
                   path="/bankinvestment"
                   element={
@@ -201,6 +213,40 @@ function App() {
                     </RoleProtectedComponent>
                   }
                 />
+
+                <Route
+                  path="/tellers"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <Tellers />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
+                  path="/tellers/add"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <TellerForm />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
+                  path="/tellers/edit/:id"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <TellerForm />
+                    </RoleProtectedComponent>
+                  }
+                />
+
+                <Route
+                  path="/tellers/view/:accountId"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <ViewTellerDetails />
+                    </RoleProtectedComponent>
+                  }
+                />
                 <Route
                   path="/bankmapper"
                   element={
@@ -217,6 +263,7 @@ function App() {
                     </RoleProtectedComponent>
                   }
                 />
+
                 <Route
                   path="/menu-catalog"
                   element={
@@ -266,6 +313,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/client/view/:msisdn"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <ViewClientDetails />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
                   path="/cashtransactions"
                   element={
                     <RoleProtectedComponent allowedRoles={['ADMIN', "TELLER"]}>
@@ -297,30 +352,7 @@ function App() {
                     </RoleProtectedComponent>
                   }
                 />
-                <Route
-                  path="/tellers"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
-                      <Tellers />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/tellers/add"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
-                      <TellerForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/tellers/edit/:id"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
-                      <TellerForm />
-                    </RoleProtectedComponent>
-                  }
-                />
+
                 <Route
                   path="/charges"
                   element={

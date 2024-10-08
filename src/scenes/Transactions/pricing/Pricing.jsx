@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, useTheme } from '@mui/material';
+import { Box, Button, IconButton, Menu, useTheme } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Add, Delete, EditOutlined } from '@mui/icons-material';
 import { tokens } from '../../../theme';
@@ -49,49 +49,60 @@ const Pricing = () => {
     // const handleEdit = (id) => {
     //     navigate(`/pricing/edit/${id}`);
     // };
+    const toSentenceCase = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
 
     const columns = [
-        { field: "id", headerName: "ID", flex: 1 },
-        { field: "name", headerName: "Name", flex: 1 },
-        { field: "description", headerName: "Description", flex: 1 },
-        { field: "chargesType", headerName: "Charges Type", flex: 1 },
-        { field: "percentage", headerName: "Percentage", flex: 1 },
-        { field: "bankId", headerName: "Bank ID", flex: 1 },
-        {
-            field: "actions",
-            headerName: "Actions",
-            flex: 1,
-            renderCell: (params) => {
-                const row = params.row;
-                return (
-                    <>
-                        {/* <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.greenAccent[600]}
-                            borderRadius="4px"
-                            onClick={() => handleEdit(row.id)}
-                        >
-                            <EditOutlined />
-                        </Box> */}
-                        <Box
-                            width="30%"
-                            m="0"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.redAccent[600]}
-                            borderRadius="4px"
-                        >
-                            <Delete />
-                        </Box>
-                    </>
-                );
-            },
-        },
+        // { field: "id", headerName: "ID", flex: 1 },
+        { field: "name", headerName: "Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "description", headerName: "Description", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "chargesType", headerName: "Charges Type", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "percentage", headerName: "Percentage", flex: 1, },
+        { field: "bankId", headerName: "Bank ID", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        // {
+        //     field: "actions",
+        //     headerName: "Actions",
+        //     flex: 1,
+        //     renderCell: (params) => (
+        //         <>
+        //             <IconButton
+        //                 aria-label="more"
+        //                 aria-controls="long-menu"
+        //                 aria-haspopup="true"
+        //                 onClick={(event) => handleClick(event, params.row)}
+        //             >
+        //                 <MoreVertIcon />
+        //             </IconButton>
+        //             <Menu
+        //                 anchorEl={anchorEl}
+        //                 open={open}
+        //                 onClose={handleClose}
+        //                 PaperProps={{
+        //                     style: {
+        //                         maxHeight: 48 * 4.5,
+        //                         width: "20ch",
+        //                         transform: "translateX(-50%)",
+        //                     },
+        //                 }}
+        //             >
+        //                 <MenuItem onClick={() => handleEdit(currentRow)}>
+        //                     <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+        //                     Edit
+        //                 </MenuItem>
+        //                 <MenuItem onClick={() => handleViewCorp(currentRow)}>
+        //                     <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
+        //                     View
+        //                 </MenuItem>
+        //                 <MenuItem onClick={() => handleDelete(currentRow)}>
+        //                     <Delete fontSize="small" style={{ marginRight: "8px" }} />
+        //                     Delete
+        //                 </MenuItem>
+        //             </Menu>
+        //         </>
+        //     ),
+        // },
     ];
 
     return (
