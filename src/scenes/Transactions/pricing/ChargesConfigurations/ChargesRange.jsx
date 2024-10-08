@@ -65,9 +65,12 @@ const ChargesRange = () => {
 
     return (
         <Box>
-            <Typography variant="h5" color={colors.greenAccent[400]} sx={{ m: "0 10px 15px 5px" }}>
-                Charges Range Configuration
-            </Typography>
+            <Box sx={{ marginLeft: '100px', marginBottom: '10px' }}>
+
+                <Typography variant="h5" color={colors.greenAccent[400]} sx={{ m: "0 10px 15px 5px" }}>
+                    Charges Range Configuration
+                </Typography>
+            </Box>
 
             <Formik
                 onSubmit={handleChargesRange}
@@ -82,86 +85,144 @@ const ChargesRange = () => {
                     handleChange,
                     handleSubmit,
                 }) => (
-                    <form onSubmit={handleSubmit}>
-                        <Box
-                            display="grid"
-                            gap="30px"
-                            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                            sx={{
-                                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                            }}
-                        >
 
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="number"
-                                label="Charges ID"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.chargesId}
-                                name="chargesId"
-                                error={!!touched.chargesId && !!errors.chargesId}
-                                helperText={touched.chargesId && errors.chargesId}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="number"
-                                label="Charged Fee"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.chargedFee}
-                                name="chargedFee"
-                                error={!!touched.chargedFee && !!errors.chargedFee}
-                                helperText={touched.chargedFee && errors.chargedFee}
-                                sx={{ gridColumn: "span 2" }}
-                            />
+                    <Box
+                        display="grid"
+                        sx={{
+                            px: 2, // Optional: horizontal padding for the outer container
+                            padding: "10px 100px 20px 100px"
 
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="number"
-                                label="Minimum Amount"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.minimumAmount}
-                                name="minimumAmount"
-                                error={!!touched.minimumAmount && !!errors.minimumAmount}
-                                helperText={touched.minimumAmount && errors.minimumAmount}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type="number"
-                                label="Maximum Amount"
-                                onBlur={handleBlur}
-                                onChange={handleChange}
-                                value={values.maximumAmount}
-                                name="maximumAmount"
-                                error={!!touched.maximumAmount && !!errors.maximumAmount}
-                                helperText={touched.maximumAmount && errors.maximumAmount}
-                                sx={{ gridColumn: "span 2" }}
-                            />
-                        </Box>
-                        <Box display="flex" justifyContent="end" mt="20px">
-                            <Stack direction="row" spacing={2}>
-                                <LoadingButton
-                                    type="submit"
-                                    color="secondary"
-                                    variant="contained"
-                                    loading={pending}
-                                    loadingPosition="start"
-                                    startIcon={<Save />}
-                                >
-                                    Save
-                                </LoadingButton>
-                            </Stack>
-                        </Box>
-                    </form>
+                        }}
+                    >
+                        <form onSubmit={handleSubmit}>
+                            <Box
+                                display="grid"
+                                gap="30px"
+                                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                                sx={{
+                                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "10px",
+                                    padding: "40px",
+                                    "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                                }}
+                            >
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="number"
+                                    label="Charges ID"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.chargesId}
+                                    name="chargesId"
+                                    error={!!touched.chargesId && !!errors.chargesId}
+                                    helperText={touched.chargesId && errors.chargesId}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="number"
+                                    label="Charged Fee"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.chargedFee}
+                                    name="chargedFee"
+                                    error={!!touched.chargedFee && !!errors.chargedFee}
+                                    helperText={touched.chargedFee && errors.chargedFee}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="number"
+                                    label="Minimum Amount"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.minimumAmount}
+                                    name="minimumAmount"
+                                    error={!!touched.minimumAmount && !!errors.minimumAmount}
+                                    helperText={touched.minimumAmount && errors.minimumAmount}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="number"
+                                    label="Maximum Amount"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.maximumAmount}
+                                    name="maximumAmount"
+                                    error={!!touched.maximumAmount && !!errors.maximumAmount}
+                                    helperText={touched.maximumAmount && errors.maximumAmount}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
+                                />
+                            </Box>
+                            <Box display="flex" justifyContent="end" mt="20px">
+                                <Stack direction="row" spacing={2}>
+                                    <LoadingButton
+                                        type="submit"
+                                        color="secondary"
+                                        variant="contained"
+                                        loading={pending}
+                                        loadingPosition="start"
+                                        startIcon={<Save />}
+                                    >
+                                        Save
+                                    </LoadingButton>
+                                </Stack>
+                            </Box>
+                        </form>
+                    </Box>
                 )}
+
             </Formik>
             <Snackbar
                 open={snackbar.open}

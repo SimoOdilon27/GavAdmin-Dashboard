@@ -110,9 +110,12 @@ const AssignCharges = () => {
 
     return (
         <Box>
-            <Typography variant="h5" color={colors.greenAccent[400]} sx={{ m: "0 10px 15px 5px" }}>
-                Assign Charges
-            </Typography>
+            <Box sx={{ marginLeft: '100px', marginBottom: '10px' }}>
+
+                <Typography variant="h5" color={colors.greenAccent[400]} sx={{ m: "0 10px 15px 5px" }}>
+                    Assign Charges
+                </Typography>
+            </Box>
 
             <Formik
                 onSubmit={handleAssignCharges}
@@ -127,83 +130,118 @@ const AssignCharges = () => {
                     handleChange,
                     handleSubmit,
                 }) => (
-                    <form onSubmit={handleSubmit}>
-                        <Box
-                            display="grid"
-                            gap="30px"
-                            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                            sx={{
-                                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                            }}
-                        >
 
-                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
-                                <InputLabel>Service</InputLabel>
-                                <Select
-                                    label="Service"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.serviceId}
-                                    name="serviceId"
-                                    error={!!touched.serviceId && !!errors.serviceId}
-                                >
-                                    <MenuItem value="">Select Service</MenuItem>
-                                    {Array.isArray(servicesID) && servicesID.length > 0 ? (
-                                        servicesID.map(option => (
-                                            <MenuItem key={option} value={option}>
-                                                {option}
-                                            </MenuItem>
-                                        ))
-                                    ) : (
-                                        <MenuItem value="">No Banks available</MenuItem>
-                                    )}
-                                </Select>
-                                {touched.bankId && errors.bankId && (
-                                    <Alert severity="error">{errors.bankId}</Alert>
-                                )}
-                            </FormControl>
+                    <Box
+                        display="grid"
+                        sx={{
+                            px: 2, // Optional: horizontal padding for the outer container
+                            padding: "10px 100px 20px 100px"
 
-
-                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
-                                <InputLabel>Charge</InputLabel>
-                                <Select
-                                    label="charge"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.chargesId}
-                                    name="chargesId"
-                                    error={!!touched.chargesId && !!errors.chargesId}
-                                >
-                                    <MenuItem value="">Select Charge</MenuItem>
-                                    {Array.isArray(pricingData) && pricingData.length > 0 ? (
-                                        pricingData.map(option => (
-                                            <MenuItem key={option.id} value={option.id}>
-                                                {option.name}
-                                            </MenuItem>
-                                        ))
-                                    ) : (
-                                        <MenuItem value="">No Banks available</MenuItem>
-                                    )}
-                                </Select>
-                                {touched.bankId && errors.bankId && (
-                                    <Alert severity="error">{errors.bankId}</Alert>
-                                )}
-                            </FormControl>
-
-                        </Box>
-                        <Box display="flex" justifyContent="end" mt="20px">
-                            <LoadingButton
-                                type="submit"
-                                color="secondary"
-                                variant="contained"
-                                loading={pending}
-                                loadingPosition="start"
-                                startIcon={<Save />}
+                        }}
+                    >
+                        <form onSubmit={handleSubmit}>
+                            <Box
+                                display="grid"
+                                gap="30px"
+                                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                                sx={{
+                                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "10px",
+                                    padding: "40px",
+                                    "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                                }}
                             >
-                                Save
-                            </LoadingButton>
-                        </Box>
-                    </form>
+
+                                <FormControl fullWidth variant="filled" sx={{
+                                    gridColumn: "span 2",
+                                    '& .MuiInputLabel-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                    },
+                                    '& .MuiFilledInput-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                    },
+                                }}>
+                                    <InputLabel>Service</InputLabel>
+                                    <Select
+                                        label="Service"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.serviceId}
+                                        name="serviceId"
+                                        error={!!touched.serviceId && !!errors.serviceId}
+                                    >
+                                        <MenuItem value="">Select Service</MenuItem>
+                                        {Array.isArray(servicesID) && servicesID.length > 0 ? (
+                                            servicesID.map(option => (
+                                                <MenuItem key={option} value={option}>
+                                                    {option}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem value="">No Banks available</MenuItem>
+                                        )}
+                                    </Select>
+                                    {touched.bankId && errors.bankId && (
+                                        <Alert severity="error">{errors.bankId}</Alert>
+                                    )}
+                                </FormControl>
+
+
+                                <FormControl fullWidth variant="filled" sx={{
+                                    gridColumn: "span 2",
+                                    '& .MuiInputLabel-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                    },
+                                    '& .MuiFilledInput-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                    },
+                                }}>
+                                    <InputLabel>Charge</InputLabel>
+                                    <Select
+                                        label="charge"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.chargesId}
+                                        name="chargesId"
+                                        error={!!touched.chargesId && !!errors.chargesId}
+                                    >
+                                        <MenuItem value="">Select Charge</MenuItem>
+                                        {Array.isArray(pricingData) && pricingData.length > 0 ? (
+                                            pricingData.map(option => (
+                                                <MenuItem key={option.id} value={option.id}>
+                                                    {option.name}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem value="">No Banks available</MenuItem>
+                                        )}
+                                    </Select>
+                                    {touched.bankId && errors.bankId && (
+                                        <Alert severity="error">{errors.bankId}</Alert>
+                                    )}
+                                </FormControl>
+
+                            </Box>
+                            <Box display="flex" justifyContent="end" mt="20px">
+                                <LoadingButton
+                                    type="submit"
+                                    color="secondary"
+                                    variant="contained"
+                                    loading={pending}
+                                    loadingPosition="start"
+                                    startIcon={<Save />}
+                                >
+                                    Save
+                                </LoadingButton>
+                            </Box>
+                        </form>
+                    </Box>
                 )}
             </Formik>
             <Snackbar
