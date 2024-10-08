@@ -222,8 +222,8 @@ const AssignCharges = () => {
                                             <MenuItem value="">No Banks available</MenuItem>
                                         )}
                                     </Select>
-                                    {touched.bankId && errors.bankId && (
-                                        <Alert severity="error">{errors.bankId}</Alert>
+                                    {touched.chargesId && errors.chargesId && (
+                                        <Alert severity="error">{errors.chargesId}</Alert>
                                     )}
                                 </FormControl>
 

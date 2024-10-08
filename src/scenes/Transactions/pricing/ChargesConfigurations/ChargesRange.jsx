@@ -1,8 +1,8 @@
 import { Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Snackbar, Stack, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Alert, Box, FormControl, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Formik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { tokens } from '../../../../theme';
 import CBS_Services from '../../../../services/api/GAV_Sercives';
@@ -14,6 +14,8 @@ const ChargesRange = () => {
     const [pending, setPending] = useState(false);
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
+    const [pricingData, setPricingData] = useState([]);
+
 
     const [initialValues, setInitialValues] = useState({
         chargedFee: 0,
@@ -34,6 +36,31 @@ const ChargesRange = () => {
         }
         setSnackbar({ ...snackbar, open: false });
     };
+
+    const fetchPricingData = async () => {
+        setPending(true);
+        try {
+            const payload = {
+                serviceReference: 'GET_ALL_CHARGES',
+                requestBody: ''
+            }
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
+
+            // const response = await CBS_Services('APE', 'pricing/get/all', 'GET');
+            if (response && response.status === 200) {
+                setPricingData(response.body.data || []);
+            } else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        setPending(false);
+    };
+
+    useEffect(() => {
+        fetchPricingData();
+    }, [])
 
     const handleChargesRange = async (values, { resetForm }) => {
         setPending(true);
@@ -107,30 +134,42 @@ const ChargesRange = () => {
                                 }}
                             >
 
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="number"
-                                    label="Charges ID"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.chargesId}
-                                    name="chargesId"
-                                    error={!!touched.chargesId && !!errors.chargesId}
-                                    helperText={touched.chargesId && errors.chargesId}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
-                                />
+                                <FormControl fullWidth variant="filled" sx={{
+                                    gridColumn: "span 2",
+                                    '& .MuiInputLabel-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                    },
+                                    '& .MuiFilledInput-root': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                    },
+                                }}>
+                                    <InputLabel>Charge</InputLabel>
+                                    <Select
+                                        label="charge"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.chargesId}
+                                        name="chargesId"
+                                        error={!!touched.chargesId && !!errors.chargesId}
+                                    >
+                                        <MenuItem value="">Select Charge</MenuItem>
+                                        {Array.isArray(pricingData) && pricingData.length > 0 ? (
+                                            pricingData.map(option => (
+                                                <MenuItem key={option.id} value={option.id}>
+                                                    {option.name}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem value="">No Banks available</MenuItem>
+                                        )}
+                                    </Select>
+                                    {touched.chargesId && errors.chargesId && (
+                                        <Alert severity="error">{errors.chargesId}</Alert>
+                                    )}
+                                </FormControl>
                                 <TextField
                                     fullWidth
                                     variant="filled"
