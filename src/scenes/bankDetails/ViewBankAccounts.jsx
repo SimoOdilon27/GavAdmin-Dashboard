@@ -11,12 +11,15 @@ import Header from '../../components/Header';
 const BankAccount = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const userData = useSelector((state) => state.users);
+    const token = userData.token;
 
     const [bankAccountData, setBankAccountData] = useState([]);
     const [formData, setFormData] = useState({
         accountId: '',
         amount: 0,
-        investorName: '',
+        investorName: userData?.userName
+        ,
     });
     const [showModal, setShowModal] = useState(false);
     const [showDailyInvestModal, setShowDailyInvestModal] = useState(false);
@@ -25,8 +28,7 @@ const BankAccount = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [globalLoading, setGlobalLoading] = useState(false);
+
     const [globalMessage, setGlobalMessage] = useState({ type: '', content: '' });
     const [selectedAccountId, setSelectedAccountId] = useState('');
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
@@ -34,8 +36,6 @@ const BankAccount = () => {
     const [showStatusModal, setShowStatusModal] = useState(false);
 
 
-    const userData = useSelector((state) => state.users);
-    const token = userData.token;
 
     const handleToggleInvestmentModal = (accountId) => {
         setFormData(prevFormData => ({
@@ -192,13 +192,13 @@ const BankAccount = () => {
 
     const columns = [
         { field: "name", headerName: "Account Name", flex: 1 },
-        { field: "externalCorpOrBankOrBranchName", headerName: "External Acc Name", flex: 1 },
+        // { field: "externalCorpOrBankOrBranchName", headerName: "External Acc Name", flex: 1 },
         { field: "type", headerName: "Account Type", flex: 1 },
         { field: "totalCapitalInvested", headerName: "Total Capital Invested", flex: 1 },
-        { field: "totalDebitBalance", headerName: "Total Debit Balance", flex: 1 },
+        // { field: "totalDebitBalance", headerName: "Total Debit Balance", flex: 1 },
         { field: "totalCreditBalance", headerName: "Total Credit Balance", flex: 1 },
         { field: "balance", headerName: "Account Balance", flex: 1 },
-        { field: "dailyAccountThreshold", headerName: "Daily Account Threshold", flex: 1 },
+        // { field: "dailyAccountThreshold", headerName: "Daily Account Threshold", flex: 1 },
         {
             field: "active",
             headerName: "Status",
@@ -367,14 +367,14 @@ const BankAccount = () => {
                         value={formData.amount}
                         onChange={handleChange}
                     />
-                    <TextField
+                    {/* <TextField
                         fullWidth
                         margin="normal"
                         label="Creator Name"
                         name="investorName"
                         value={formData.investorName}
                         onChange={handleChange}
-                    />
+                    /> */}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleConfirmAdd} color="primary" disabled={loading}>

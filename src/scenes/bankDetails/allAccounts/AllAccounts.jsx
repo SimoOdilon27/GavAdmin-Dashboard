@@ -23,7 +23,7 @@ const AllAccounts = () => {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Account Management" subtitle="Manage all Accounts" />
+                <Header title="Account Management" subtitle="Create Accounts" />
 
                 <Box  >
                     {/* <Button
@@ -62,14 +62,14 @@ const AllAccounts = () => {
                                 <Tab label="Corporation Account" value="2" />
                                 <Tab label="Branch Account" value="3" />
                                 <Tab label="Bank Account" value="4" />
-                                <Tab label="Client Account" value="5" />
+                                {/* <Tab label="Client Account" value="5" /> */}
                             </TabList>
                         </Box>
                         <TabPanel value="1" ><TellerAccount /></TabPanel>
                         <TabPanel value="2"><CorpAccount /></TabPanel>
                         <TabPanel value="3"><BranchAccount /></TabPanel>
                         <TabPanel value="4"><BankAcc /></TabPanel>
-                        <TabPanel value="5"><ClientAccount /></TabPanel>
+                        {/* <TabPanel value="5"><ClientAccount /></TabPanel> */}
                     </TabContext>
                 </Box>
             </Box>

@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, DialogTitle, FormControlLabel, Snackbar, useTheme } from "@mui/material";
+import { Box, Button, Checkbox, Chip, DialogTitle, FormControlLabel, Snackbar, useTheme } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../../theme";
 
@@ -7,8 +7,10 @@ import { useEffect, useState } from "react";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { useSelector } from "react-redux";
 import { Dialog, DialogActions, DialogContent, TextField, Alert, CircularProgress } from '@mui/material';
-import { Add, Delete, EditOutlined } from "@mui/icons-material";
-
+import { Add, Delete, EditOutlined, RemoveRedEyeSharp } from "@mui/icons-material";
+import { Menu, MenuItem, IconButton } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useNavigate } from "react-router-dom";
 
 
 const Corporation = () => {
@@ -40,7 +42,7 @@ const Corporation = () => {
     const [branchID, setBranchID] = useState([]);
     const [pending, setPending] = useState(true);
     const userData = useSelector((state) => state.users)
-
+    const navigate = useNavigate();
     const token = userData.token
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
@@ -53,6 +55,28 @@ const Corporation = () => {
             return;
         }
         setSnackbar({ ...snackbar, open: false });
+    };
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentRow, setCurrentRow] = useState(null);
+    const open = Boolean(anchorEl);
+
+    // Define or import the handleEdit and handleDelete functions
+
+
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Your delete logic here
+    };
+
+    const handleClick = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setCurrentRow(row); // Store the current row to pass to actions
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setCurrentRow(null);
     };
 
 
@@ -200,22 +224,22 @@ const Corporation = () => {
 
 
 
-    const handleEdit = (corp) => {
-        setSelectedCorporation(corp);
-        setFormData({
-            corporationId: corp.corporationId,
-            name: corp.corporationName,
-            email: corp.email,
-            contact: corp.contact,
-            address: corp.address,
-            cbsCorporationId: corp.cbsCorporationId,
-            country: corp.country,
-            corporationAccountThreshold: corp.corporationAccountThreshold,
-            corporationName: corp.corporationName,
+    // const handleEdit = (corp) => {
+    //     setSelectedCorporation(corp);
+    //     setFormData({
+    //         corporationId: corp.corporationId,
+    //         name: corp.corporationName,
+    //         email: corp.email,
+    //         contact: corp.contact,
+    //         address: corp.address,
+    //         cbsCorporationId: corp.cbsCorporationId,
+    //         country: corp.country,
+    //         corporationAccountThreshold: corp.corporationAccountThreshold,
+    //         corporationName: corp.corporationName,
 
-        });
-        setShowEditModal(true);
-    };
+    //     });
+    //     setShowEditModal(true);
+    // };
 
     const handleToggleCorpModal = () => {
         setShowModal(!showModal);
@@ -250,56 +274,105 @@ const Corporation = () => {
         setErrorMessage('');
     }
 
+    const handleAddCorp = () => {
+        navigate('/corporation/add');
+    };
+
+    const handleEditCorp = (row) => {
+        // Pass the entire row data to the edit page
+        navigate(`/corporation/edit/${row.id}`, { state: { corporationData: row } });
+    };
+    const handleViewCorp = (row) => {
+        // Pass the entire row data to the edit page
+        navigate(`/corporation/view/${row.accounts}`, { state: { corporationData: row } });
+    };
+
+    const toSentenceCase = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
+
 
     const columns = [
-        { field: "corporationId", headerName: "Corporation ID", flex: 1 },
-        { field: "corporationName", headerName: "Corporation Name", flex: 1 },
-        { field: "contact", headerName: "Contact", flex: 1 },
-        { field: "email", headerName: "Email", flex: 1 },
-        { field: "address", headerName: "Address", flex: 1 },
-        { field: "country", headerName: "Country", flex: 1 },
-        {
-            field: "activationDateTime",
-            headerName: "Activation Date",
-            flex: 1,
-            type: "date",
-            valueGetter: (params) => new Date(params.value),
-        },
+        // { field: "corporationId", headerName: "Corporation ID", flex: 1 },
+        { field: "corporationName", headerName: "Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "contact", headerName: "Phone Number", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "email", headerName: "Email", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "address", headerName: "Address", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "country", headerName: "Country", flex: 1, valueGetter: (params) => toSentenceCase(params.value) },
 
+        {
+            field: "creationDateTime",
+            headerName: "Creation Date",
+            flex: 1,
+            valueGetter: (params) => {
+                const date = new Date(params.value);
+                return date.toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                });
+            },
+        },
+        {
+            field: "status",
+            headerName: "Status",
+            flex: 1,
+            renderCell: (params) => {
+                const isActive = params.row.active; // Access the "active" field from the row data
+                return (
+                    <Chip
+                        label={isActive ? "Active" : "Inactive"}
+                        style={{
+                            backgroundColor: isActive ? "green" : "red",
+                            color: "white",
+                            padding: "1px 1px 1px 1px",
+                        }}
+                    />
+                );
+            },
+        },
         {
             field: "actions",
             headerName: "Actions",
             flex: 1,
-            renderCell: (params) => {
-                const corp = params.row; // Access the current row's data
-                return (
-                    <>
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.greenAccent[600]}
-                            borderRadius="4px"
-                            onClick={() => handleEdit(corp)}
-                        >
-                            <EditOutlined />
-                        </Box>
-                        <Box
-                            width="30%"
-                            m="0"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.redAccent[600]}
-                            borderRadius="4px"
-                        >
-                            <Delete />
-                        </Box>
-                    </>
-                );
-            },
+            renderCell: (params) => (
+                <>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, params.row)}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: "20ch",
+                                transform: "translateX(-50%)",
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={() => handleEditCorp(currentRow)}>
+                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                            Edit
+                        </MenuItem>
+                        <MenuItem onClick={() => handleViewCorp(currentRow)}>
+                            <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
+                            View
+                        </MenuItem>
+                        <MenuItem onClick={() => handleDelete(currentRow)}>
+                            <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                            Delete
+                        </MenuItem>
+                    </Menu>
+                </>
+            ),
         },
 
     ];
@@ -328,7 +401,7 @@ const Corporation = () => {
                             padding: "10px 20px",
                             marginRight: "10px",
                         }}
-                        onClick={handleToggleCorpModal}
+                        onClick={handleAddCorp}
                     >
                         <Add sx={{ mr: "10px" }} />
                         Add Corporation

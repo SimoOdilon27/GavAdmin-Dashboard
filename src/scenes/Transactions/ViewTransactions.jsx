@@ -75,7 +75,7 @@ const ViewTransactions = () => {
                 if (response && response.status === 200) {
 
                     if (userData.roles === 'ADMIN') {
-                        setTransactionData(response.body.data);
+                        setTransactionData(response.body.data || '');
                     }
                     else if (userData.roles === 'TELLER') {
                         const data = response.body.data.map((item, index) => ({

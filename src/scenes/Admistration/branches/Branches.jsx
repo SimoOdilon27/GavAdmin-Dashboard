@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import CBS_Services from '../../../services/api/GAV_Sercives';
-import { Alert, Badge, Box, Button, Checkbox, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, MenuItem, TextField, useTheme } from '@mui/material';
+import { Alert, Badge, Box, Button, Checkbox, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, IconButton, Menu, MenuItem, TextField, useTheme } from '@mui/material';
 import { tokens } from '../../../theme';
-import { Add, Delete, EditOutlined } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, RemoveRedEyeSharp } from '@mui/icons-material';
 import Header from '../../../components/Header';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { useNavigate } from 'react-router-dom';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
 
 const Branches = () => {
     const theme = useTheme();
@@ -27,8 +30,6 @@ const Branches = () => {
 
     });
 
-
-
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
 
@@ -38,12 +39,34 @@ const Branches = () => {
     const [bankID, setBankID] = useState('');
     const [loading, setLoading] = useState(false);
     const [selectedBranch, setSelectedBranch] = useState(null);
+    const userData = useSelector((state) => state.users);
+    const navigate = useNavigate();
 
     console.log("formada", formData);
-
-    const userData = useSelector((state) => state.users)
-
     const token = userData.token
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentRow, setCurrentRow] = useState(null);
+    const open = Boolean(anchorEl);
+
+    // Define or import the handleEdit and handleDelete functions
+
+
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Your delete logic here
+    };
+
+    const handleClick = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setCurrentRow(row); // Store the current row to pass to actions
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setCurrentRow(null);
+    };
+
 
     const handleEdit = (branch) => {
         setSelectedBranch(branch);
@@ -279,7 +302,25 @@ const Branches = () => {
         }
     };
 
+    const handleAddBranch = () => {
+        navigate('/branches/add');
+    };
 
+
+
+    const handleEditBranch = (row) => {
+        // Pass the entire row data to the edit page
+        navigate(`/branches/edit/${row.id}`, { state: { branchData: row } });
+    };
+    const handleViewBranch = (row) => {
+        // Pass the entire row data to the edit page
+        navigate(`/branches/view/${row.accounts}`, { state: { branchData: row } });
+    };
+
+    const toSentenceCase = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
 
 
     useEffect(() => {
@@ -288,28 +329,26 @@ const Branches = () => {
     }, []);
 
     const columns = [
-        { field: "branchName", headerName: "Branch Name", flex: 1 },
-        { field: "cbsBranchId", headerName: "CBS Branch ID", flex: 1 },
-        { field: "address", headerName: "ADDRESS", flex: 1 },
-        { field: "email", headerName: "Email", flex: 1 },
-        { field: "country", headerName: "Country", flex: 1 },
+        { field: "branchName", headerName: "Branch Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "cbsBranchId", headerName: "CBS Branch ID", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "address", headerName: "Address", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "email", headerName: "Email", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "country", headerName: "Country", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
         {
-            field: "active",
+            field: "status",
             headerName: "Status",
             flex: 1,
             renderCell: (params) => {
-                const corp = params.row; // Access the current row's data
+                const isActive = params.row.active; // Access the "active" field from the row data
                 return (
-                    <>
-                        {corp.active ? (
-                            // <span className="badge bg-success">Active</span>
-                            <Badge className="badge bg-success">Active</Badge>
-                        ) : (
-                            // <span className="badge bg-danger">Inactive</span>
-                            <Badge className="badge bg-danger">Inactive</Badge>
-
-                        )}
-                    </>
+                    <Chip
+                        label={isActive ? "Active" : "Inactive"}
+                        style={{
+                            backgroundColor: isActive ? "green" : "red",
+                            color: "white",
+                            padding: "1px 1px 1px 1px",
+                        }}
+                    />
                 );
             },
         },
@@ -319,36 +358,43 @@ const Branches = () => {
             field: "actions",
             headerName: "Actions",
             flex: 1,
-            renderCell: (params) => {
-                const corp = params.row; // Access the current row's data
-                return (
-                    <>
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.greenAccent[600]}
-                            borderRadius="4px"
-                            onClick={() => handleEdit(corp)}
-                        >
-                            <EditOutlined />
-                        </Box>
-                        <Box
-                            width="30%"
-                            m="0"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.redAccent[600]}
-                            borderRadius="4px"
-                        >
-                            <Delete />
-                        </Box>
-                    </>
-                );
-            },
+            renderCell: (params) => (
+                <>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, params.row)}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: "20ch",
+                                transform: "translateX(-50%)",
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={() => handleEditBranch(currentRow)}>
+                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                            Edit
+                        </MenuItem>
+                        <MenuItem onClick={() => handleViewBranch(currentRow)}>
+                            <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
+                            View
+                        </MenuItem>
+                        <MenuItem onClick={() => handleDelete(currentRow)}>
+                            <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                            Delete
+                        </MenuItem>
+                    </Menu>
+                </>
+            ),
         },
 
     ];
@@ -369,7 +415,7 @@ const Branches = () => {
                             padding: "10px 20px",
                             marginRight: "10px",
                         }}
-                        onClick={handleToggleBranchModal}
+                        onClick={handleAddBranch}
                     >
                         <Add sx={{ mr: "10px" }} />
                         Add Braches

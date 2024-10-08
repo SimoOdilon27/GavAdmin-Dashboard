@@ -28,7 +28,6 @@ import AllAccounts from "./scenes/bankDetails/allAccounts/AllAccounts";
 import RoleManagement from "./scenes/settings/rolemanagement/RoleManagement";
 import UserManagement from "./scenes/settings/Usermanagement/UserManagement";
 import UserForm from "./scenes/settings/Usermanagement/UserForm";
-import UpdatePassword from "./scenes/auth/UpdatePassword";
 import Tellers from "./scenes/Admistration/tellers/Tellers";
 import TellerForm from "./scenes/Admistration/tellers/TellerForm";
 import Pricing from "./scenes/Transactions/pricing/Pricing";
@@ -38,6 +37,14 @@ import GimacWalletForm from "./scenes/gimacServices/wallet/GimacWalletForm";
 import GimacCountries from "./scenes/gimacServices/countries/GimacCountries";
 import GimacCountriesForm from "./scenes/gimacServices/countries/GimacCountriesForm";
 import RoleProtectedComponent from "./tools/ProtectedRoleComponent";
+import AccountType from "./scenes/bankDetails/accounType/AccountType";
+import AccountTypeForm from "./scenes/bankDetails/accounType/AccountTypeForm";
+import CorporationForm from "./scenes/Admistration/corporation/CorporationForm";
+import ViewCorporationDetails from "./scenes/Admistration/corporation/ViewCorporationDetails";
+import BankForm from "./scenes/Admistration/bank/BankForm";
+import ViewBankDetails from "./scenes/Admistration/bank/ViewBankDetails";
+import ViewBranchesDetails from "./scenes/Admistration/branches/ViewBranchesDetails";
+import BranchesForm from "./scenes/Admistration/branches/BranchesForm";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -80,10 +87,60 @@ function App() {
                   }
                 />
                 <Route
+                  path="/corporation/add"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <CorporationForm />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
+                  path="/corporation/edit/:id"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <CorporationForm />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
+                  path="/corporation/view/:accounts"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <ViewCorporationDetails />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
                   path="/bank"
                   element={
                     <RoleProtectedComponent allowedRoles={['ADMIN']}>
                       <Bank />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
+                  path="/bank/edit/:id"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <BankForm />
+                    </RoleProtectedComponent>
+                  }
+                />
+
+                <Route
+                  path="/bank/add"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <BankForm />
+                    </RoleProtectedComponent>
+                  }
+                />
+
+                <Route
+                  path="/bank/view/:accounts"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <ViewBankDetails />
                     </RoleProtectedComponent>
                   }
                 />
@@ -116,6 +173,31 @@ function App() {
                   element={
                     <RoleProtectedComponent allowedRoles={['ADMIN']}>
                       <Branches />
+                    </RoleProtectedComponent>
+                  }
+                />
+
+                <Route
+                  path="/branches/add"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <BranchesForm />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
+                  path="/branches/edit/:id"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <BranchesForm />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
+                  path="/branches/view/:accounts"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <ViewBranchesDetails />
                     </RoleProtectedComponent>
                   }
                 />
@@ -300,6 +382,30 @@ function App() {
                   element={
                     <RoleProtectedComponent allowedRoles={['ADMIN']}>
                       <GimacCountriesForm />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
+                  path="/accounttype"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <AccountType />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
+                  path="/accounttype/add"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <AccountTypeForm />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
+                  path="/accounttype/edit/:id"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <AccountTypeForm />
                     </RoleProtectedComponent>
                   }
                 />

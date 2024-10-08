@@ -1,0 +1,188 @@
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Box, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography, useTheme, Switch, Grid, Paper, Divider, Alert, Tooltip, Snackbar, CircularProgress } from "@mui/material";
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { Add, Delete, EditOutlined, Money, MoneyOff, TrendingUp, Visibility } from '@mui/icons-material';
+import { tokens } from '../../../theme';
+import CBS_Services from '../../../services/api/GAV_Sercives';
+import Header from '../../../components/Header';
+import { useNavigate } from 'react-router-dom';
+
+const AccountType = () => {
+
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
+    const userData = useSelector((state) => state.users);
+
+    const [AccountType, setAccountType] = useState([]);
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+    const [loading, setLoading] = useState(false);
+    const [globalMessage, setGlobalMessage] = useState({ type: '', content: '' });
+    const navigate = useNavigate();
+    const token = userData.token;
+
+    const fetchAccountType = async () => {
+        setLoading(true);
+        try {
+            const payload = {
+                serviceReference: 'GET_ACCOUNT_TYPE',
+                requestBody: ''
+            };
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            console.log("response", response);
+
+            if (response && response.body.meta.statusCode === 200) {
+                setAccountType(response.body.data || []);
+            } else {
+                setGlobalMessage({ type: 'error', content: 'Error fetching data' });
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setGlobalMessage({ type: 'error', content: 'Error fetching bank account data' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAccountType();
+    }, []);
+
+    const showSnackbar = (message, severity) => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbar({ ...snackbar, open: false });
+    };
+
+    const handleEdit = (id) => {
+        navigate(`/accounttype/edit/${id}`);
+    };
+
+    const handleAddAccountType = () => {
+        navigate('/accounttype/add');
+    };
+
+
+    const columns = [
+        { field: "type", headerName: "Account type", flex: 1 },
+        { field: "description", headerName: "Description", flex: 1 },
+        { field: "idTag", headerName: "Id Tag", flex: 1 },
+
+
+        {
+            field: "actions",
+            headerName: "Actions",
+            flex: 1,
+            renderCell: (params) => (
+                <>
+
+
+                    <Tooltip title="Edit">
+                        <Box
+                            width="30%"
+                            m="0 4px"
+                            p="5px"
+                            display="flex"
+                            justifyContent="center"
+                            onClick={() => handleEdit(params.row)}
+                            variant="outlined"
+                            size="small"
+                            style={{ marginRight: '5px', backgroundColor: colors.greenAccent[600] }}
+                        >
+                            <EditOutlined style={{ color: '#fff' }} /> {/* Replace Visibility with your preferred icon */}
+                        </Box>
+                    </Tooltip>
+                </>
+            ),
+        }
+    ];
+
+
+    return (
+        <Box m="20px">
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Header title="Account Type" subtitle="Manage Account Types" />
+
+                <Button
+                    sx={{
+                        backgroundColor: colors.blueAccent[700],
+                        color: colors.grey[100],
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        padding: "10px 20px",
+                        marginRight: "10px",
+                    }}
+                    onClick={handleAddAccountType}
+                >
+                    <Add sx={{ mr: "10px" }} />
+                    New Account Type
+                </Button>
+            </Box>
+
+            <Box
+                m="40px 15px 15px 15px"
+                height="70vh"
+                sx={{
+                    "& .MuiDataGrid-root": {
+                        border: "none",
+                    },
+                    "& .MuiDataGrid-cell": {
+                        borderBottom: "none",
+                    },
+                    "& .name-column--cell": {
+                        color: colors.greenAccent[300],
+                    },
+                    "& .MuiDataGrid-columnHeaders": {
+                        backgroundColor: colors.blueAccent[700],
+                        borderBottom: "none",
+                    },
+                    "& .MuiDataGrid-virtualScroller": {
+                        backgroundColor: colors.primary[400],
+                    },
+                    "& .MuiDataGrid-footerContainer": {
+                        borderTop: "none",
+                        backgroundColor: colors.blueAccent[700],
+                    },
+                    "& .MuiCheckbox-root": {
+                        color: `${colors.greenAccent[200]} !important`,
+                    },
+                    "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+                        color: `${colors.grey[100]} !important`,
+                    },
+                }}
+            >
+
+                <DataGrid
+                    rows={AccountType}
+                    columns={columns}
+                    components={{ Toolbar: GridToolbar }}
+                    checkboxSelection
+                    disableSelectionOnClick
+                    loading={loading}
+
+                />
+            </Box>
+
+
+
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+        </Box>
+    )
+}
+
+export default AccountType

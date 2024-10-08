@@ -1,5 +1,5 @@
-import { Add, Delete, EditOutlined } from '@mui/icons-material';
-import { Box, Button, Checkbox, FormControl, FormControlLabel, InputLabel, Snackbar, Typography, useTheme } from "@mui/material";
+import { Add, Delete, EditOutlined, RemoveRedEyeSharp } from '@mui/icons-material';
+import { Box, Button, Checkbox, Chip, FormControl, FormControlLabel, IconButton, InputLabel, Menu, Snackbar, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import CBS_Services from '../../../services/api/GAV_Sercives';
@@ -7,6 +7,8 @@ import { tokens } from '../../../theme';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../../components/Header';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, CircularProgress, Alert } from '@mui/material';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useNavigate } from 'react-router-dom';
 
 const Bank = () => {
     const theme = useTheme();
@@ -41,6 +43,7 @@ const Bank = () => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedBank, setSelectedBank] = useState(null);
     const userData = useSelector((state) => state.users)
+    const navigate = useNavigate();
 
     const token = userData.token
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
@@ -81,6 +84,27 @@ const Bank = () => {
         })
     };
 
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentRow, setCurrentRow] = useState(null);
+    const open = Boolean(anchorEl);
+
+    // Define or import the handleEdit and handleDelete functions
+
+
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Your delete logic here
+    };
+
+    const handleClick = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setCurrentRow(row); // Store the current row to pass to actions
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setCurrentRow(null);
+    };
 
 
     const hideAddBank = () => {
@@ -88,33 +112,6 @@ const Bank = () => {
 
     };
 
-    const handleEdit = (bank) => {
-        setSelectedBank(bank);
-        setFormData({
-            id: bank.id,
-            bankId: bank.bankId,
-            address: bank.address,
-            contact: bank.contact,
-            bankEmail: bank.bankEmail,
-            bankName: bank.bankName,
-            cbsBankId: bank.cbsBankId,
-            bankCode: bank.bankCode,
-            bankSignature: bank.bankSignature,
-            bankSite: bank.bankSite,
-            corporationId: bank.corporationId,
-            accountType: bank.accountType,
-            dailyLimit: bank.dailyLimit,
-            country: bank.country,
-            bankManager: bank.bankManager,
-            active: bank.active,
-            region: bank.region,
-            email: bank.bankEmail,
-            categoryId: bank.categoryId,
-
-
-        });
-        setShowEditModal(true);
-    };
 
     const handleToggleEditBankModal = () => {
         setShowEditModal(!showEditModal);
@@ -131,7 +128,6 @@ const Bank = () => {
             [name]: value,
         });
     };
-
 
 
     const handleConfirmAdd = async () => {
@@ -167,8 +163,6 @@ const Bank = () => {
         }
         setLoading(false);
     };
-
-
 
 
     const handleConfirmEdit = async () => {
@@ -262,31 +256,48 @@ const Bank = () => {
 
     }, []);
 
+    const handleAddBank = () => {
+        navigate('/bank/add');
+    };
 
+    const handleEditBank = (row) => {
+        // Pass the entire row data to the edit page
+        navigate(`/bank/edit/${row.id}`, { state: { bankData: row } });
+    };
+    const handleViewCorp = (row) => {
+        // Pass the entire row data to the edit page
+        navigate(`/bank/view/${row.accounts}`, { state: { bankData: row } });
+    };
+
+    const toSentenceCase = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
 
     const columns = [
-        { field: "bankName", headerName: "BANK NAME", flex: 1 },
-        { field: "bankCode", headerName: "BANK Code", flex: 1 },
-        { field: "cbsBankId", headerName: "CBS BANK ID", flex: 1 },
-        { field: "address", headerName: "ADDRESS", flex: 1 },
-        { field: "bankEmail", headerName: "Email", flex: 1 },
-        { field: "contact", headerName: "PHONE NUMBER", flex: 1 },
-        { field: "bankManger", headerName: "BANK MANAGER", flex: 1 },
-        { field: "country", headerName: "COUNTRY", flex: 1 },
+        { field: "bankName", headerName: "Bank Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "bankCode", headerName: "Bank Code", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "cbsBankId", headerName: "CBS Bank ID", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "address", headerName: "Address", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "bankEmail", headerName: "Email", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "contact", headerName: "Phone Number", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "bankManger", headerName: "Bank Manager", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "country", headerName: "Country", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
         {
-            field: "active",
+            field: "status",
             headerName: "Status",
             flex: 1,
             renderCell: (params) => {
-                const corp = params.row; // Access the current row's data
+                const isActive = params.row.active; // Access the "active" field from the row data
                 return (
-                    <>
-                        {corp.active ? (
-                            <span className="badge bg-success">Active</span>
-                        ) : (
-                            <span className="badge bg-danger">Inactive</span>
-                        )}
-                    </>
+                    <Chip
+                        label={isActive ? "Active" : "Inactive"}
+                        style={{
+                            backgroundColor: isActive ? "green" : "red",
+                            color: "white",
+                            padding: "1px 1px 1px 1px",
+                        }}
+                    />
                 );
             },
         },
@@ -296,36 +307,43 @@ const Bank = () => {
             field: "actions",
             headerName: "Actions",
             flex: 1,
-            renderCell: (params) => {
-                const bank = params.row; // Access the current row's data
-                return (
-                    <>
-                        <Box
-                            width="30%"
-                            m="0 4px"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.greenAccent[600]}
-                            borderRadius="4px"
-                            onClick={() => handleEdit(bank)}
-                        >
-                            <EditOutlined />
-                        </Box>
-                        <Box
-                            width="30%"
-                            m="0"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.redAccent[600]}
-                            borderRadius="4px"
-                        >
-                            <Delete />
-                        </Box>
-                    </>
-                );
-            },
+            renderCell: (params) => (
+                <>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, params.row)}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: "20ch",
+                                transform: "translateX(-50%)",
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={() => handleEditBank(currentRow)}>
+                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                            Edit
+                        </MenuItem>
+                        <MenuItem onClick={() => handleViewCorp(currentRow)}>
+                            <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
+                            View
+                        </MenuItem>
+                        <MenuItem onClick={() => handleDelete(currentRow)}>
+                            <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                            Delete
+                        </MenuItem>
+                    </Menu>
+                </>
+            ),
         },
 
     ];
@@ -346,7 +364,7 @@ const Bank = () => {
                             padding: "10px 20px",
                             marginRight: "10px",
                         }}
-                        onClick={handleToggleBankModal}
+                        onClick={handleAddBank}
                     >
                         <Add sx={{ mr: "10px" }} />
                         Add Bank
