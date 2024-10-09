@@ -19,9 +19,35 @@ const TellerForm = () => {
     const location = useLocation();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
-    const [branchID, setBranchID] = useState('');
-    const [bankID, setBankID] = useState('');
-    const [corpID, setCorpID] = useState('');
+    const [corporations, setCorporations] = useState([]);
+    const [banks, setBanks] = useState([]);
+    const [branches, setBranches] = useState([]);
+
+    // Filtered lists
+    const [filteredBanks, setFilteredBanks] = useState([]);
+    const [filteredBranches, setFilteredBranches] = useState([]);
+
+    const handleCorporationChange = (event, setFieldValue) => {
+        const corporationId = event.target.value;
+        setFieldValue('corporationId', corporationId);
+        setFieldValue('bankId', ''); // Reset bank selection
+        setFieldValue('branchId', ''); // Reset branch selection
+
+        // Filter banks based on selected corporation
+        const relatedBanks = banks.filter(bank => bank.corporationId === corporationId);
+        setFilteredBanks(relatedBanks);
+        setFilteredBranches([]); // Reset filtered branches
+    };
+
+    const handleBankChange = (event, setFieldValue) => {
+        const bankId = event.target.value;
+        setFieldValue('bankId', bankId);
+        setFieldValue('branchId', ''); // Reset branch selection
+
+        // Filter branches based on selected bank
+        const relatedBranches = branches.filter(branch => branch.bankId === bankId);
+        setFilteredBranches(relatedBranches);
+    };
 
     const [formData] = useState({
         request: id,
@@ -121,11 +147,12 @@ const TellerForm = () => {
                 requestBody: ''
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            console.log("response Branch", response);
 
             // const response = await CBS_Services('AP', `api/gav/bankBranch/getAll`, 'GET', null);
 
             if (response && response.body.meta.statusCode === 200) {
-                setBranchID(response.body.data);
+                setBranches(response.body.data);
 
             } else {
                 console.error('Error fetching data');
@@ -141,12 +168,13 @@ const TellerForm = () => {
                 requestBody: ''
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            console.log("response Bank", response);
 
             // const response = await CBS_Services('AP', `api/gav/bank/getAll`, 'GET', null);
             console.log("fetchbankid", response);
 
             if (response && response.status === 200) {
-                setBankID(response.body.data);
+                setBanks(response.body.data);
 
             } else if (response && response.body.status === 401) {
                 showSnackbar(response.body.errors || 'Error fetching Teller', 'error');
@@ -168,9 +196,10 @@ const TellerForm = () => {
                 requestBody: ''
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            console.log("response Corporation", response);
 
             if (response && response.status === 200) {
-                setCorpID(response.body.data);
+                setCorporations(response.body.data);
 
             } else if (response && response.body.status === 401) {
                 showSnackbar(response.body.errors || 'Error fetching Corporation', 'error');
@@ -189,35 +218,7 @@ const TellerForm = () => {
         fetchCorpID()
     }, [])
 
-    // useEffect(() => {
-    //     const fetchTellerById = async () => {
-    //         if (id) {
-    //             try {
-    //                 const payload = {
-    //                     serviceReference: 'GET_TELLER_BY_ID',
-    //                     requestBody: JSON.stringify(formData)
-    //                 };
 
-    //                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-    //                 // const response = await CBS_Services('CLIENT', 'api/gav/teller/get', 'POST', formData);
-    //                 console.log("fetched teller", response);
-
-    //                 if (response && response.body.meta.statusCode === 200) {
-    //                     setInitialValues(response.body.data);
-    //                     showSnackbar('Fetched Teller Information Successfully', 'success');
-    //                 } else {
-    //                     console.error('Error fetching data');
-    //                     showSnackbar(response.body.errors || 'Error Finding Teller Information', 'error');
-    //                 }
-    //             } catch (error) {
-    //                 console.error('Error:', error);
-    //                 showSnackbar('An error occurred while fetching the teller information', 'error');
-    //             }
-    //         }
-    //     };
-
-    //     fetchTellerById();
-    // }, [id, token]);
 
     useEffect(() => {
         if (id && location.state && location.state.tellerData) {
@@ -246,6 +247,7 @@ const TellerForm = () => {
                     handleBlur,
                     handleChange,
                     handleSubmit,
+                    setFieldValue,
                 }) => (
                     <Box
                         display="grid"
@@ -334,20 +336,17 @@ const TellerForm = () => {
                                     <Select
                                         label="Corporation"
                                         onBlur={handleBlur}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleCorporationChange(e, setFieldValue)}
                                         value={values.corporationId}
                                         name="corporationId"
                                         error={!!touched.corporationId && !!errors.corporationId}
                                     >
                                         <MenuItem value="">Select Corporation</MenuItem>
-                                        {Array.isArray(corpID) && corpID.length > 0
-                                            ? corpID.map((option) => (
-                                                <MenuItem key={option.corporationId} value={option.corporationId}>
-                                                    {option.corporationName}
-                                                </MenuItem>
-                                            ))
-                                            :
-                                            <MenuItem value="">No Corporatiion available</MenuItem>}
+                                        {corporations.map((corp) => (
+                                            <MenuItem key={corp.corporationId} value={corp.corporationId}>
+                                                {corp.corporationName}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                     {touched.language && errors.language && (
                                         <Alert severity="error">{errors.language}</Alert>
@@ -370,21 +369,18 @@ const TellerForm = () => {
                                     <Select
                                         label="Bank"
                                         onBlur={handleBlur}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleBankChange(e, setFieldValue)}
                                         value={values.bankId}
                                         name="bankId"
                                         error={!!touched.bankId && !!errors.bankId}
+                                        disabled={!values.corporationId}
                                     >
                                         <MenuItem value="">Select Bank</MenuItem>
-                                        {Array.isArray(bankID) && bankID.length > 0 ? (
-                                            bankID.map(option => (
-                                                <MenuItem key={option.bankId} value={option.bankId}>
-                                                    {option.bankName}
-                                                </MenuItem>
-                                            ))
-                                        ) : (
-                                            <MenuItem value="">No Banks available</MenuItem>
-                                        )}
+                                        {filteredBanks.map((bank) => (
+                                            <MenuItem key={bank.bankId} value={bank.bankId}>
+                                                {bank.bankName}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                     {touched.bankId && errors.bankId && (
                                         <Alert severity="error">{errors.bankId}</Alert>
@@ -411,17 +407,14 @@ const TellerForm = () => {
                                         value={values.branchId}
                                         name="branchId"
                                         error={!!touched.branchId && !!errors.branchId}
+                                        disabled={!values.bankId}
                                     >
                                         <MenuItem value="">Select Branch</MenuItem>
-                                        {Array.isArray(branchID) && branchID.length > 0 ? (
-                                            branchID.map(option => (
-                                                <MenuItem key={option.id} value={option.id}>
-                                                    {option.branchName}
-                                                </MenuItem>
-                                            ))
-                                        ) : (
-                                            <MenuItem value="">No Branch available</MenuItem>
-                                        )}
+                                        {filteredBranches.map((branch) => (
+                                            <MenuItem key={branch.id} value={branch.id}>
+                                                {branch.branchName}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                     {touched.branchId && errors.branchId && (
                                         <Alert severity="error">{errors.branchId}</Alert>
@@ -521,52 +514,6 @@ const TellerForm = () => {
 
 
 
-                                        {/* <TextField
-                                            fullWidth
-                                            variant="filled"
-                                            type="text"
-                                            label="balance"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.balance}
-                                            name="balance"
-                                            error={!!touched.balance && !!errors.balance}
-                                            helperText={touched.balance && errors.balance}
-                                            sx={{ gridColumn: "span 2", 
-                                             '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        }, }}
-                                            disabled
-                                        />
-                                        <TextField
-                                            fullWidth
-                                            variant="filled"
-                                            type="text"
-                                            label="virtualBalance"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.virtualBalance}
-                                            name="virtualBalance"
-                                            error={!!touched.virtualBalance && !!errors.virtualBalance}
-                                            helperText={touched.virtualBalance && errors.virtualBalance}
-                                            sx={{ gridColumn: "span 2", 
-                                             '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        }, }}
-                                            disabled
-                                        /> */}
 
                                         <FormControlLabel
                                             control={

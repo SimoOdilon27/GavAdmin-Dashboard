@@ -272,7 +272,7 @@ const ViewTellerDetails = () => {
                             <Box>
                                 <Typography variant="h5" color={colors.greenAccent[500]}>
                                     <Receipt sx={{ mr: 1, verticalAlign: 'middle' }} />
-                                    Teller Transactions
+                                    {`${initialValues.tellerName} Teller Transactions `}
                                 </Typography>
                                 <Typography variant="body2" color={colors.grey[400]} mt={1}>
                                     Showing transactions for this teller

@@ -512,7 +512,7 @@ const ViewAccountDetails = () => {
                             <Box>
                                 <Typography variant="h5" color={colors.greenAccent[500]}>
                                     <Receipt sx={{ mr: 1, verticalAlign: 'middle' }} />
-                                    Teller Transactions
+                                    {`${initialValues.name} Account Transactions `}
                                 </Typography>
                                 <Typography variant="body2" color={colors.grey[400]} mt={1}>
                                     Showing transactions for this teller
@@ -561,7 +561,7 @@ const ViewAccountDetails = () => {
                                 />
                                 <LoadingButton
                                     variant="contained"
-                                    color="secondary"
+                                    color="primary"
                                     onClick={handleFetchData}
                                     loading={loading}
                                     loadingPosition="start"
