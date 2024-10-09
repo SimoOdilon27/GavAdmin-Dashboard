@@ -181,7 +181,7 @@ const BankInvestments = () => {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Bank Investments" subtitle="Manage your Bank Investments" />
+                <Header title="BANK INVESTMENTS" subtitle="Manage your Bank Investments" />
                 {/* <Button
                     variant="contained"
                     color="secondary"

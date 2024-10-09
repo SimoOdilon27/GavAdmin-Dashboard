@@ -306,7 +306,7 @@ const ViewTransactions = () => {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Transactions" subtitle="View all transactions" />
+                <Header title="TRANSACTIONS" subtitle="View all transactions" />
 
             </Box>
 

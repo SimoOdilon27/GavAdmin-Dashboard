@@ -268,7 +268,7 @@ const BankAccount = () => {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Accounts" subtitle="Manage yourAccounts" />
+                <Header title="ACCOUNTS" subtitle="Manage yourAccounts" />
             </Box>
 
             <Box

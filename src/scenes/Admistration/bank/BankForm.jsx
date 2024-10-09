@@ -22,6 +22,7 @@ const BankForm = () => {
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const [corpID, setCorpID] = useState('');
+    const [countryData, setCountryData] = useState([]);
 
     const regionsInCameroon = ["Adamaoua", "Centre", "Est", "Extrême-Nord", "Littoral", "Nord", "Nord-Ouest", "Ouest", "Sud", "Sud-Ouest"];
 
@@ -125,9 +126,29 @@ const BankForm = () => {
         }
     };
 
+    const fetchCountryDataWithDefaultId = async () => {
+        try {
+            const defaultInternalId = 'default'; // Set the default internalId here
+            const response = await CBS_Services('APE', 'wallet/mapper/gimacCountries/list/all', 'POST', { internalId: defaultInternalId });
+
+            console.log("fetchresp", response);
+
+            if (response && response.status === 200) {
+                setCountryData(response.body.data);
+            } else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+
+
     useEffect(() => {
         // Fetch Bank data when the component mounts
         fetchCorpID();
+        fetchCountryDataWithDefaultId();
 
     }, []);
 
@@ -523,15 +544,50 @@ const BankForm = () => {
 
 
 
+                                <FormControl fullWidth variant="filled"
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}>
+                                    <InputLabel>Country</InputLabel>
+                                    <Select
+                                        label="Country"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.country}
+                                        name="country"
+                                        error={!!touched.country && !!errors.country}
+                                    >
+                                        <MenuItem value="" selected disabled>Select Wallet Type</MenuItem>
+                                        {Array.isArray(countryData) && countryData.length > 0 ? (
+                                            countryData.map((option) => (
+                                                <MenuItem key={option.countryId} value={option.countryId}>
+                                                    {option.country}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <option value="">No Countries available</option>
+                                        )}
+                                    </Select>
+                                    {touched.country && errors.country && (
+                                        <Alert severity="error">{errors.country}</Alert>
+                                    )}
 
+                                </FormControl>
 
-                                <TextField
+                                {/* <TextField
                                     fullWidth
                                     variant="filled"
                                     type="text"
-                                    label="Country" Countries
-
-
+                                    label="Country"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values.country}
@@ -556,7 +612,7 @@ const BankForm = () => {
                                             color: 'white', // Default label color
                                         }
                                     }}
-                                />
+                                /> */}
 
 
 

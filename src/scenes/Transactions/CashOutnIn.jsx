@@ -4,8 +4,8 @@ import { Add, AttachMoney, MoneyOff } from '@mui/icons-material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import Header from '../../components/Header';
 import { tokens } from '../../theme';
-import CashIn from './cashtransactions/CashIn';
-import CashOut from './cashtransactions/CashOut';
+import CashIn from './operations/CashIn';
+import CashOut from './operations/CashOut';
 
 
 const CashOutnIn = () => {
@@ -21,7 +21,7 @@ const CashOutnIn = () => {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Cash In/Out" subtitle="Carry Out your Cash In/Out Transactions" />
+                <Header title="OPERATIONS" subtitle="Carry Out your Cash In/Out Transactions" />
 
 
             </Box>

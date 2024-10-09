@@ -1,4 +1,4 @@
-import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Stack, TextField } from "@mui/material";
+import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, useTheme } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -13,6 +13,7 @@ import { Save } from "@mui/icons-material";
 const GimacCountriesForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const { id } = useParams();
+    const theme = useTheme();
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
@@ -168,7 +169,18 @@ const GimacCountriesForm = () => {
                                     name="countryCode"
                                     error={!!touched.countryCode && !!errors.countryCode}
                                     helperText={touched.countryCode && errors.countryCode}
-                                    sx={{ gridColumn: "span 2" }}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
                                 />
                                 <TextField
                                     fullWidth
@@ -181,7 +193,18 @@ const GimacCountriesForm = () => {
                                     name="country"
                                     error={!!touched.country && !!errors.country}
                                     helperText={touched.country && errors.country}
-                                    sx={{ gridColumn: "span 2" }}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
                                 />
                                 <TextField
                                     fullWidth
@@ -194,7 +217,18 @@ const GimacCountriesForm = () => {
                                     name="serviceProvider"
                                     error={!!touched.serviceProvider && !!errors.serviceProvider}
                                     helperText={touched.serviceProvider && errors.serviceProvider}
-                                    sx={{ gridColumn: "span 4" }}
+                                    sx={{
+                                        gridColumn: "span 4",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
                                 />
                                 <TextField
                                     fullWidth
@@ -207,7 +241,18 @@ const GimacCountriesForm = () => {
                                     name="internationalDialingCode"
                                     error={!!touched.internationalDialingCode && !!errors.internationalDialingCode}
                                     helperText={touched.internationalDialingCode && errors.internationalDialingCode}
-                                    sx={{ gridColumn: "span 2" }}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
                                 />
                                 <TextField
                                     fullWidth
@@ -220,7 +265,18 @@ const GimacCountriesForm = () => {
                                     name="internalId"
                                     error={!!touched.internalId && !!errors.internalId}
                                     helperText={touched.internalId && errors.internalId}
-                                    sx={{ gridColumn: "span 2" }}
+                                    sx={{
+                                        gridColumn: "span 2",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}
                                 />
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
