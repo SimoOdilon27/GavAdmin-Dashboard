@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../../components/Header";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CBS_Services from "../../../services/api/GAV_Sercives";
@@ -14,6 +14,7 @@ const GimacWalletForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const theme = useTheme();
     const { id } = useParams();
+    const location = useLocation();
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
@@ -25,7 +26,7 @@ const GimacWalletForm = () => {
         gimacMemberCode: "",
         walletType: "",
         countryId: "",
-        internalId: "",
+        internalId: "000",
         serviceDescription: "",
         serviceRef: "",
         queryRef: "",
@@ -95,27 +96,27 @@ const GimacWalletForm = () => {
         setPending(false);
     };
 
-    useEffect(() => {
-        if (id) {
-            // Fetch the existing wallet by ID to populate the form for editing
-            const payload = {
-                serviceReference: 'GET_WALLET_BY_ID',
-                requestBody: id,
-            }
-            console.log("payload==", payload)
+    // useEffect(() => {
+    //     if (id) {
+    //         // Fetch the existing wallet by ID to populate the form for editing
+    //         const payload = {
+    //             serviceReference: 'GET_WALLET_BY_ID',
+    //             requestBody: id,
+    //         }
+    //         console.log("payload==", payload)
 
-            // CBS_Services("GIMAC", `wallet/mapper/getCountry/${id}`, "GET", null)
-            CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token)
-                .then((response) => {
-                    if (response && response.body.meta.statusCode === 200) {
-                        setInitialValues(response.body.data);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error fetching wallet:", error);
-                });
-        }
-    }, [id]);
+    //         // CBS_Services("GIMAC", `wallet/mapper/getCountry/${id}`, "GET", null)
+    //         CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token)
+    //             .then((response) => {
+    //                 if (response && response.body.meta.statusCode === 200) {
+    //                     setInitialValues(response.body.data);
+    //                 }
+    //             })
+    //             .catch((error) => {
+    //                 console.error("Error fetching wallet:", error);
+    //             });
+    //     }
+    // }, [id]);
 
 
     const fetchCountryDataWithDefaultId = async () => {
@@ -138,6 +139,16 @@ const GimacWalletForm = () => {
     useEffect(() => {
         fetchCountryDataWithDefaultId();
     }, [])
+
+    useEffect(() => {
+        if (id && location.state && location.state.walletData) {
+            // Use the data passed from the wallets component
+            setInitialValues(location.state.walletData);
+        }
+    }, [id, location.state]);
+
+    console.log("initial values:", initialValues);
+
 
     return (
         <Box m="20px">
@@ -356,7 +367,7 @@ const GimacWalletForm = () => {
                                     helperText={touched.serviceRef && errors.serviceRef}
 
                                     sx={{
-                                        gridColumn: "span 2",
+                                        gridColumn: "span 1",
 
                                         '& .MuiInputLabel-root': {
                                             color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
@@ -383,7 +394,7 @@ const GimacWalletForm = () => {
                                     helperText={touched.queryRef && errors.queryRef}
 
                                     sx={{
-                                        gridColumn: "span 2",
+                                        gridColumn: "span 1",
 
                                         '& .MuiInputLabel-root': {
                                             color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
@@ -425,7 +436,7 @@ const GimacWalletForm = () => {
                                     }}
                                 />
 
-                                <TextField
+                                {/* <TextField
                                     fullWidth
                                     variant="filled"
                                     type="text"
@@ -451,7 +462,7 @@ const GimacWalletForm = () => {
                                         },
 
                                     }}
-                                />
+                                /> */}
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>

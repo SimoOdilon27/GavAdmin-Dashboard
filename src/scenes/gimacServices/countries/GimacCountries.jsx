@@ -8,6 +8,7 @@ import Header from '../../../components/Header';
 import { Add, Delete, EditOutlined } from '@mui/icons-material';
 import { tokens } from '../../../theme';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { formatValue } from '../../../tools/formatValue';
 
 
 const GimacCountries = () => {
@@ -84,22 +85,23 @@ const GimacCountries = () => {
         navigate('/gimac-countries/add');
     };
 
+    // const handleEdit = (row) => {
+    //     navigate(`/gimac-countries/edit/${row.id}`);
+    // };
+
     const handleEdit = (row) => {
-        navigate(`/gimac-countries/edit/${row.id}`);
+        // Pass the entire row data to the edit page
+        navigate(`/gimac-countries/edit/${row.id}`, { state: { countryData: row } });
     };
 
-    const toSentenceCase = (text) => {
-        if (!text) return '';
-        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    };
 
 
     const columns = [
         // { field: "countryId", headerName: "Country ID", flex: 1 },
-        { field: "countryCode", headerName: "Country Code", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "country", headerName: "Country", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "serviceProvider", headerName: "Service Provider", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "internationalDialingCode", headerName: "Int Dialing Code", flex: 1 },
+        { field: "countryCode", headerName: "Country Code", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "country", headerName: "Country", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "serviceProvider", headerName: "Service Provider", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "internationalDialingCode", headerName: "Int Dialing Code", flex: 1, valueGetter: (params) => formatValue(params.value), },
         {
             field: "actions",
             headerName: "Actions",
@@ -196,7 +198,7 @@ const GimacCountries = () => {
                     rows={countriesData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
+                    // checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
                 />

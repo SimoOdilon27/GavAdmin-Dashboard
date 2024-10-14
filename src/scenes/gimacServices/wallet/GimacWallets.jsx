@@ -8,6 +8,7 @@ import Header from '../../../components/Header';
 import { Add, Delete, EditOutlined } from '@mui/icons-material';
 import { tokens } from '../../../theme';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { formatValue } from '../../../tools/formatValue';
 
 
 
@@ -50,6 +51,9 @@ const GimacWallets = () => {
                 requestBody: JSON.stringify({ internalId: "Back-Office" }),
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+
+            console.log("reaponse---", response);
+
             if (response && response.body.meta.statusCode === 200) {
                 setWalletsData(response.body.data || []);
             } else {
@@ -69,27 +73,28 @@ const GimacWallets = () => {
         navigate('/gimac-wallets/add');
     };
 
+    // const handleEdit = (row) => {
+    //     navigate(`/gimac-wallets/edit/${row.id}`);
+    // };
+
     const handleEdit = (row) => {
-        navigate(`/gimac-wallets/edit/${row.id}`);
+        // Pass the entire row data to the edit page
+        navigate(`/gimac-wallets/edit/${row.id}`, { state: { walletData: row } });
     };
 
 
-    const toSentenceCase = (text) => {
-        if (!text) return '';
-        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    };
 
     const columns = [
         // { field: "id", headerName: "ID", flex: 1 },
-        { field: "name", headerName: "Wallet Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "gimacMemberCode", headerName: "Gimac Member Code", flex: 1 },
-        { field: "walletType", headerName: "Wallet Type", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "countryName", headerName: "Country", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "countryCode", headerName: "Country Code", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "serviceDescription", headerName: "Service Description", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "serviceRef", headerName: "Service Ref", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "queryName", headerName: "Query Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "queryRef", headerName: "Query Ref", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "name", headerName: "Wallet Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "gimacMemberCode", headerName: "Gimac Member Code", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "walletType", headerName: "Wallet Type", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "countryName", headerName: "Country", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "countryCode", headerName: "Country Code", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "serviceDescription", headerName: "Service Description", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "serviceRef", headerName: "Service Ref", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "queryName", headerName: "Query Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "queryRef", headerName: "Query Ref", flex: 1, valueGetter: (params) => formatValue(params.value), },
         {
             field: "actions",
             headerName: "Actions",
@@ -186,7 +191,7 @@ const GimacWallets = () => {
                     rows={walletsData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
+                    // checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
                 />

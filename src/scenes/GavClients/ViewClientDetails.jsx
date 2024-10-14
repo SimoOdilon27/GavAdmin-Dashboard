@@ -24,6 +24,7 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import CBS_Services from "../../services/api/GAV_Sercives";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
+import { formatValue } from "../../tools/formatValue";
 
 const ViewClientDetails = () => {
     const theme = useTheme();
@@ -106,44 +107,100 @@ const ViewClientDetails = () => {
         </Box>
     );
 
+    const statusBadgeStyles = {
+        PENDING: { backgroundColor: 'orange', color: 'white' },
+        SUCCESSFUL: { backgroundColor: 'green', color: 'white' },
+        FAILED: { backgroundColor: 'red', color: 'white' },
+    };
+
     const columns = [
         {
-            field: 'id',
-            headerName: 'ID',
-            width: 80,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>ID</span>,
+            field: 'dateTime',
+            headerName: 'Date & Time',
+            flex: 1,
+            valueGetter: (params) => formatValue(params.value),
+        },
+
+        {
+            field: 'fromAccount',
+            headerName: 'From Account',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>From Account</span>,
+
         },
         {
-            field: 'transactionId',
-            headerName: 'Transaction ID',
-            width: 150,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction ID</span>,
+            field: 'toAccount',
+            headerName: 'To Account',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Account</span>,
         },
+        // {
+        //     field: 'toBankId',
+        //     headerName: 'To Bank ID',
+        //     flex: 1,
+        //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Bank ID</span>,
+        // },
+
+        // {
+        //     field: 'transactionType',
+        //     headerName: 'Type',
+        //     flex: 1,
+        //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>Type</span>,
+        // },
+
+        // {
+        //     field: 'processingId',
+        //     headerName: 'Processing ID',
+        //     flex: 1,
+        //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>Processing ID</span>,
+        // },
         {
-            field: 'transactionType',
-            headerName: 'Type',
-            width: 120,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Type</span>,
+            field: 'direction',
+            headerName: 'Direction',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction Type</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
         {
             field: 'amount',
             headerName: 'Amount',
-            width: 120,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Amount</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
+
+
+
+        {
+            field: 'service',
+            headerName: 'Service',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Service</span>,
+            valueGetter: (params) => formatValue(params.value),
+        },
+
         {
             field: 'status',
             headerName: 'Status',
-            width: 100,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Status</span>,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        padding: '5px 10px',
+                        borderRadius: '12px',
+                        backgroundColor: statusBadgeStyles[params.value]?.backgroundColor,
+                        color: statusBadgeStyles[params.value]?.color,
+                        textAlign: 'center',
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
         },
-        {
-            field: 'dateTime',
-            headerName: 'Date & Time',
-            width: 180,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Date & Time</span>,
-        },
-    ];
+
+
+    ]
 
     useEffect(() => {
         if (msisdn && location.state && location.state.clientData) {
@@ -195,11 +252,13 @@ const ViewClientDetails = () => {
                             <Typography variant="h5" color={colors.grey[100]} gutterBottom>
                                 {initialValues.name} {initialValues.surname}
                             </Typography>
-                            <Chip
-                                label={initialValues.active ? "Active Client" : "Inactive Client"}
-                                color={initialValues.active ? "success" : "error"}
-                                sx={{ mt: 1 }}
-                            />
+
+                            {!initialValues.active &&
+                                <Chip
+                                    label={initialValues.active ? "Active Client" : "Inactive Client"}
+                                    color={initialValues.active ? "success" : "error"}
+                                    sx={{ mt: 1 }}
+                                />}
                         </Grid>
                         <Grid item xs={12} md={9}>
                             <Grid container spacing={2}>
@@ -212,8 +271,8 @@ const ViewClientDetails = () => {
                                     <InfoItem icon={<Badge />} label="Internal ID" value={initialValues.internalId} />
                                 </Grid>
                                 <Grid item xs={12} md={4}>
-                                    <InfoItem icon={<AttachMoney />} label="Initial Balance" value={initialValues.initialBalance} />
-                                    <InfoItem icon={<Language />} label="Language" value={initialValues.language} />
+                                    <InfoItem icon={<AttachMoney />} label="Initial Balance" value={formatValue(initialValues.initialBalance)} />
+                                    <InfoItem icon={<Language />} label="Language" value={formatValue(initialValues.language)} />
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -248,7 +307,7 @@ const ViewClientDetails = () => {
                 <TabPanel value={activeTab} index={0}>
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={6}>
-                            <InfoItem icon={<CalendarToday />} label="Date of Birth" value={initialValues.dateOfBirth} />
+                            <InfoItem icon={<CalendarToday />} label="Date of Birth" value={formatValue(initialValues.dateOfBirth)} />
                             <InfoItem icon={<LocationOn />} label="Place of Birth" value={initialValues.placeOfBirth} />
                             <InfoItem icon={<Work />} label="Occupation" value={initialValues.occupation} />
                             <InfoItem icon={<Person />} label="Father's Name" value={initialValues.fatherName} />
@@ -258,8 +317,8 @@ const ViewClientDetails = () => {
                             <InfoItem icon={<LocationOn />} label="Address" value={initialValues.address} />
                             <InfoItem icon={<LocationOn />} label="Region" value={initialValues.region} />
                             <InfoItem icon={<Assignment />} label="CNI Number" value={initialValues.cniNumber} />
-                            <InfoItem icon={<CalendarToday />} label="CNI Creation Date" value={initialValues.cniCreationDate} />
-                            <InfoItem icon={<CalendarToday />} label="CNI Expiration Date" value={initialValues.cniExpirationDate} />
+                            <InfoItem icon={<CalendarToday />} label="CNI Creation Date" value={formatValue(initialValues.cniCreationDate)} />
+                            <InfoItem icon={<CalendarToday />} label="CNI Expiration Date" value={formatValue(initialValues.cniExpirationDate)} />
                         </Grid>
                     </Grid>
                 </TabPanel>
@@ -273,8 +332,8 @@ const ViewClientDetails = () => {
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <InfoItem icon={<Assignment />} label="Branch ID" value={initialValues.branchId} />
-                            <InfoItem icon={<CalendarToday />} label="Creation Date" value={initialValues.creationDate} />
-                            <InfoItem icon={<AttachMoney />} label="Minimum Account Limit" value={initialValues.minimumAccountLimit} />
+                            <InfoItem icon={<CalendarToday />} label="Creation Date" value={formatValue(initialValues.creationDate)} />
+                            <InfoItem icon={<AttachMoney />} label="Minimum Account Limit" value={formatValue(initialValues.minimumAccountLimit)} />
                         </Grid>
                     </Grid>
                 </TabPanel>

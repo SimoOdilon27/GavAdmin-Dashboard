@@ -48,6 +48,7 @@ import BranchesForm from "./scenes/Admistration/branches/BranchesForm";
 import ViewTellerDetails from "./scenes/Admistration/tellers/ViewTellerDetails";
 import ViewAccountDetails from "./scenes/bankDetails/accounts/ViewAccountDetails";
 import ViewClientDetails from "./scenes/GavClients/ViewClientDetails";
+import ConfigureCharges from "./scenes/Transactions/pricing/ChargesConfigurations/ConfigureCharges";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -366,6 +367,14 @@ function App() {
                   element={
                     <RoleProtectedComponent allowedRoles={['ADMIN']}>
                       <Charges />
+                    </RoleProtectedComponent>
+                  }
+                />
+                <Route
+                  path="/pricing/configurecharges"
+                  element={
+                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                      <ConfigureCharges />
                     </RoleProtectedComponent>
                   }
                 />

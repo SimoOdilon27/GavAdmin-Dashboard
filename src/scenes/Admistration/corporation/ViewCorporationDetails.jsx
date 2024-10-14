@@ -25,6 +25,7 @@ import {
 import { tokens } from "../../../theme";
 import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { formatValue } from "../../../tools/formatValue";
 
 
 const ViewCorporationDetails = () => {
@@ -142,91 +143,80 @@ const ViewCorporationDetails = () => {
 
     // console.log("initialValues", initialValues);
 
+    const statusBadgeStyles = {
+        PENDING: { backgroundColor: 'orange', color: 'white' },
+        SUCCESSFUL: { backgroundColor: 'green', color: 'white' },
+        FAILED: { backgroundColor: 'red', color: 'white' },
+    };
+
     const columns = [
         {
-            field: 'id',
-            headerName: 'ID',
-            width: 80,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>ID</span>,
+            field: 'dateTime',
+            headerName: 'Date & Time',
+            flex: 1,
+            valueGetter: (params) => formatValue(params.value),
         },
-        {
-            field: 'transactionId',
-            headerName: 'Transaction ID',
-            width: 150,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction ID</span>,
-        },
-        {
-            field: 'transactionType',
-            headerName: 'Type',
-            width: 120,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Type</span>,
-        },
-        {
-            field: 'status',
-            headerName: 'Status',
-            width: 100,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Status</span>,
-        },
-        {
-            field: 'processingId',
-            headerName: 'Processing ID',
-            width: 150,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Processing ID</span>,
-        },
-        {
-            field: 'direction',
-            headerName: 'Direction',
-            width: 100,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction Type</span>,
-        },
-        {
-            field: 'amount',
-            headerName: 'Amount',
-            width: 120,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Amount</span>,
-        },
+
         {
             field: 'fromAccount',
             headerName: 'From Account',
-            width: 150,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>From Account</span>,
-        },
-        {
-            field: 'fromBankId',
-            headerName: 'From Bank ID',
-            width: 120,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>From Bank ID</span>,
+
         },
         {
             field: 'toAccount',
             headerName: 'To Account',
-            width: 150,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Account</span>,
         },
+
         {
-            field: 'toBankId',
-            headerName: 'To Bank ID',
-            width: 120,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Bank ID</span>,
+            field: 'direction',
+            headerName: 'Direction',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction Type</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
         {
-            field: 'transactionCategory',
-            headerName: 'Category',
-            width: 150,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Category</span>,
+            field: 'amount',
+            headerName: 'Amount',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Amount</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
+
+
+
         {
             field: 'service',
             headerName: 'Service',
-            width: 120,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Service</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
+
         {
-            field: 'dateTime',
-            headerName: 'Date & Time',
-            width: 180,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Date & Time</span>,
+            field: 'status',
+            headerName: 'Status',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Status</span>,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        padding: '5px 10px',
+                        borderRadius: '12px',
+                        backgroundColor: statusBadgeStyles[params.value]?.backgroundColor,
+                        color: statusBadgeStyles[params.value]?.color,
+                        textAlign: 'center',
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
         },
+
+
     ]
 
     return (
@@ -340,6 +330,10 @@ const ViewCorporationDetails = () => {
                                     sx={{
                                         backgroundColor: initialValues.active ? colors.greenAccent[500] : colors.redAccent[500],
                                         color: "white",
+                                        borderRadius: 1, // Removes the rounded corners for a rectangular shape
+                                        height: '30px', // Adjusts the height (you can tweak this value)
+                                        padding: '0 12px', // Adds padding to give it more width
+
                                     }}
                                 />
                             </Box>
@@ -534,7 +528,7 @@ const ViewCorporationDetails = () => {
                         components={{
                             Toolbar: GridToolbar,
                         }}
-                        checkboxSelection
+                        // checkboxSelection
                         disableRowSelectionOnClick
                     />
                 </Box>

@@ -8,6 +8,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../../components/Header';
 import { Add, Delete, EditOutlined, RemoveRedEyeRounded, RemoveRedEyeSharp } from '@mui/icons-material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { formatValue } from '../../../tools/formatValue';
 
 
 const Tellers = () => {
@@ -80,18 +81,15 @@ const Tellers = () => {
 
 
 
-    const toSentenceCase = (text) => {
-        if (!text) return '';
-        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    };
+
 
     const columns = [
-        { field: "id", headerName: "Teller ID", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "tellerName", headerName: "Teller Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "branchName", headerName: "Branch Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "balance", headerName: "Balance", flex: 1, },
-        { field: "virtualBalance", headerName: "Virtual Balance", flex: 1, },
-        { field: "language", headerName: "Language", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "id", headerName: "Teller ID", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "tellerName", headerName: "Teller Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "branchName", headerName: "Branch Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "balance", headerName: "Balance", flex: 1, valueGetter: (params) => formatValue(params.value) },
+        { field: "virtualBalance", headerName: "Virtual Balance", flex: 1, valueGetter: (params) => formatValue(params.value) },
+        { field: "language", headerName: "Language", flex: 1, valueGetter: (params) => formatValue(params.value), },
         {
             field: "status",
             headerName: "Status",

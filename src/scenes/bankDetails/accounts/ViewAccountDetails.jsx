@@ -277,6 +277,62 @@ const ViewAccountDetails = () => {
 
     if (!initialValues) return null;
 
+    const toPascalCase = (str) => {
+        return str
+            .split(' ') // Split string by spaces
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter and lowercase the rest
+            .join(' '); // Join back the words
+    };
+
+    const formatValue = (value) => {
+        if (typeof value === 'boolean') {
+            return value ? 'Yes' : 'No';
+        }
+        if (value === null || value === undefined) {
+            return 'N/A';
+        }
+        if (typeof value === 'number') {
+            return value.toLocaleString(); // Format numbers with commas
+        }
+        if (typeof value === 'string') {
+            // Check if it's an ISO 8601 date string and convert it to Date object
+            if (isISODateString(value)) {
+                const dateObj = new Date(value);
+                return `${dateObj.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                })} ${dateObj.toLocaleTimeString('en-GB', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                })}`;
+            }
+            // For non-date strings, format to Pascal Case and replace underscores with spaces
+            return toPascalCase(value.replace(/_/g, ' '));
+        }
+        if (value instanceof Date) {
+            return `${value.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+            })} ${value.toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+            })}`;
+        }
+        return value.toString();
+    };
+
+    // Helper function to check if the string is in ISO 8601 format
+    const isISODateString = (str) => {
+        return /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+/.test(str);
+    };
+
+
+
+
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -328,32 +384,32 @@ const ViewAccountDetails = () => {
                             <InfoItem
                                 icon={<Assignment />}
                                 label="Account Name"
-                                value={initialValues.name}
+                                value={(initialValues.name)}
                             />
                             <InfoItem
                                 icon={<AccountBalance />}
                                 label="Account ID"
-                                value={initialValues.accountId}
+                                value={(initialValues.accountId)}
                             />
                             <InfoItem
                                 icon={<Business />}
                                 label="Bank Code"
-                                value={initialValues.bankCode}
+                                value={formatValue(initialValues.bankCode)}
                             />
                             <InfoItem
                                 icon={<Business />}
                                 label="Bank ID"
-                                value={initialValues.bankId}
+                                value={(initialValues.bankId)}
                             />
                             <InfoItem
                                 icon={<CreditCard />}
                                 label="CBS Account Number"
-                                value={initialValues.cbsAccountNumber}
+                                value={(initialValues.cbsAccountNumber)}
                             />
                             <InfoItem
                                 icon={<Business />}
                                 label="Corporation ID"
-                                value={initialValues.corporationId}
+                                value={(initialValues.corporationId)}
                             />
                             <Box mt={2}>
                                 <Typography variant="subtitle2" color={colors.grey[400]} mb={1}>
@@ -390,32 +446,32 @@ const ViewAccountDetails = () => {
                             <InfoItem
                                 icon={<AccountBalanceWallet />}
                                 label="Current Balance"
-                                value={initialValues.balance}
+                                value={formatValue(initialValues.balance)}
                             />
                             <InfoItem
                                 icon={<Payment />}
                                 label="Total Amount with Interest"
-                                value={initialValues.totalAmountWithInterest}
+                                value={formatValue(initialValues.totalAmountWithInterest)}
                             />
                             <InfoItem
                                 icon={<Payment />}
                                 label="Total Capital Invested"
-                                value={initialValues.totalCapitalInvested}
+                                value={formatValue(initialValues.totalCapitalInvested)}
                             />
                             <InfoItem
                                 icon={<Payment />}
                                 label="Total Credit Balance"
-                                value={initialValues.totalCreditBalance}
+                                value={formatValue(initialValues.totalCreditBalance)}
                             />
                             <InfoItem
                                 icon={<MoneyOff />}
                                 label="Total Debit Balance"
-                                value={initialValues.totalDebitBalance}
+                                value={formatValue(initialValues.totalDebitBalance)}
                             />
                             <InfoItem
                                 icon={<Payment />}
                                 label="Total Interest"
-                                value={initialValues.totalInterest}
+                                value={formatValue(initialValues.totalInterest)}
                             />
                         </CardContent>
                     </Card>
@@ -431,12 +487,12 @@ const ViewAccountDetails = () => {
                             <InfoItem
                                 icon={<Lock />}
                                 label="Maximum Bound"
-                                value={initialValues.maximumBound}
+                                value={formatValue(initialValues.maximumBound)}
                             />
                             <InfoItem
                                 icon={<Lock />}
                                 label="Minimum Bound"
-                                value={initialValues.minimumBound}
+                                value={formatValue(initialValues.minimumBound)}
                             />
                             <InfoItem
                                 icon={<Phone />}
@@ -446,7 +502,7 @@ const ViewAccountDetails = () => {
                             <InfoItem
                                 icon={<Assignment />}
                                 label="Type"
-                                value={initialValues.type}
+                                value={formatValue(initialValues.type)}
                             />
                             <InfoItem
                                 icon={<Assignment />}
@@ -472,17 +528,17 @@ const ViewAccountDetails = () => {
                             <InfoItem
                                 icon={<CalendarToday />}
                                 label="Creation Date"
-                                value={initialValues.creationDateTime}
+                                value={formatValue(initialValues.creationDateTime)}
                             />
                             <InfoItem
                                 icon={<CalendarToday />}
                                 label="Last Investment Date"
-                                value={initialValues.lastInvestmentDate}
+                                value={formatValue(initialValues.lastInvestmentDate)}
                             />
                             <InfoItem
                                 icon={<CalendarToday />}
                                 label="Last Modification Date"
-                                value={initialValues.lastModificationDate}
+                                value={formatValue(initialValues.lastModificationDate)}
                             />
                             <InfoItem
                                 icon={<Business />}

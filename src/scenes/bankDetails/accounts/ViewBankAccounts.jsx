@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography, useTheme, Switch, Grid, Paper, Divider, Alert, Tooltip, Snackbar, CircularProgress, MenuItem, Menu, IconButton } from "@mui/material";
+import { Box, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography, useTheme, Switch, Grid, Paper, Divider, Alert, Tooltip, Snackbar, CircularProgress, MenuItem, Menu, IconButton, Chip } from "@mui/material";
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Add, Delete, EditOutlined, Money, MoneyOff, RemoveRedEyeSharp, TrendingUp, Visibility } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, Money, MoneyOff, NotInterested, RemoveRedEyeSharp, Save, TrendingUp, Verified, VerifiedOutlined, Visibility } from '@mui/icons-material';
 import { tokens } from '../../../theme';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import Header from '../../../components/Header';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useNavigate } from 'react-router-dom';
+import { LoadingButton } from '@mui/lab';
 
 
 
@@ -100,19 +101,23 @@ const BankAccount = () => {
             if (action === 'activate') {
                 payload = {
                     serviceReference: 'ACTIVATE_ACCOUNT',
-                    requestBody: selectedAccount.accountId
+                    requestBody: JSON.stringify({
+                        request: selectedAccount.accountId
+                    })
                 }
 
             } else if (action === 'deactivate') {
                 payload = {
                     serviceReference: 'DEACTIVATE_ACCOUNT',
-                    requestBody: selectedAccount.accountId
+                    requestBody: JSON.stringify({
+                        request: selectedAccount.accountId
+                    })
                 }
             }
-            // const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
-            const endpoint = `api/gav/account/${action}/${selectedAccount.accountId}`;
-            const response = await CBS_Services('ACCOUNT', endpoint, 'PUT', null);
+            // const endpoint = `api/gav/account/${action}/${selectedAccount.accountId}`;
+            // const response = await CBS_Services('ACCOUNT', endpoint, 'PUT', null);
             fetchBankAccountData();
 
             setLoading(false);
@@ -171,10 +176,7 @@ const BankAccount = () => {
         setCurrentRow(null);
     };
 
-    const toSentenceCase = (text) => {
-        if (!text) return '';
-        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    };
+
 
 
     const handleViewAccount = (row) => {
@@ -182,33 +184,39 @@ const BankAccount = () => {
         navigate(`/bankaccount/view/${row.accountId}`, { state: { accountData: row } });
     };
 
+    const toSentenceCase = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
+
     const columns = [
-        { field: "name", headerName: "Account Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        // { field: "externalCorpOrBankOrBranchName", headerName: "External Acc Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "type", headerName: "Account Type", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "totalCapitalInvested", headerName: "Total Capital Invested", flex: 1, },
+        { field: "name", headerName: "Account Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        // { field: "externalCorpOrBankOrBranchName", headerName: "External Acc Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "type", headerName: "Account Type", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "totalCapitalInvested", headerName: "Total Capital Invested", flex: 1, valueGetter: (params) => formatValue(params.value) },
         // { field: "totalDebitBalance", headerName: "Total Debit Balance", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "totalCreditBalance", headerName: "Total Credit Balance", flex: 1, },
-        { field: "balance", headerName: "Account Balance", flex: 1, },
+        { field: "totalCreditBalance", headerName: "Total Credit Balance", flex: 1, valueGetter: (params) => formatValue(params.value) },
+        { field: "balance", headerName: "Account Balance", flex: 1, valueGetter: (params) => formatValue(params.value) },
         // { field: "dailyAccountThreshold", headerName: "Daily Account Threshold", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+
+
         {
             field: "active",
             headerName: "Status",
             flex: 1,
-            renderCell: (params) => (
-                <Box>
-                    <Switch
-                        checked={params.value}
-                        onChange={() => handleActivateDeactivate(params.row.accountId, params.value ? 'deactivate' : 'activate')}
-                        color="secondary"
+            renderCell: (params) => {
+                const isActive = params.row.active; // Access the "active" field from the row data
+                return (
+                    <Chip
+                        label={isActive ? "Active" : "Inactive"}
+                        style={{
+                            backgroundColor: isActive ? "green" : "red",
+                            color: "white",
+                            padding: "1px 1px 1px 1px",
+                        }}
                     />
-                    <Typography
-                        color={params.value ? colors.greenAccent[500] : colors.redAccent[500]}
-                    >
-                        {params.value ? 'Active' : 'Inactive'}
-                    </Typography>
-                </Box>
-            ),
+                );
+            },
         },
 
 
@@ -216,41 +224,75 @@ const BankAccount = () => {
             field: "actions",
             headerName: "Actions",
             flex: 1,
-            renderCell: (params) => (
-                <>
-                    <IconButton
-                        aria-label="more"
-                        aria-controls="long-menu"
-                        aria-haspopup="true"
-                        onClick={(event) => handleClick(event, params.row)}
-                    >
-                        <MoreVertIcon />
-                    </IconButton>
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        PaperProps={{
-                            style: {
-                                maxHeight: 48 * 4.5,
-                                width: "20ch",
-                                transform: "translateX(-50%)",
-                            },
-                        }}
-                    >
-                        <MenuItem onClick={() => handleViewAccount(currentRow)}>
-                            <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
-                            View More
-                        </MenuItem>
-                        <MenuItem onClick={() => handleDelete(currentRow)}>
-                            <Delete fontSize="small" style={{ marginRight: "8px" }} />
-                            Delete
-                        </MenuItem>
-                    </Menu>
-                </>
-            ),
-        },
+            renderCell: (params) => {
+                const isActive = params.row?.active; // Safely access the 'active' field
+
+                return (
+                    <>
+                        <IconButton
+                            aria-label="more"
+                            aria-controls={`actions-menu-${params.row?.accountId}`}
+                            aria-haspopup="true"
+                            onClick={(event) => handleClick(event, params.row)}
+                        >
+                            <MoreVertIcon />
+                        </IconButton>
+                        <Menu
+                            id={`actions-menu-${params.row?.accountId}`}
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl) && currentRow?.accountId === params.row?.accountId}
+                            onClose={handleClose}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 48 * 4.5,
+                                    width: "20ch",
+                                    transform: "translateX(-50%)",
+                                },
+                            }}
+                        >
+                            <MenuItem onClick={() => handleViewAccount(params.row)}>
+                                <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
+                                View More
+                            </MenuItem>
+
+                            <MenuItem
+                                onClick={() => {
+                                    const action = isActive ? 'deactivate' : 'activate';
+                                    handleActivateDeactivate(params.row?.accountId, action);
+                                    handleClose();
+                                }}
+                            >
+                                {isActive ? (
+                                    <>
+                                        <NotInterested style={{ marginRight: "8px", color: "red" }} />
+                                        Deactivate
+                                    </>
+                                ) : (
+                                    <>
+                                        <VerifiedOutlined style={{ marginRight: "8px", color: "green" }} />
+                                        Activate
+                                    </>
+                                )}
+                            </MenuItem>
+
+                            <MenuItem onClick={() => handleDelete(params.row)}>
+                                <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                                Delete
+                            </MenuItem>
+                        </Menu>
+                    </>
+                );
+            },
+        }
+
     ];
+
+    const toPascalCase = (str) => {
+        return str
+            .split(' ') // Split string by spaces
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter and lowercase the rest
+            .join(' '); // Join back the words
+    };
 
     const formatValue = (value) => {
         if (typeof value === 'boolean') {
@@ -262,8 +304,28 @@ const BankAccount = () => {
         if (typeof value === 'number') {
             return value.toLocaleString(); // Format numbers with commas
         }
+        if (typeof value === 'string') {
+            return toPascalCase(value.replace(/_/g, ' ')); // Replace underscores with spaces and format in Pascal Case
+        }
+
+        if (typeof value === 'date') {
+            return `${value.toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+            })} ${value.toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+            })}`;
+        }
         return value.toString();
     };
+
+
+    // const date = new Date(params.value);
+
+
 
     return (
         <Box m="20px">
@@ -308,7 +370,7 @@ const BankAccount = () => {
                     rows={bankAccountData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
+                    // checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
 
@@ -325,12 +387,25 @@ const BankAccount = () => {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={confirmActivateDeactivate} color="secondary" disabled={loading}>
-                        {loading ? <CircularProgress animation="border" size="sm" /> : `${action.charAt(0).toUpperCase() + action.slice(1)}`}
-                    </Button>
-                    <Button onClick={() => setShowStatusModal(false)} color="primary">
+                    <Button onClick={() => setShowStatusModal(false)} color="primary" variant='contained'>
                         Cancel
                     </Button>
+                    {/* <Button onClick={confirmActivateDeactivate} color="secondary" disabled={loading} variant='contained'>
+                        {loading ? <CircularProgress animation="border" size="sm" /> : `${action.charAt(0).toUpperCase() + action.slice(1)}`}
+                    </Button> */}
+
+                    <LoadingButton
+                        type="submit"
+                        color="secondary"
+                        onClick={confirmActivateDeactivate}
+                        variant="contained"
+                        loading={loading}
+                        loadingPosition="start"
+                    // startIcon={<VerifiedOutlined />}
+                    >
+                        {`${action.charAt(0).toUpperCase() + action.slice(1)}`}
+                    </LoadingButton>
+
                 </DialogActions>
             </Dialog>
 

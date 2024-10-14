@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../../components/Header";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CBS_Services from "../../../services/api/GAV_Sercives";
@@ -14,6 +14,7 @@ const GimacCountriesForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const { id } = useParams();
     const theme = useTheme();
+    const location = useLocation();
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
@@ -25,7 +26,7 @@ const GimacCountriesForm = () => {
         country: "",
         serviceProvider: "",
         internationalDialingCode: "",
-        internalId: ""
+        internalId: "000"
     });
 
     const [pending, setPending] = useState(false);
@@ -90,31 +91,38 @@ const GimacCountriesForm = () => {
         setPending(false);
     };
 
+    // useEffect(() => {
+    //     if (id) {
+    //         // Fetch the existing country by ID to populate the form for editing
+    //         // const countryId = id;
+    //         const payload = {
+    //             serviceReference: 'GET_COUNTRY_BY_ID',
+    //             requestBody: id,
+    //         }
+    //         console.log("payload==", payload)
+
+    //         // CBS_Services("GIMAC", `wallet/mapper/getCountry/${id}`, "GET", null)
+    //         CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token)
+    //             .then((response) => {
+    //                 console.log("fetch", response);
+
+    //                 if (response && response.body.meta.statusCode === 200) {
+
+    //                     setInitialValues(response.body.data);
+    //                 }
+    //             })
+    //             .catch((error) => {
+    //                 console.error("Error fetching country:", error);
+    //             });
+    //     }
+    // }, [id]);
+
     useEffect(() => {
-        if (id) {
-            // Fetch the existing country by ID to populate the form for editing
-            // const countryId = id;
-            const payload = {
-                serviceReference: 'GET_COUNTRY_BY_ID',
-                requestBody: id,
-            }
-            console.log("payload==", payload)
-
-            // CBS_Services("GIMAC", `wallet/mapper/getCountry/${id}`, "GET", null)
-            CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token)
-                .then((response) => {
-                    console.log("fetch", response);
-
-                    if (response && response.body.meta.statusCode === 200) {
-
-                        setInitialValues(response.body.data);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error fetching country:", error);
-                });
+        if (id && location.state && location.state.countryData) {
+            // Use the data passed from the countrys component
+            setInitialValues(location.state.countryData);
         }
-    }, [id]);
+    }, [id, location.state]);
 
     return (
         <Box m="20px">
@@ -218,7 +226,7 @@ const GimacCountriesForm = () => {
                                     error={!!touched.serviceProvider && !!errors.serviceProvider}
                                     helperText={touched.serviceProvider && errors.serviceProvider}
                                     sx={{
-                                        gridColumn: "span 4",
+                                        gridColumn: "span 2",
                                         '& .MuiInputLabel-root': {
                                             color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
                                         },
@@ -254,7 +262,7 @@ const GimacCountriesForm = () => {
                                         },
                                     }}
                                 />
-                                <TextField
+                                {/* <TextField
                                     fullWidth
                                     variant="filled"
                                     type="text"
@@ -277,7 +285,7 @@ const GimacCountriesForm = () => {
                                             color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
                                         },
                                     }}
-                                />
+                                /> */}
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>

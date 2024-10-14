@@ -8,6 +8,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Receipt, Refresh, Search } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Badge } from '@mui/material';
+import { formatValue } from '../../tools/formatValue';
 
 
 const ViewTransactions = () => {
@@ -158,83 +159,80 @@ const ViewTransactions = () => {
     };
 
     const columns = [
-        // {
-        //     field: 'fromBankId',
-        //     headerName: 'From Bank ID',
-        //     width: 120,
-        //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>From Bank ID</span>,
-        // },
+        {
+            field: 'dateTime',
+            headerName: 'Date & Time',
+            flex: 1,
+            valueGetter: (params) => formatValue(params.value),
+        },
 
         {
             field: 'fromAccount',
             headerName: 'From Account',
-            width: 190,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>From Account</span>,
+
         },
         {
             field: 'toAccount',
             headerName: 'To Account',
-            width: 190,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Account</span>,
         },
         // {
         //     field: 'toBankId',
         //     headerName: 'To Bank ID',
-        //     width: 120,
+        //     flex: 1,
         //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Bank ID</span>,
         // },
 
         // {
         //     field: 'transactionType',
         //     headerName: 'Type',
-        //     width: 120,
+        //     flex: 1,
         //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>Type</span>,
         // },
 
         // {
         //     field: 'processingId',
         //     headerName: 'Processing ID',
-        //     width: 150,
+        //     flex: 1,
         //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>Processing ID</span>,
         // },
         {
             field: 'direction',
             headerName: 'Direction',
-            width: 100,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction Type</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
         {
             field: 'amount',
             headerName: 'Amount',
-            width: 120,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Amount</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
 
 
         // {
         //     field: 'transactionCategory',
         //     headerName: 'Category',
-        //     width: 150,
+        //     flex: 1,
         //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>Category</span>,
         // },
         {
             field: 'service',
             headerName: 'Service',
-            width: 180,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Service</span>,
-        },
-
-        {
-            field: 'transactionId',
-            headerName: 'Transaction ID',
-            width: 150,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction ID</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
 
         {
             field: 'status',
             headerName: 'Status',
-            width: 100,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Status</span>,
             renderCell: (params) => (
                 <div
@@ -250,23 +248,7 @@ const ViewTransactions = () => {
                 </div>
             ),
         },
-        {
-            field: 'dateTime',
-            headerName: 'Date & Time',
-            width: 180,
-            valueGetter: (params) => {
-                const date = new Date(params.value);
-                return `${date.toLocaleDateString('en-GB', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                })} ${date.toLocaleTimeString('en-GB', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                })}`;
-            },
-        },
+
 
     ]
 
@@ -425,7 +407,7 @@ const ViewTransactions = () => {
                     rows={transactionData}
                     columns={(userData.roles === "ADMIN") ? columns : tellercolumns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
+                    // checkboxSelection
                     disableSelectionOnClick
                     loading={pending}
                 />

@@ -21,6 +21,7 @@ import { useTheme } from '@mui/material/styles';
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Header from "../../../components/Header";
 import CBS_Services from "../../../services/api/GAV_Sercives";
+import { formatValue } from "../../../tools/formatValue";
 
 const ViewBranchesDetails = () => {
     const theme = useTheme();
@@ -110,44 +111,81 @@ const ViewBranchesDetails = () => {
         </Box>
     );
 
+    const statusBadgeStyles = {
+        PENDING: { backgroundColor: 'orange', color: 'white' },
+        SUCCESSFUL: { backgroundColor: 'green', color: 'white' },
+        FAILED: { backgroundColor: 'red', color: 'white' },
+    };
+
     const columns = [
         {
-            field: 'id',
-            headerName: 'ID',
-            width: 80,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>ID</span>,
+            field: 'dateTime',
+            headerName: 'Date & Time',
+            flex: 1,
+            valueGetter: (params) => formatValue(params.value),
+        },
+
+        {
+            field: 'fromAccount',
+            headerName: 'From Account',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>From Account</span>,
+
         },
         {
-            field: 'accountNumber',
-            headerName: 'Account Number',
-            width: 150,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Account Number</span>,
+            field: 'toAccount',
+            headerName: 'To Account',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Account</span>,
+        },
+
+        {
+            field: 'direction',
+            headerName: 'Direction',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction Type</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
         {
-            field: 'accountType',
-            headerName: 'Account Type',
-            width: 120,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Account Type</span>,
+            field: 'amount',
+            headerName: 'Amount',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Amount</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
+
+
+
         {
-            field: 'balance',
-            headerName: 'Balance',
-            width: 120,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Balance</span>,
+            field: 'service',
+            headerName: 'Service',
+            flex: 1,
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Service</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
-        {
-            field: 'currency',
-            headerName: 'Currency',
-            width: 100,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Currency</span>,
-        },
+
         {
             field: 'status',
             headerName: 'Status',
-            width: 100,
+            flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Status</span>,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        padding: '5px 10px',
+                        borderRadius: '12px',
+                        backgroundColor: statusBadgeStyles[params.value]?.backgroundColor,
+                        color: statusBadgeStyles[params.value]?.color,
+                        textAlign: 'center',
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
         },
-    ];
+
+
+    ]
 
     if (!initialValues) return null;
 
@@ -247,6 +285,10 @@ const ViewBranchesDetails = () => {
                                     sx={{
                                         backgroundColor: initialValues.active ? colors.greenAccent[500] : colors.redAccent[500],
                                         color: "white",
+                                        borderRadius: 1, // Removes the rounded corners for a rectangular shape
+                                        height: '30px', // Adjusts the height (you can tweak this value)
+                                        padding: '0 12px', // Adds padding to give it more width
+
                                     }}
                                 />
                             </Box>

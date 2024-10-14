@@ -19,6 +19,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { tokens } from '../../theme';
 import CBS_Services from '../../services/api/GAV_Sercives';
 import Header from '../../components/Header';
+import { formatValue } from '../../tools/formatValue';
 
 const BankInvestments = () => {
     const theme = useTheme();
@@ -152,9 +153,9 @@ const BankInvestments = () => {
 
     const InvestmentColumns = [
         // { field: 'id', headerName: ' Investment ID', flex: 1 },
-        { field: 'accountName', headerName: 'Account Name', flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: 'amount', headerName: 'Amount', flex: 1, },
-        { field: 'investorName', headerName: 'Investor Name', flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: 'accountName', headerName: 'Account Name', flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: 'amount', headerName: 'Amount', flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: 'investorName', headerName: 'Investor Name', flex: 1, valueGetter: (params) => formatValue(params.value), },
         {
             field: 'approvalStatus',
             headerName: 'Approval Status',
@@ -227,7 +228,7 @@ const BankInvestments = () => {
                     rows={capitalInvestmentData}
                     columns={InvestmentColumns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
+                    // checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
                 />
@@ -235,18 +236,19 @@ const BankInvestments = () => {
 
             </Box>
             {/* Confirmation Modal for Capital Investment */}
-            <Dialog open={confirmationModal.show} onClose={handleCloseConfirmationModal}>
+            <Dialog open={confirmationModal.show} onClose={handleCloseConfirmationModal} fullWidth >
                 <DialogTitle>Confirm Approval</DialogTitle>
                 <DialogContent>
                     <Typography>Are you sure you want to approve this Investment?</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleConfirmApproveInvestment} color="primary" variant="contained">
-                        Confirm
-                    </Button>
-                    <Button onClick={handleCloseConfirmationModal} color="secondary">
+                    <Button onClick={handleCloseConfirmationModal} color="primary" variant="contained">
                         Cancel
                     </Button>
+                    <Button onClick={handleConfirmApproveInvestment} color="secondary" variant="contained">
+                        Confirm
+                    </Button>
+
 
                 </DialogActions>
             </Dialog>

@@ -7,6 +7,7 @@ import { Add, Delete, EditOutlined } from '@mui/icons-material';
 import { tokens } from '../../../theme';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import Header from '../../../components/Header';
+import { formatValue } from '../../../tools/formatValue';
 
 const Pricing = () => {
     const theme = useTheme();
@@ -42,25 +43,25 @@ const Pricing = () => {
         fetchPricingData();
     }, []);
 
+    // const handleAddPricing = () => {
+    //     navigate('/pricing/configure');
+    // };
     const handleAddPricing = () => {
-        navigate('/pricing/configure');
+        navigate('/pricing/configurecharges');
     };
 
     // const handleEdit = (id) => {
     //     navigate(`/pricing/edit/${id}`);
     // };
-    const toSentenceCase = (text) => {
-        if (!text) return '';
-        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    };
+
 
     const columns = [
         // { field: "id", headerName: "ID", flex: 1 },
-        { field: "name", headerName: "Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "description", headerName: "Description", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "chargesType", headerName: "Charges Type", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "percentage", headerName: "Percentage", flex: 1, },
-        { field: "bankId", headerName: "Bank ID", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "name", headerName: "Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "description", headerName: "Description", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "chargesType", headerName: "Charges Type", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "percentage", headerName: "Percentage", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "bankId", headerName: "Bank ID", flex: 1, valueGetter: (params) => formatValue(params.value), },
         // {
         //     field: "actions",
         //     headerName: "Actions",
@@ -160,7 +161,7 @@ const Pricing = () => {
                     rows={pricingData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
+                    // checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
                 />

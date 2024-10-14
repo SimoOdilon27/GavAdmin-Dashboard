@@ -8,6 +8,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../components/Header';
 import { useNavigate } from 'react-router-dom';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { formatValue } from '../../tools/formatValue';
 
 
 const Clients = () => {
@@ -182,23 +183,20 @@ const Clients = () => {
         navigate(`/client/view/${row.msisdn}`, { state: { clientData: row } });
     };
 
-    const toSentenceCase = (text) => {
-        if (!text) return '';
-        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    };
+
 
     console.log("current Row+++", currentRow);
 
 
     const columns = [
-        { field: "name", headerName: "Client Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "msisdn", headerName: "MSISDN", flex: 1 },
-        { field: "language", headerName: "Language", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "dateOfBirth", headerName: "Date of Birth", flex: 1 },
-        { field: "cniNumber", headerName: "Cni", flex: 1 },
-        { field: "initialBalance", headerName: "Initial Balance", flex: 1 },
-        { field: "email", headerName: "Email", flex: 1 },
-        { field: "address", headerName: "Address", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "name", headerName: "Client Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "msisdn", headerName: "MSISDN", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "language", headerName: "Language", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "dateOfBirth", headerName: "Date of Birth", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "cniNumber", headerName: "Cni", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "initialBalance", headerName: "Initial Balance", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "email", headerName: "Email", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "address", headerName: "Address", flex: 1, valueGetter: (params) => formatValue(params.value), },
         // { field: "email", headerName: "Email", flex: 1 },
         {
             field: "status",
