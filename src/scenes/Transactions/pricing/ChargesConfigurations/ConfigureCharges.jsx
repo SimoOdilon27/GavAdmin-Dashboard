@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import {
     Box,
@@ -20,9 +20,10 @@ import {
     Divider,
     Button,
     Stack,
+    IconButton,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { Save } from '@mui/icons-material';
+import { Add, Remove, RemoveCircle, Save } from '@mui/icons-material';
 import CBS_Services from '../../../../services/api/GAV_Sercives';
 import { tokens } from '../../../../theme';
 import Header from '../../../../components/Header';
@@ -50,6 +51,11 @@ const ConfigureCharges = () => {
         bankId: '',
         minimumAmount: 0,
         maximumAmount: 0,
+        chargedFee: 0,
+        chargesId: '',
+        ranges: [
+            { minimumAmount: 0, maximumAmount: 0, chargedFee: 0, chargesId: '', }
+        ],
     };
 
     const validationSchema = Yup.object().shape({
@@ -58,7 +64,8 @@ const ConfigureCharges = () => {
         percentage: Yup.number().min(0, 'Percentage must be non-negative'),
         bankId: Yup.string(),
         minimumAmount: Yup.number().min(0, 'Minimum amount must be non-negative'),
-        maximumAmount: Yup.number().min(0, 'Maximum amount must be non-negative')
+        maximumAmount: Yup.number().min(0, 'Maximum amount must be non-negative'),
+        chargedFee: Yup.number().min(0, 'Charged fee must be non-negative'),
 
     });
 
@@ -106,68 +113,107 @@ const ConfigureCharges = () => {
     };
 
 
+    const createCharge = async (values) => {
+        const payload = {
+            serviceReference: 'OTHER_CHARGES',
+            requestBody: JSON.stringify({
+                description: values.description,
+                name: values.name,
+                percentage: values.percentage,
+                active: values.active,
+                chargesAppliesByPercentage: values.chargesAppliesByPercentage
+            })
+        };
+
+        console.log("payload", payload);
+
+
+        const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
+        console.log("response==", response);
+
+        if (response && response.body.meta.statusCode !== 200) {
+            showSnackbar("Error creating charge", 'error');
+
+            throw new Error(response.body.errors || 'Error creating charge');
+        }
+        return response.body.data.id; // Return the ID directly from the response
+    };
+
     const handleSubmit = async (values, { setSubmitting, resetForm }) => {
         setPending(true);
-        let serviceReference;
-        let requestBody;
-
-        if (values.bankId) {
-            serviceReference = 'BANK_CHARGES';
-            requestBody = {
-                bankId: values.bankId,
-                description: values.description,
-                name: values.name,
-                percentage: values.percentage,
-                active: values.active,
-                chargesAppliesByPercentage: values.chargesAppliesByPercentage
-            };
-        } else if (!values.chargesAppliesByPercentage) {
-            serviceReference = 'CHARGES_RANGE';
-            requestBody = {
-                chargedFee: values.chargedFee,
-                chargesId: values.chargesId,
-                minimumAmount: values.minimumAmount,
-                maximumAmount: values.maximumAmount
-            };
-        } else {
-            serviceReference = 'OTHER_CHARGES';
-            requestBody = {
-                description: values.description,
-                name: values.name,
-                percentage: values.percentage,
-                active: values.active,
-                chargesAppliesByPercentage: values.chargesAppliesByPercentage
-            };
-        }
 
         try {
-            const payload = {
-                serviceReference,
-                requestBody: JSON.stringify(requestBody)
-            };
+            if (values.bankId) {
+                // Handle BANK_CHARGES case
+                const payload = {
+                    serviceReference: 'BANK_CHARGES',
+                    requestBody: JSON.stringify({
+                        bankId: values.bankId,
+                        description: values.description,
+                        name: values.name,
+                        percentage: values.percentage,
+                        active: values.active,
+                        chargesAppliesByPercentage: !values.chargesAppliesByPercentage
+                    })
+                };
 
-            console.log("payload===", payload);
-            console.log("values===", values);
+                console.log("payload===", payload);
+                console.log("values===", values);
 
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
-            console.log("response===", response);
+                const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
+                console.log("response===", response);
 
-            if (response && response.body.meta.statusCode === 200) {
-                showSnackbar("Charges saved successfully", 'success');
-                resetForm();
-            } else if (response && response.body.status === 401) {
-                showSnackbar('Unauthorized to perform action', 'error');
+                if (response && response.body.meta.statusCode !== 200) {
+                    showSnackbar("Error saving bank charge", 'error');
+                    // throw new Error(response.body.errors || 'Error saving bank charge');
+
+                }
+
+                showSnackbar("Bank charge saved successfully", 'success');
+
+            } else if (values.chargesAppliesByPercentage) {
+                // Create the charge first and get the ID
+                const chargeId = await createCharge(values);
+
+                // Now save each range using the obtained chargeId
+                for (const range of values.ranges) {
+                    const payload = {
+                        serviceReference: 'CHARGES_RANGE',
+                        requestBody: JSON.stringify({
+                            minimumAmount: range.minimumAmount,
+                            maximumAmount: range.maximumAmount,
+                            chargedFee: range.chargedFee,
+                            chargesId: chargeId // Use the ID from createCharge
+                        })
+                    };
+                    console.log("payload===", payload);
+                    console.log("values===", values);
+
+
+                    const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
+                    if (response && response.body.meta.statusCode !== 200) {
+                        showSnackbar("Error saving range", 'error');
+                        // throw new Error(response.body.errors || 'Error saving range');
+                    }
+                }
+
+                showSnackbar("Charge and all ranges saved successfully", 'success');
             } else {
-                showSnackbar(response.body.errors || 'Error', 'error');
+                // Handle OTHER_CHARGES case
+                await createCharge(values);
+                showSnackbar("Charge saved successfully", 'success');
             }
+
+            resetForm();
         } catch (error) {
             console.error('Error:', error);
-            showSnackbar('Connection Error! Try again later', 'error');
+            showSnackbar(`Error: ${error.message}`, 'error');
         } finally {
             setPending(false);
             setSubmitting(false);
         }
     };
+
 
     const showSnackbar = (message, severity) => {
         setSnackbar({ open: true, message, severity });
@@ -218,21 +264,50 @@ const ConfigureCharges = () => {
                                     Charge Configuration
                                 </Typography>
 
-                                <FormControlLabel
-                                    control={
-                                        <Field
-                                            as={Checkbox}
-                                            name="chargesAppliesByPercentage"
-                                            color="secondary"
-                                        />
-                                    }
-                                    label="Charges Applied by Percentage"
-                                    sx={{ gridColumn: "span 4" }}
-                                />
+                                <>
 
-                                <Typography variant="body2" color="textSecondary" sx={{ gridColumn: "span 4", mt: -2, mb: 2 }}>
-                                    Check this box if you want to apply charges as a percentage. Otherwise, you'll be able to set fixed charges.
-                                </Typography>
+                                    <Typography variant="h6" sx={{ gridColumn: "span 4" }}>
+                                        For a Specific Bank
+                                    </Typography>
+
+                                    <Typography variant="body2" color="textSecondary" sx={{ gridColumn: "span 4", mt: -2, mb: 1 }}>
+                                        Select a bank if you want to apply the charge to a specific bank. Otherwise, leave it blank if you do not want to specify.
+                                    </Typography>
+
+
+                                    <FormControl fullWidth variant="filled" sx={{
+                                        gridColumn: "span 4",
+                                        '& .MuiInputLabel-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                        },
+                                        '& .MuiFilledInput-root': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                        },
+                                        '& .MuiInputLabel-root.Mui-focused': {
+                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                        },
+                                    }}>
+                                        <InputLabel>Bank</InputLabel>
+                                        <Field
+                                            as={Select}
+                                            name="bankId"
+                                            label="Bank"
+                                            error={!!touched.bankId && !!errors.bankId}
+                                        >
+                                            <MenuItem value="">Select Bank</MenuItem>
+                                            {banks.map((bank) => (
+                                                <MenuItem key={bank.bankId} value={bank.bankId}>
+                                                    {bank.bankName}
+                                                </MenuItem>
+                                            ))}
+                                        </Field>
+                                        {touched.bankId && errors.bankId && (
+                                            <Typography color="error">{errors.bankId}</Typography>
+                                        )}
+                                    </FormControl>
+                                </>
+
+
 
                                 <TextField
                                     fullWidth
@@ -259,66 +334,22 @@ const ConfigureCharges = () => {
                                     }}
                                 />
 
-                                {values.chargesAppliesByPercentage && (
-                                    <>
-                                        <TextField
-                                            fullWidth
-                                            variant="filled"
-                                            type="text"
-                                            label="Name"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.name}
-                                            name="name"
-                                            error={!!touched.name && !!errors.name}
-                                            helperText={touched.name && errors.name}
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
 
-                                            }}
-                                        />
 
-                                        <TextField
-                                            fullWidth
-                                            variant="filled"
-                                            type="number"
-                                            label="Percentage"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.percentage}
-                                            name="percentage"
-                                            error={!!touched.percentage && !!errors.percentage}
-                                            helperText={touched.percentage && errors.percentage}
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-
-                                            }}
-                                        />
-                                    </>
-                                )}
-
-                                {!values.chargesAppliesByPercentage && (
-                                    <>
-                                        <FormControl fullWidth variant="filled" sx={{
-                                            gridColumn: "span 4",
+                                <>
+                                    <TextField
+                                        fullWidth
+                                        variant="filled"
+                                        type="text"
+                                        label="Name"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.name}
+                                        name="name"
+                                        error={!!touched.name && !!errors.name}
+                                        helperText={touched.name && errors.name}
+                                        sx={{
+                                            gridColumn: "span 2",
                                             '& .MuiInputLabel-root': {
                                                 color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
                                             },
@@ -329,101 +360,22 @@ const ConfigureCharges = () => {
                                                 color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
                                             },
 
-                                        }}>
-                                            <InputLabel>Charge</InputLabel>
-                                            <Select
-                                                label="charge"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.chargesId}
-                                                name="chargesId"
-                                                error={!!touched.chargesId && !!errors.chargesId}
-                                            >
-                                                <MenuItem value="">Select Charge</MenuItem>
-                                                {Array.isArray(pricingData) && pricingData.length > 0 ? (
-                                                    pricingData.map(option => (
-                                                        <MenuItem key={option.id} value={option.id}>
-                                                            {option.name}
-                                                        </MenuItem>
-                                                    ))
-                                                ) : (
-                                                    <MenuItem value="">No Charges available</MenuItem>
-                                                )}
-                                            </Select>
-                                            {touched.chargesId && errors.chargesId && (
-                                                <Alert severity="error">{errors.chargesId}</Alert>
-                                            )}
-                                        </FormControl>
+                                        }}
+                                    />
 
-                                        <TextField
-                                            fullWidth
-                                            variant="filled"
-                                            type="number"
-                                            label="Minimum Amount"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.minimumAmount}
-                                            name="minimumAmount"
-                                            error={!!touched.minimumAmount && !!errors.minimumAmount}
-                                            helperText={touched.minimumAmount && errors.minimumAmount}
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-
-                                            }}
-                                        />
-
-                                        <TextField
-                                            fullWidth
-                                            variant="filled"
-                                            type="number"
-                                            label="Maximum Amount"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.maximumAmount}
-                                            name="maximumAmount"
-                                            error={!!touched.maximumAmount && !!errors.maximumAmount}
-                                            helperText={touched.maximumAmount && errors.maximumAmount}
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-
-                                            }}
-                                        />
-                                    </>
-                                )}
-
-                                {values.chargesAppliesByPercentage && (
-                                    <>
-                                        <Divider sx={{ gridColumn: "span 4", my: 2 }} />
-
-                                        <Typography variant="h6" sx={{ gridColumn: "span 4", mb: 1 }}>
-                                            For a Specific Bank
-                                        </Typography>
-
-                                        <Typography variant="body2" color="textSecondary" sx={{ gridColumn: "span 4", mt: -2, mb: 1 }}>
-                                            Select a bank if you want to apply the charge to a specific bank. Otherwise, leave it blank if you do not want to specify.
-                                        </Typography>
-
-
-                                        <FormControl fullWidth variant="filled" sx={{
-                                            gridColumn: "span 3",
+                                    <TextField
+                                        fullWidth
+                                        variant="filled"
+                                        type="number"
+                                        label="Percentage"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.percentage}
+                                        name="percentage"
+                                        error={!!touched.percentage && !!errors.percentage}
+                                        helperText={touched.percentage && errors.percentage}
+                                        sx={{
+                                            gridColumn: "span 2",
                                             '& .MuiInputLabel-root': {
                                                 color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
                                             },
@@ -433,41 +385,133 @@ const ConfigureCharges = () => {
                                             '& .MuiInputLabel-root.Mui-focused': {
                                                 color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
                                             },
-                                        }}>
-                                            <InputLabel>Bank</InputLabel>
-                                            <Field
-                                                as={Select}
-                                                name="bankId"
-                                                label="Bank"
-                                                error={!!touched.bankId && !!errors.bankId}
-                                            >
-                                                <MenuItem value="">Select Bank</MenuItem>
-                                                {banks.map((bank) => (
-                                                    <MenuItem key={bank.bankId} value={bank.bankId}>
-                                                        {bank.bankName}
-                                                    </MenuItem>
-                                                ))}
-                                            </Field>
-                                            {touched.bankId && errors.bankId && (
-                                                <Typography color="error">{errors.bankId}</Typography>
-                                            )}
-                                        </FormControl>
-                                    </>
-                                )}
 
-                                {/* <FormControlLabel
+                                        }}
+                                    />
+                                </>
+
+                                <Typography variant="body2" color="textSecondary" sx={{ gridColumn: "span 4" }}>
+                                    Check this box if you want to apply charges as a Range. Otherwise, you'll be able to set as a percentage.
+                                </Typography>
+
+                                <FormControlLabel
                                     control={
                                         <Field
                                             as={Checkbox}
-                                            name="active"
+                                            name="chargesAppliesByPercentage"
                                             color="secondary"
-                                            disabled={true}
-                                            
                                         />
                                     }
-                                    label="Active"
-                                    sx={{ gridColumn: "span 2", justifyContent: "flex-start" }}
-                                /> */}
+                                    label="Charges Applies by Range"
+                                    sx={{ gridColumn: "span 4" }}
+                                />
+
+
+                                <Divider sx={{ gridColumn: "span 4", my: 2 }} />
+
+                                {values.chargesAppliesByPercentage && (
+                                    <FieldArray name="ranges">
+                                        {({ push, remove }) => (
+                                            <Box sx={{ gridColumn: "span 4" }}>
+                                                {values.ranges.map((range, index) => (
+                                                    <Box key={index} sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                                                        <TextField
+                                                            fullWidth
+                                                            variant="filled"
+                                                            type="number"
+                                                            label="Minimum Amount"
+                                                            name={`ranges.${index}.minimumAmount`}
+                                                            value={range.minimumAmount}
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            error={touched.ranges?.[index]?.minimumAmount && errors.ranges?.[index]?.minimumAmount}
+                                                            helperText={touched.ranges?.[index]?.minimumAmount && errors.ranges?.[index]?.minimumAmount}
+                                                            sx={{
+                                                                '& .MuiInputLabel-root': {
+                                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                                                },
+                                                                '& .MuiFilledInput-root': {
+                                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                                                },
+                                                                '& .MuiInputLabel-root.Mui-focused': {
+                                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                                                },
+                                                            }}
+                                                        />
+                                                        <TextField
+                                                            fullWidth
+                                                            variant="filled"
+                                                            type="number"
+                                                            label="Maximum Amount"
+                                                            name={`ranges.${index}.maximumAmount`}
+                                                            value={range.maximumAmount}
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            error={touched.ranges?.[index]?.maximumAmount && errors.ranges?.[index]?.maximumAmount}
+                                                            helperText={touched.ranges?.[index]?.maximumAmount && errors.ranges?.[index]?.maximumAmount}
+                                                            sx={{
+                                                                '& .MuiInputLabel-root': {
+                                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                                                },
+                                                                '& .MuiFilledInput-root': {
+                                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                                                },
+                                                                '& .MuiInputLabel-root.Mui-focused': {
+                                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                                                },
+                                                            }}
+                                                        />
+                                                        <TextField
+                                                            fullWidth
+                                                            variant="filled"
+                                                            type="number"
+                                                            label="Charged Fee"
+                                                            name={`ranges.${index}.chargedFee`}
+                                                            value={range.chargedFee}
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            error={touched.ranges?.[index]?.chargedFee && errors.ranges?.[index]?.chargedFee}
+                                                            helperText={touched.ranges?.[index]?.chargedFee && errors.ranges?.[index]?.chargedFee}
+                                                            sx={{
+                                                                '& .MuiInputLabel-root': {
+                                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
+                                                                },
+                                                                '& .MuiFilledInput-root': {
+                                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
+                                                                },
+                                                                '& .MuiInputLabel-root.Mui-focused': {
+                                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
+                                                                },
+                                                            }}
+                                                        />
+                                                        <IconButton
+                                                            color="red"
+                                                            variant="contained"
+                                                            sx={{ color: colors.redAccent[500], mr: 2 }}
+                                                            onClick={() => remove(index)}>
+                                                            <RemoveCircle />
+                                                        </IconButton>
+                                                    </Box>
+                                                ))}
+                                                <Button
+                                                    color="secondary"
+                                                    variant="outlined"
+                                                    startIcon={<Add />}
+                                                    onClick={() => push({ minimumAmount: 0, maximumAmount: 0, chargedFee: 0 })}
+                                                    sx={{ mt: 1 }}
+
+                                                >
+                                                    Add Range
+                                                </Button>
+                                            </Box>
+                                        )}
+                                    </FieldArray>
+                                )}
+
+
+
+
+
                             </Box>
 
                             <Box display="flex" justifyContent="end" mt="20px">

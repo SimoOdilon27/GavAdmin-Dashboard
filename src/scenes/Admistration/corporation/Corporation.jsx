@@ -441,7 +441,7 @@ const Corporation = () => {
                     },
                 }}
             >
-                <DataGrid checkboxSelection rows={corporationData} columns={columns} components={{ Toolbar: GridToolbar }} loading={pending}
+                <DataGrid rows={corporationData} columns={columns} components={{ Toolbar: GridToolbar }} loading={pending}
                 />
             </Box>
 

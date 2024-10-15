@@ -455,7 +455,7 @@ const Branches = () => {
                     },
                 }}
             >
-                <DataGrid checkboxSelection rows={branchData} columns={columns} components={{ Toolbar: GridToolbar }} loading={loading}
+                <DataGrid rows={branchData} columns={columns} components={{ Toolbar: GridToolbar }} loading={loading}
                 />
             </Box>
 
