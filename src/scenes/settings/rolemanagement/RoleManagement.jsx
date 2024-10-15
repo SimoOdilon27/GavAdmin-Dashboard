@@ -9,6 +9,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { LoadingButton } from '@mui/lab';
 import { Formik } from 'formik';
 import * as yup from "yup";
+import { formatValue } from '../../../tools/formatValue';
 
 const RoleManagement = () => {
     const theme = useTheme();
@@ -278,14 +279,14 @@ const RoleManagement = () => {
 
 
     const columns = [
-        { field: "id", headerName: "ID", flex: 1 },
-        { field: "roleName", headerName: "Role", flex: 1 },
-        { field: "creationDate", headerName: "Creation Date", flex: 1 },
+        // { field: "id", headerName: "ID", flex: 1 },
+        { field: "roleName", headerName: "Role", flex: 2, valueGetter: (params) => formatValue(params.value), },
+        { field: "creationDate", headerName: "Creation Date", flex: 2, valueGetter: (params) => formatValue(params.value), },
 
         {
             field: "actions",
             headerName: "Actions",
-            flex: 1,
+            flex: 2,
             renderCell: (params) => {
                 const row = params.row;
                 return (
@@ -379,7 +380,6 @@ const RoleManagement = () => {
                     rows={roleData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
                     setFieldValue

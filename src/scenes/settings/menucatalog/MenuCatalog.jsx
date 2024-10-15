@@ -8,6 +8,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../../components/Header';
 import { Add, Delete, EditOutlined } from '@mui/icons-material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { formatValue } from '../../../tools/formatValue';
 
 
 const MenuCatalog = () => {
@@ -69,11 +70,11 @@ const MenuCatalog = () => {
     };
 
     const columns = [
-        { field: "id", headerName: "Catalog Name", flex: 1 },
-        { field: "serviceProvider", headerName: "Service Provider", flex: 1 },
-        { field: "description", headerName: "Description", flex: 1 },
-        { field: "endPoint", headerName: "Endpoint", flex: 1 },
-        { field: "requestType", headerName: "Request Type", flex: 1 },
+        { field: "id", headerName: "Catalog Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "serviceProvider", headerName: "Service Provider", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "description", headerName: "Description", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "endPoint", headerName: "Endpoint", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "requestType", headerName: "Request Type", flex: 1, valueGetter: (params) => formatValue(params.value), },
         {
             field: "actions",
             headerName: "Actions",
@@ -170,7 +171,6 @@ const MenuCatalog = () => {
                     rows={CatalogData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
                 />

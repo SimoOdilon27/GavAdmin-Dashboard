@@ -8,6 +8,7 @@ import CBS_Services from '../../../services/api/GAV_Sercives';
 import Header from '../../../components/Header';
 import { useNavigate } from 'react-router-dom';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { formatValue } from '../../../tools/formatValue';
 
 
 const AccountType = () => {
@@ -98,8 +99,8 @@ const AccountType = () => {
 
 
     const columns = [
-        { field: "type", headerName: "Account type", flex: 1, valueGetter: (params) => toSentenceCase(params.value) },
-        { field: "description", headerName: "Description", flex: 1, valueGetter: (params) => toSentenceCase(params.value) },
+        { field: "type", headerName: "Account type", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "description", headerName: "Description", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "idTag", headerName: " Tag", flex: 1, },
 
 
@@ -203,7 +204,6 @@ const AccountType = () => {
                     rows={AccountType}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
 

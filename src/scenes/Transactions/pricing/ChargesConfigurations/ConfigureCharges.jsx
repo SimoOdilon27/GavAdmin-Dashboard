@@ -270,7 +270,7 @@ const ConfigureCharges = () => {
                                         For a Specific Bank
                                     </Typography>
 
-                                    <Typography variant="body2" color="textSecondary" sx={{ gridColumn: "span 4", mt: -2, mb: 1 }}>
+                                    <Typography variant="body2" color="textSecondary" sx={{ gridColumn: "span 4", mt: -2, mb: 0 }}>
                                         Select a bank if you want to apply the charge to a specific bank. Otherwise, leave it blank if you do not want to specify.
                                     </Typography>
 

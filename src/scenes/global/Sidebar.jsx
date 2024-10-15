@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link, NavLink } from "react-router-dom";
@@ -25,7 +25,7 @@ import { tokens } from "../../theme";
 import { AccountCircle, ManageAccounts, MapOutlined, Money, SettingsApplicationsOutlined, SupervisedUserCircleOutlined } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 
-const Item = ({ title, to, icon, selected, setSelected }) => {
+const Item = ({ title, to, icon, selected, setSelected, closeSubmenu }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   return (
@@ -34,7 +34,10 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       style={{
         color: colors.grey[100],
       }}
-      onClick={() => setSelected(title)}
+      onClick={() => {
+        setSelected(title);
+        closeSubmenu();
+      }}
       icon={icon}
     >
       <Typography>{title}</Typography>
@@ -48,9 +51,28 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const [expandedSubMenu, setExpandedSubMenus] = useState([]);
+  const [openSubmenu, setOpenSubmenu] = useState(null);
+
   const userData = useSelector((state) => state.users);
   const userName = userData.userName;
   const role = userData.roles;
+
+  const handleSubMenuClick = (menuName) => {
+    if (openSubmenu === menuName) {
+      setOpenSubmenu(null); // Close if it's already open
+    } else {
+      setOpenSubmenu(menuName); // Open the clicked submenu
+    }
+
+    if (isCollapsed) {
+      setIsCollapsed(false);
+    }
+  };
+
+  const closeSubmenu = () => {
+    setOpenSubmenu(null);
+  };
 
   return (
 
@@ -147,6 +169,7 @@ const Sidebar = () => {
               icon={<HomeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
+              closeSubmenu={closeSubmenu}
             />
 
             {role.includes("ADMIN") && (
@@ -172,7 +195,7 @@ const Sidebar = () => {
                     to="/bankaccount"
                     icon={<AttachMoneyIcon />}
                     selected={selected}
-                    setSelected={setSelected}
+                    closeSubmenu={closeSubmenu}
                   />
 
                   <Item
@@ -181,6 +204,7 @@ const Sidebar = () => {
                     icon={<TrendingDownIcon />}
                     selected={selected}
                     setSelected={setSelected}
+                    closeSubmenu={closeSubmenu}
                   />
                 </>
 
@@ -199,6 +223,7 @@ const Sidebar = () => {
                     icon={<WalletIcon />}
                     selected={selected}
                     setSelected={setSelected}
+                    closeSubmenu={closeSubmenu}
                   />
                   <Item
                     title="Transactions"
@@ -206,6 +231,7 @@ const Sidebar = () => {
                     icon={<TrendingDownIcon />}
                     selected={selected}
                     setSelected={setSelected}
+                    closeSubmenu={closeSubmenu}
                   />
                 </>
 
@@ -223,6 +249,7 @@ const Sidebar = () => {
                   icon={<PersonOutlinedIcon />}
                   selected={selected}
                   setSelected={setSelected}
+                  closeSubmenu={closeSubmenu}
                 />
 
                 <>
@@ -239,6 +266,7 @@ const Sidebar = () => {
                     icon={<WalletIcon />}
                     selected={selected}
                     setSelected={setSelected}
+                    closeSubmenu={closeSubmenu}
                   />
                   <Item
                     title="Countries"
@@ -246,6 +274,7 @@ const Sidebar = () => {
                     icon={<PublicIcon />}
                     selected={selected}
                     setSelected={setSelected}
+                    closeSubmenu={closeSubmenu}
                   />
                 </>
 
@@ -262,6 +291,8 @@ const Sidebar = () => {
                 <SubMenu
                   title="Administration"
                   icon={<SettingsApplicationsOutlined />}
+                  open={openSubmenu === "settings"}
+                  onOpenChange={() => handleSubMenuClick("settings")}
                   sx={{ m: "15px 0 5px 20px" }}
                 >
                   <Item
@@ -302,12 +333,11 @@ const Sidebar = () => {
                   />
                 </SubMenu>
 
-
-
-
                 <SubMenu
                   title="Authorization"
                   icon={<CollectionsIcon />}
+                  open={openSubmenu === "authorization"}
+                  onOpenChange={() => handleSubMenuClick("authorization")}
                 >
                   <Item
                     title="Roles"
@@ -338,6 +368,7 @@ const Sidebar = () => {
                   icon={<ManageAccounts />}
                   selected={selected}
                   setSelected={setSelected}
+                  closeSubmenu={closeSubmenu}
                 />
                 <Item
                   title="Pricing"
@@ -345,6 +376,7 @@ const Sidebar = () => {
                   icon={<TagIcon />}
                   selected={selected}
                   setSelected={setSelected}
+                  closeSubmenu={closeSubmenu}
                 />
               </>
             )}
