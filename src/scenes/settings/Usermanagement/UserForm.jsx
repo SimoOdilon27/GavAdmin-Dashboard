@@ -1,4 +1,4 @@
-import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, TextField } from "@mui/material";
+import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, useTheme } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -9,9 +9,12 @@ import { useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { tokens } from "../../../theme";
 
 const UserForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
     const [initialValues, setInitialValues] = useState({
         userName: "",
         password: "",
@@ -27,6 +30,7 @@ const UserForm = () => {
 
     const [tellerData, setTellerData] = useState([]);
     const [roleData, setRoleData] = useState([]);
+
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
@@ -35,6 +39,25 @@ const UserForm = () => {
     const [selectedTeller, setSelectedTeller] = useState(''); // New state for selected lawyer
     const navigate = useNavigate();
     console.log("selectedTe,", selectedTeller);
+
+    const formFieldStyles = (gridColumn = "span 2") => ({
+        gridColumn,
+        '& .MuiInputLabel-root': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100] // Light color for dark mode
+                : colors.black[700], // Dark color for light mode
+        },
+        '& .MuiFilledInput-root': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[700],
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[100],
+        },
+    });
 
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
@@ -180,7 +203,7 @@ const UserForm = () => {
                                 }}
                             >
 
-                                <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
+                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 4")}>
                                     <InputLabel>Role</InputLabel>
                                     <Select
                                         label="Role"
@@ -232,13 +255,13 @@ const UserForm = () => {
                                     name="userName"
                                     error={!!touched.userName && !!errors.userName}
                                     helperText={touched.userName && errors.userName}
-                                    sx={{ gridColumn: "span 4" }}
+                                    sx={formFieldStyles("span 4")}
                                 />
 
                                 {/* Conditional Teller Dropdown */}
                                 {values.roles === "TELLER" && (
                                     <>
-                                        <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
+                                        <FormControl fullWidth variant="filled" sx={formFieldStyles("span 4")}>
                                             <InputLabel>Teller</InputLabel>
                                             <Select
                                                 label="Teller"
@@ -273,7 +296,7 @@ const UserForm = () => {
                                             name="refId"
                                             error={!!touched.refId && !!errors.refId}
                                             helperText={touched.refId && errors.refId}
-                                            sx={{ gridColumn: "span 4" }}
+                                            sx={formFieldStyles("span 4")}
                                             disabled
                                         />
                                     </>
@@ -297,7 +320,7 @@ const UserForm = () => {
                                     name="password"
                                     error={!!touched.password && !!errors.password}
                                     helperText={touched.password && errors.password}
-                                    sx={{ gridColumn: "span 2" }}
+                                    sx={formFieldStyles("span 2")}
                                 />
 
                                 <TextField
@@ -315,7 +338,7 @@ const UserForm = () => {
                                     name="tel"
                                     error={!!touched.tel && !!errors.tel}
                                     helperText={touched.tel && errors.tel}
-                                    sx={{ gridColumn: "span 2" }}
+                                    sx={formFieldStyles("span 2")}
                                 />
 
                                 <TextField
@@ -333,7 +356,7 @@ const UserForm = () => {
                                     name="email"
                                     error={!!touched.email && !!errors.email}
                                     helperText={touched.email && errors.email}
-                                    sx={{ gridColumn: "span 3" }}
+                                    sx={formFieldStyles("span 3")}
                                 />
 
 
@@ -360,24 +383,19 @@ const UserForm = () => {
                                         <Alert severity="error">{errors.language}</Alert>
                                     )}
                                 </FormControl>
-
-
-
-
-
-
-
-
-
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
-                                <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
-                                    startIcon={<Save />} >
-                                    {loading ? 'Creating User...' : 'Create User'}
-                                </LoadingButton>
-                                <Button color="primary" variant="contained" disabled={loading} onClick={() => navigate(-1)}>
-                                    Cancel
-                                </Button>
+                                <Stack direction="row" spacing={2}>
+                                    <Button color="primary" variant="contained" disabled={loading} onClick={() => navigate(-1)}>
+                                        Cancel
+                                    </Button>
+                                    <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
+                                        startIcon={<Save />} >
+                                        {loading ? 'Creating User...' : 'Create User'}
+                                    </LoadingButton>
+
+                                </Stack>
+
                             </Box>
                         </form>
                     </Box>

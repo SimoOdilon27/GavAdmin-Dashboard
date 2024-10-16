@@ -179,26 +179,7 @@ const ViewTransactions = () => {
             flex: 1,
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Account</span>,
         },
-        // {
-        //     field: 'toBankId',
-        //     headerName: 'To Bank ID',
-        //     flex: 1,
-        //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Bank ID</span>,
-        // },
 
-        // {
-        //     field: 'transactionType',
-        //     headerName: 'Type',
-        //     flex: 1,
-        //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>Type</span>,
-        // },
-
-        // {
-        //     field: 'processingId',
-        //     headerName: 'Processing ID',
-        //     flex: 1,
-        //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>Processing ID</span>,
-        // },
         {
             field: 'direction',
             headerName: 'Direction',
@@ -215,12 +196,6 @@ const ViewTransactions = () => {
         },
 
 
-        // {
-        //     field: 'transactionCategory',
-        //     headerName: 'Category',
-        //     flex: 1,
-        //     renderHeader: () => <span style={{ fontWeight: 'bold' }}>Category</span>,
-        // },
         {
             field: 'service',
             headerName: 'Service',

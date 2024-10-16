@@ -16,6 +16,25 @@ import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 const CorporationForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const theme = useTheme();
+    const formFieldStyles = (gridColumn = "span 2") => ({
+        gridColumn,
+        '& .MuiInputLabel-root': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100] // Light color for dark mode
+                : colors.black[700], // Dark color for light mode
+        },
+        '& .MuiFilledInput-root': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[700],
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[100],
+        },
+    });
+
     const colors = tokens(theme.palette.mode);
     const { id } = useParams();
     const navigate = useNavigate();

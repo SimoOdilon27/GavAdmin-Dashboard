@@ -1,8 +1,8 @@
-import { Alert, Box, Button, Checkbox, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputAdornment, InputLabel, List, ListItem, ListItemIcon, ListItemText, ListSubheader, MenuItem, Select, Snackbar, Stack, TextField, useMediaQuery, useTheme } from '@mui/material'
+import { Alert, Box, Button, Checkbox, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputAdornment, InputLabel, List, ListItem, ListItemIcon, ListItemText, ListSubheader, MenuItem, Select, Snackbar, Stack, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import Header from '../../../components/Header'
 import { tokens } from '../../../theme';
-import { Add, EditOutlined, MenuBook, Save, Search, VerifiedUser } from '@mui/icons-material';
+import { Add, AdminPanelSettingsOutlined, EditOutlined, HelpOutline, LockOpenOutlined, MenuBook, Save, Search, SecurityOutlined, StarOutlined, SupervisorAccountOutlined, VerifiedUser, VpnKeyOutlined } from '@mui/icons-material';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
@@ -164,33 +164,6 @@ const RoleManagement = () => {
 
 
 
-    //     setLoading(true);
-    //     try {
-    //         const payload = {
-    //             tagName: assignRoleData.tagName,
-    //             roleName: selectedRow,
-    //         };
-
-    //         const response = await CBS_Services('GATEWAY', `role/addRoleToService`, 'POST', payload, token);
-    //         console.log("assignroleform", payload);
-    //         console.log("responseassign", response);
-
-    //         if (response && response.status === 200) {
-    //             showSnackbar('Role assigned successfully.', 'success');
-    //             handleToggleAssignRoleModal();
-    //             await fetchRoleData();
-    //         } else {
-    //             showSnackbar(response.body.errors || 'Error assigning role', 'error');
-    //         }
-    //     } catch (error) {
-    //         console.error('Error:', error);
-    //         showSnackbar('Network Error! Try again later.', 'error');
-    //     }
-
-    //     setLoading(false);
-    // };
-
-
     // Function to fetch Catalog data
 
     const handleConfirmAssignRole = async () => {
@@ -240,8 +213,8 @@ const RoleManagement = () => {
                 serviceReference: 'GET_ALL_CATALOG',
                 requestBody: ''
             }
-            // const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            const response = await CBS_Services('APE', 'catalog/get/all', 'GET');
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            // const response = await CBS_Services('APE', 'catalog/get/all', 'GET');
 
             console.log("response", response);
 
@@ -279,56 +252,181 @@ const RoleManagement = () => {
     };
 
 
+    const level = "1";
+
+    console.log("level", level);
+    console.log("roleData", roleData);
+
+
+
+
+    // const columns = [
+    //     {
+    //         field: "level",
+    //         headerName: "Access Level",
+    //         flex: 1,
+    //         renderCell: (params) => {
+    //             const level = parseInt(params.value, 10);
+    //             let icon;
+    //             let backgroundColor;
+    //             let name;
+
+    //             switch (level) {
+    //                 case 1:
+    //                     icon = <AdminPanelSettingsOutlined />;
+    //                     backgroundColor = colors.greenAccent[600];
+    //                     name = "Admin";
+    //                     break;
+    //                 case 2:
+    //                     icon = <SecurityOutlined />;
+    //                     backgroundColor = colors.greenAccent[500];
+    //                     name = "User";
+    //                     break;
+    //                 case 3:
+    //                     icon = <LockOpenOutlined />;
+    //                     backgroundColor = colors.greenAccent[400];
+    //                     name = "Admin Corporation";
+    //                     break;
+    //                 case 4:
+    //                     icon = <VpnKeyOutlined />;
+    //                     backgroundColor = colors.blueAccent[600];
+    //                     name = "Admin Bank";
+    //                     break;
+    //                 case 5:
+    //                     icon = <SupervisorAccountOutlined />;
+    //                     backgroundColor = colors.blueAccent[500];
+    //                     name = "Admin Branch";
+    //                     break;
+    //                 case 6:
+    //                     icon = <StarOutlined />;
+    //                     backgroundColor = colors.blueAccent[400];
+    //                     name = "Teller";
+    //                     break;
+    //                 default:
+    //                     icon = <HelpOutline />;
+    //                     backgroundColor = colors.grey[500];
+    //                     name = "Unknown";
+    //             }
+
+    //             return (
+    //                 <Tooltip title={`Level ${level}: ${name}`}>
+    //                     <Chip
+    //                         icon={icon}
+    //                         label={name}
+    //                         style={{
+    //                             backgroundColor: backgroundColor,
+    //                             color: colors.grey[100],
+    //                             fontWeight: 'bold',
+    //                             width: '90%',
+    //                         }}
+    //                     />
+    //                 </Tooltip>
+    //             );
+    //         },
+    //     },
+    //     {
+    //         field: "creationDate",
+    //         headerName: "Creation Date",
+    //         flex: 2,
+    //         valueGetter: (params) => formatValue(params.value),
+    //         renderCell: (params) => (
+    //             <Typography variant="body2">
+    //                 {new Date(params.value).toLocaleDateString()}
+    //             </Typography>
+    //         ),
+    //     },
+
+    //     {
+    //         field: "roleName",
+    //         headerName: "Role",
+    //         flex: 2,
+    //         valueGetter: (params) => formatValue(params.value),
+    //         renderCell: (params) => (
+    //             <Typography variant="body2" style={{ fontWeight: 'medium' }}>
+    //                 {params.value}
+    //             </Typography>
+    //         ),
+    //     },
+
+    //     {
+    //         field: "actions",
+    //         headerName: "Actions",
+    //         flex: 1,
+    //         renderCell: (params) => {
+    //             const row = params.row;
+    //             return (
+    //                 <Tooltip title="Assign User Role">
+    //                     <Box
+    //                         width="60%"
+    //                         m="0 auto"
+    //                         p="5px"
+    //                         display="flex"
+    //                         justifyContent="center"
+    //                         backgroundColor={colors.greenAccent[600]}
+    //                         borderRadius="4px"
+    //                         onClick={() => handleAssignUserRole(row.roleName)}
+    //                         style={{ cursor: 'pointer' }}
+    //                     >
+    //                         <VerifiedUser />
+    //                     </Box>
+    //                 </Tooltip>
+    //             );
+    //         },
+    //     },
+    // ];
+
+
     const columns = [
         {
-            field: "level", headerName: "Level", flex: 1, renderCell: (params) => (
-                <Box
-                    sx={{ marginLeft: '10px', }}
-                >
-                    {params.value}
-                </Box>
-            ),
-            renderHeader: () => (
-                <Box sx={{ marginLeft: '10px', }}> {/* Add left margin and center text */}
-                    Level
-                </Box>
+            field: "creationDate",
+            headerName: "Creation Date",
+            flex: 1,
+            headerAlign: "center", // Center the header
+            align: "center", // Center the content
+            valueGetter: (params) => formatValue(params.value),
+            renderCell: (params) => (
+                <Typography variant="body2">
+                    {new Date(params.value).toLocaleDateString()}
+                </Typography>
             ),
         },
-        { field: "roleName", headerName: "Role", flex: 2, valueGetter: (params) => formatValue(params.value), },
-        { field: "creationDate", headerName: "Creation Date", flex: 2, valueGetter: (params) => formatValue(params.value), },
-
+        {
+            field: "roleName",
+            headerName: "Role",
+            flex: 1,
+            headerAlign: "center", // Center the header
+            align: "center", // Center the content
+            valueGetter: (params) => formatValue(params.value),
+            renderCell: (params) => (
+                <Typography variant="body2" style={{ fontWeight: 'medium' }}>
+                    {params.value}
+                </Typography>
+            ),
+        },
         {
             field: "actions",
             headerName: "Actions",
-            flex: 2,
+            flex: 1,
+            headerAlign: "center", // Center the header
+            align: "center", // Center the content
             renderCell: (params) => {
                 const row = params.row;
                 return (
-                    <>
+                    <Tooltip title="Assign User Role">
                         <Box
                             width="30%"
-                            m="0 4px"
+                            m="0 auto"
                             p="5px"
                             display="flex"
                             justifyContent="center"
                             backgroundColor={colors.greenAccent[600]}
                             borderRadius="4px"
                             onClick={() => handleAssignUserRole(row.roleName)}
+                            style={{ cursor: 'pointer' }}
                         >
                             <VerifiedUser />
                         </Box>
-                        {/* <Box
-                            width="30%"
-                            m="0"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.redAccent[600]}
-                            borderRadius="4px"
-                        >
-                            <Delete />
-                        </Box> */}
-                    </>
+                    </Tooltip>
                 );
             },
         },

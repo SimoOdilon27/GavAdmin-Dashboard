@@ -26,6 +26,25 @@ const BankForm = () => {
 
     const regionsInCameroon = ["Adamaoua", "Centre", "Est", "Extrême-Nord", "Littoral", "Nord", "Nord-Ouest", "Ouest", "Sud", "Sud-Ouest"];
 
+    const formFieldStyles = (gridColumn = "span 2") => ({
+        gridColumn,
+        '& .MuiInputLabel-root': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100] // Light color for dark mode
+                : colors.black[700], // Dark color for light mode
+        },
+        '& .MuiFilledInput-root': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[700],
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[100],
+        },
+    });
+
     const [formData, setFormData] = useState({
         id: "",
         address: "",
@@ -45,6 +64,7 @@ const BankForm = () => {
         bankManger: "",
         region: '',
         bankId: '',
+        accountNumber: '',
         active: false
     });
 
@@ -203,18 +223,7 @@ const BankForm = () => {
 
 
                                 <FormControl fullWidth variant="filled"
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -259,18 +268,7 @@ const BankForm = () => {
                                     name="bankName"
                                     error={!!touched.bankName && !!errors.bankName}
                                     helperText={touched.bankName && errors.bankName}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -281,6 +279,26 @@ const BankForm = () => {
 
 
 
+                                {id &&
+                                    (<TextField
+                                        fullWidth
+                                        variant="filled"
+                                        type="text"
+                                        label=" Account Number"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.accountNumber}
+                                        name="accountNumber"
+                                        error={!!touched.accountNumber && !!errors.accountNumber}
+                                        helperText={touched.accountNumber && errors.accountNumber}
+                                        sx={formFieldStyles("span 2")}
+
+                                        InputLabelProps={{
+                                            sx: {
+                                                color: 'white', // Default label color
+                                            }
+                                        }}
+                                    />)}
 
                                 <TextField
                                     fullWidth
@@ -293,18 +311,7 @@ const BankForm = () => {
                                     name="cbsBankId"
                                     error={!!touched.cbsBankId && !!errors.cbsBankId}
                                     helperText={touched.cbsBankId && errors.cbsBankId}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -315,18 +322,7 @@ const BankForm = () => {
 
 
                                 <FormControl
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiFormLabel-root': {
-                                            color: 'white', // Ensure label remains white
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: 'white', // Keep the label white when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
                                     InputLabelProps={{
                                         sx: {
                                             color: 'white', // Default label color
@@ -360,18 +356,7 @@ const BankForm = () => {
                                     name="bankManger"
                                     error={!!touched.bankManger && !!errors.bankManger}
                                     helperText={touched.bankManger && errors.bankManger}
-                                    sx={{
-                                        gridColumn: "span 3",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 3")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -391,18 +376,7 @@ const BankForm = () => {
                                     name="dailyLimit"
                                     error={!!touched.dailyLimit && !!errors.dailyLimit}
                                     helperText={touched.dailyLimit && errors.dailyLimit}
-                                    sx={{
-                                        gridColumn: "span 1",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 1")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -423,18 +397,7 @@ const BankForm = () => {
                                     name="bankEmail"
                                     error={!!touched.bankEmail && !!errors.bankEmail}
                                     helperText={touched.bankEmail && errors.bankEmail}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -454,19 +417,7 @@ const BankForm = () => {
                                     name="contact"
                                     error={!!touched.contact && !!errors.contact}
                                     helperText={touched.contact && errors.contact}
-                                    sx={{
-                                        gridColumn: "span 1",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
-
+                                    sx={formFieldStyles("span 1")}
                                     InputLabelProps={{
                                         sx: {
                                             color: 'white', // Default label color
@@ -474,18 +425,8 @@ const BankForm = () => {
                                     }}
                                 />
 
-                                <FormControl fullWidth variant="filled" sx={{
-                                    gridColumn: "span 1",
-                                    '& .MuiInputLabel-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                    },
-                                    '& .MuiFilledInput-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                    },
-                                }}
+                                <FormControl fullWidth variant="filled"
+                                    sx={formFieldStyles("span 1")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -522,18 +463,7 @@ const BankForm = () => {
                                     name="address"
                                     error={!!touched.address && !!errors.address}
                                     helperText={touched.address && errors.address}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -545,18 +475,7 @@ const BankForm = () => {
 
 
                                 <FormControl fullWidth variant="filled"
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}>
+                                    sx={formFieldStyles("span 2")}>
                                     <InputLabel>Country</InputLabel>
                                     <Select
                                         label="Country"
@@ -582,40 +501,6 @@ const BankForm = () => {
                                     )}
 
                                 </FormControl>
-
-                                {/* <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Country"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.country}
-                                    name="country"
-                                    error={!!touched.country && !!errors.country}
-                                    helperText={touched.country && errors.country}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                /> */}
-
-
-
 
                             </Box>
 

@@ -10,79 +10,9 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@mui/lab';
 import { Formik } from 'formik';
+import { formatValue } from '../../../tools/formatValue';
 
-const mockData = [
-    {
-        id: 1,
-        userName: "JohnDoe",
-        email: "johndoe@example.com",
-        role: "Admin",
-        refId: "REF12345",
-    },
-    {
-        id: 2,
-        userName: "JaneSmith",
-        email: "janesmith@example.com",
-        role: "User",
-        refId: "REF12346",
-    },
-    {
-        id: 3,
-        userName: "MichaelBrown",
-        email: "michaelbrown@example.com",
-        role: "Moderator",
-        refId: "REF12347",
-    },
-    {
-        id: 4,
-        userName: "EmilyDavis",
-        email: "emilydavis@example.com",
-        role: "Admin",
-        refId: "REF12348",
-    },
-    {
-        id: 5,
-        userName: "DavidWilson",
-        email: "davidwilson@example.com",
-        role: "User",
-        refId: "REF12349",
-    },
-    {
-        id: 6,
-        userName: "SarahJohnson",
-        email: "sarahjohnson@example.com",
-        role: "User",
-        refId: "REF12350",
-    },
-    {
-        id: 7,
-        userName: "ChrisLee",
-        email: "chrislee@example.com",
-        role: "Moderator",
-        refId: "REF12351",
-    },
-    {
-        id: 8,
-        userName: "LauraMartinez",
-        email: "lauramartinez@example.com",
-        role: "Admin",
-        refId: "REF12352",
-    },
-    {
-        id: 9,
-        userName: "JamesGarcia",
-        email: "jamesgarcia@example.com",
-        role: "User",
-        refId: "REF12353",
-    },
-    {
-        id: 10,
-        userName: "OliviaWhite",
-        email: "oliviawhite@example.com",
-        role: "Moderator",
-        refId: "REF12354",
-    },
-];
+
 
 const UserManagement = () => {
     const theme = useTheme();
@@ -266,16 +196,17 @@ const UserManagement = () => {
 
     const columns = [
         // { field: "id", headerName: "ID", flex: 1 },
-        { field: "userName", headerName: "User Name", flex: 1 },
-        { field: "email", headerName: "Email", flex: 1 },
-        { field: "role", headerName: "Role", flex: 1 },
-        { field: "refId", headerName: "Ref Id", flex: 1 },
-        { field: "bankCode", headerName: "Bank Code", flex: 1 },
+        { field: "userName", headerName: "User Name", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
+        { field: "email", headerName: "Email", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
+        { field: "role", headerName: "Role", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
+        { field: "refId", headerName: "Ref Id", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
+        { field: "bankCode", headerName: "Bank Code", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
 
         {
             field: "actions",
             headerName: "Actions",
             flex: 1,
+            headerAlign: "center", align: "center",
             renderCell: (params) => {
                 const row = params.row;
                 return (
@@ -387,7 +318,6 @@ const UserManagement = () => {
                     rows={usersData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
                 />
