@@ -150,8 +150,8 @@ const UserManagement = () => {
                 setBankCode(response.body.data);
 
             } else if (response && response.body.status === 401) {
-                showSnackbar("Unauthorized to perform action", 'success');
-
+                // showSnackbar("Unauthorized to perform action", 'success');
+                console.error('Error fetching data');
             }
             else {
                 console.error('Error fetching data');

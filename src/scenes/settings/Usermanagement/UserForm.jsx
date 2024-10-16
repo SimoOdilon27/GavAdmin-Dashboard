@@ -360,7 +360,7 @@ const UserForm = () => {
                                 />
 
 
-                                <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 1" }}>
+                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 1")}>
                                     <InputLabel>Language</InputLabel>
                                     <Select
                                         label="Language"

@@ -19,6 +19,7 @@ const RoleManagement = () => {
     const [roleData, setRoleData] = React.useState([])
     const [loading, setLoading] = useState(false);
     const [CatalogData, setCatalogData] = useState([]);
+    const [assignedRoleData, setAssignedRoleData] = useState([]);
     const [showModal, setShowModal] = React.useState(false)
     const [showAssignRoleModal, setShowAssignRoleModal] = React.useState(false)
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
@@ -44,9 +45,29 @@ const RoleManagement = () => {
         }
     )
     const [searchTerm, setSearchTerm] = useState('')
+    const [selectAll, setSelectAll] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
 
+    const handleSelectAll = () => {
+        setSelectAll(!selectAll);
+        if (!selectAll) {
+            // Select all unassigned tags
+            const unassignedTags = CatalogData
+                .filter(option => !assignedRoleData[selectedRow]?.includes(option.id))
+                .map(option => option.id);
+            setAssignRoleData({
+                ...assignRoleData,
+                tagNames: unassignedTags
+            });
+        } else {
+            // Deselect all
+            setAssignRoleData({
+                ...assignRoleData,
+                tagNames: []
+            });
+        }
+    };
     console.log("yserss", userData);
 
     const handleToggle = (value) => () => {
@@ -63,8 +84,13 @@ const RoleManagement = () => {
             ...assignRoleData,
             tagNames: newChecked
         });
-    };
 
+        // Update selectAll state
+        const unassignedTags = CatalogData
+            .filter(option => !assignedRoleData[selectedRow]?.includes(option.id))
+            .map(option => option.id);
+        setSelectAll(newChecked.length === unassignedTags.length);
+    };
 
     const handleToggleRoleModal = () => {
         setFormData({
@@ -162,9 +188,47 @@ const RoleManagement = () => {
         setLoading(false);
     };
 
-
-
     // Function to fetch Catalog data
+
+    // const handleConfirmAssignRole = async () => {
+    //     setLoading(true);
+    //     const results = [];
+    //     let hasError = false;
+
+    //     try {
+    //         // Process each tag sequentially
+    //         for (const tagName of assignRoleData.tagNames) {
+    //             const payload = {
+    //                 tagName: tagName,
+    //                 roleName: selectedRow,
+    //             };
+
+    //             const response = await CBS_Services('GATEWAY', `role/addRoleToService`, 'POST', payload, token);
+
+    //             if (response && response.status === 200) {
+    //                 results.push(`Success: ${tagName}`);
+    //             } else {
+    //                 results.push(`Failed: ${tagName} - ${response.body.errors || 'Unknown error'}`);
+    //                 hasError = true;
+    //             }
+    //         }
+
+    //         if (hasError) {
+    //             showSnackbar(`Some role assignments failed. ${results.join(', ')}`, 'warning');
+    //         } else {
+    //             showSnackbar('All roles assigned successfully.', 'success');
+    //         }
+
+    //         handleToggleAssignRoleModal();
+    //         await fetchRoleData();
+
+    //     } catch (error) {
+    //         console.error('Error:', error);
+    //         showSnackbar('Network Error! Try again later.', 'error');
+    //     }
+
+    //     setLoading(false);
+    // };
 
     const handleConfirmAssignRole = async () => {
         setLoading(true);
@@ -172,8 +236,10 @@ const RoleManagement = () => {
         let hasError = false;
 
         try {
-            // Process each tag sequentially
-            for (const tagName of assignRoleData.tagNames) {
+            const alreadyAssignedTags = assignedRoleData[selectedRow] || [];
+            const tagsToAssign = assignRoleData.tagNames.filter(tag => !alreadyAssignedTags.includes(tag));
+
+            for (const tagName of tagsToAssign) {
                 const payload = {
                     tagName: tagName,
                     roleName: selectedRow,
@@ -197,6 +263,7 @@ const RoleManagement = () => {
 
             handleToggleAssignRoleModal();
             await fetchRoleData();
+            await fetchAssignedRoleData();  // Refresh the assigned roles data
 
         } catch (error) {
             console.error('Error:', error);
@@ -228,26 +295,46 @@ const RoleManagement = () => {
         }
     };
 
+    const fetchAssignedRoleData = async () => {
+        try {
+            const response = await CBS_Services('GATEWAY', 'role/getAllServiceToRole', 'GET', "", token);
+
+            if (response && response.status === 200) {
+                // Transform the data into a more useful format
+                const assignedData = response.body.data.reduce((acc, item) => {
+                    if (!acc[item.roleName]) {
+                        acc[item.roleName] = [];
+                    }
+                    acc[item.roleName].push(item.serviceTags);
+                    return acc;
+                }, {});
+                setAssignedRoleData(assignedData);
+            } else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
 
     useEffect(() => {
         fetchRoleData();
-        fetchCatalogData()
+        fetchCatalogData();
+        fetchAssignedRoleData();
     }, []);
 
     console.log("selectedrow", selectedRow);
 
 
-    // const handleAssignUserRole = (assignrole) => {
-    //     setSelectedRow(assignrole);
-    //     setShowAssignRoleModal(!showAssignRoleModal);
-    // };
     const handleAssignUserRole = (assignrole) => {
         setSelectedRow(assignrole);
         setAssignRoleData({
             ...assignRoleData,
             roleName: assignrole,
-            tagName: '',  // Reset tagName when opening the modal
+            tagNames: [],  // Reset tagNames when opening the modal
         });
+        setSelectAll(false);  // Reset selectAll state
         setShowAssignRoleModal(!showAssignRoleModal);
     };
 
@@ -630,6 +717,19 @@ const RoleManagement = () => {
                                 maxHeight: 300,
                                 overflow: 'auto'
                             }}>
+                                <ListItem dense>
+                                    <ListItemIcon>
+                                        <Checkbox
+                                            edge="start"
+                                            checked={selectAll}
+                                            tabIndex={-1}
+                                            disableRipple
+                                            onChange={handleSelectAll}
+                                            color='secondary'
+                                        />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Select All" />
+                                </ListItem>
                                 {Array.isArray(CatalogData) && CatalogData.length > 0 ? (
                                     CatalogData
                                         .filter(option =>
@@ -637,25 +737,33 @@ const RoleManagement = () => {
                                         )
                                         .map((option) => {
                                             const labelId = `checkbox-list-label-${option.id}`;
+                                            const isAssigned = assignedRoleData[selectedRow]?.includes(option.id);
+                                            const isChecked = assignRoleData.tagNames.indexOf(option.id) !== -1;
 
                                             return (
                                                 <ListItem
                                                     key={option.id}
                                                     dense
                                                     button
-                                                    onClick={handleToggle(option.id)}
+                                                    onClick={isAssigned ? null : handleToggle(option.id)}
+                                                    disabled={isAssigned}
                                                 >
                                                     <ListItemIcon>
                                                         <Checkbox
                                                             edge="start"
-                                                            checked={assignRoleData.tagNames.indexOf(option.id) !== -1}
+                                                            checked={isChecked}
                                                             tabIndex={-1}
                                                             disableRipple
                                                             inputProps={{ 'aria-labelledby': labelId }}
                                                             color='secondary'
+                                                            disabled={isAssigned}
                                                         />
                                                     </ListItemIcon>
-                                                    <ListItemText id={labelId} primary={option.id} />
+                                                    <ListItemText
+                                                        id={labelId}
+                                                        primary={option.id}
+                                                        secondary={isAssigned ? "Already assigned" : null}
+                                                    />
                                                 </ListItem>
                                             );
                                         })
