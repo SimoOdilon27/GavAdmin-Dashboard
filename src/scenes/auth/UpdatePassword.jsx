@@ -25,6 +25,8 @@ const UpdatePassword = () => {
     const userData = useSelector((state) => state.users)
 
     const token = userData.token
+    console.log("token---", token);
+
     const [passwords, setPasswords] = useState({
         usernameOrEmail: userData.userName,
         oldPassword: '',

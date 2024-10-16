@@ -70,7 +70,7 @@ const Charges = () => {
                             <TabList onChange={handleChange} aria-label="lab API tabs example" centered>
                                 <Tab label="Configure Charges " value="1" />
                                 <Tab label="Configure Charges by Range" value="2" />
-                                <Tab label=" Configure Bank Charges" value="3" />
+                                <Tab label="Configure Bank Charges" value="3" />
                                 <Tab label="Assign Configured Charges" value="4" />
                             </TabList>
                         </Box>

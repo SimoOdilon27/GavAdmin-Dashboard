@@ -89,7 +89,7 @@ const BranchesForm = () => {
                 if (response && response.body.meta.statusCode === 200) {
                     showSnackbar('Branch Created Successfully.', 'success');
                     setTimeout(() => {
-                        navigate('/branch');
+                        navigate('/branches');
                     }, 2000);
                 } else {
                     showSnackbar(response.body.errors || 'Error Adding Bank', 'error');

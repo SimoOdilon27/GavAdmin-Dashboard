@@ -40,6 +40,7 @@ const RoleManagement = () => {
             id: 0,
             roleName: '',
             creationDate: '',
+            level: 0,
         }
     )
     const [searchTerm, setSearchTerm] = useState('')
@@ -279,7 +280,20 @@ const RoleManagement = () => {
 
 
     const columns = [
-        // { field: "id", headerName: "ID", flex: 1 },
+        {
+            field: "level", headerName: "Level", flex: 1, renderCell: (params) => (
+                <Box
+                    sx={{ marginLeft: '10px', }}
+                >
+                    {params.value}
+                </Box>
+            ),
+            renderHeader: () => (
+                <Box sx={{ marginLeft: '10px', }}> {/* Add left margin and center text */}
+                    Level
+                </Box>
+            ),
+        },
         { field: "roleName", headerName: "Role", flex: 2, valueGetter: (params) => formatValue(params.value), },
         { field: "creationDate", headerName: "Creation Date", flex: 2, valueGetter: (params) => formatValue(params.value), },
 
@@ -345,21 +359,25 @@ const RoleManagement = () => {
 
 
             <Box
-                m="40px 15px 15px 15px"
+                m="40px 100px 15px 100px"
                 height="70vh"
                 sx={{
                     "& .MuiDataGrid-root": {
                         border: "none",
+
                     },
                     "& .MuiDataGrid-cell": {
                         borderBottom: "none",
                     },
                     "& .name-column--cell": {
                         color: colors.greenAccent[300],
+                        display: "flex",
+
                     },
                     "& .MuiDataGrid-columnHeaders": {
                         backgroundColor: colors.blueAccent[700],
                         borderBottom: "none",
+
                     },
                     "& .MuiDataGrid-virtualScroller": {
                         backgroundColor: colors.primary[400],
@@ -443,6 +461,23 @@ const RoleManagement = () => {
                                         helperText={touched.roleName && errors.roleName}
                                         sx={{ gridColumn: "span 4" }}
                                     />
+                                    <TextField
+                                        fullWidth
+                                        variant="filled"
+                                        type="number"
+                                        label="Level"
+                                        onBlur={handleBlur}
+                                        onChange={(e) => {
+                                            handleChange(e);
+                                            setFieldValue("level", e.target.value);
+                                            setFormData({ ...formData, level: e.target.value });
+                                        }}
+                                        value={values.level}
+                                        name="level"
+                                        error={!!touched.level && !!errors.level}
+                                        helperText={touched.level && errors.level}
+                                        sx={{ gridColumn: "span 4" }}
+                                    />
 
                                 </Box>
                             </form>
@@ -467,102 +502,7 @@ const RoleManagement = () => {
             </Dialog>
             <Dialog open={showAssignRoleModal} onClose={handleToggleAssignRoleModal} fullWidth >
                 <DialogTitle>Assign Role</DialogTitle>
-                {/* <DialogContent>
 
-                    <Formik
-                        onSubmit={handleConfirmAssignRole}
-                        initialValues={assignRoleData}
-                        enableReinitialize={true}
-                    >
-                        {({
-                            values,
-                            errors,
-                            touched,
-                            handleBlur,
-                            handleChange,
-                            handleSubmit,
-                            setFieldValue
-                        }) => (
-                            <form onSubmit={handleSubmit}>
-                                <Box
-                                    display="grid"
-                                    gap="30px"
-                                    gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                                    sx={{
-                                        "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                                    }}
-                                >
-
-
-                                    <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
-                                        <InputLabel>Menu</InputLabel>
-                                        <Select
-                                            label="Menu"
-                                            onBlur={handleBlur}
-                                            onChange={(e) => {
-                                                handleChange(e);
-                                                setFieldValue("tagName", e.target.value);
-                                                setAssignRoleData({ ...assignRoleData, tagName: e.target.value });
-                                            }}
-                                            value={values.tagName}
-                                            name="tagName"
-                                            error={!!touched.tagName && !!errors.tagName}
-                                            startAdornment={
-                                                <InputAdornment position="start">
-                                                    <MenuBook />
-                                                </InputAdornment>
-                                            }
-                                            MenuProps={MenuProps}
-                                        >
-                                            <ListSubheader>
-                                                <TextField
-                                                    size="small"
-                                                    autoFocus
-                                                    placeholder="Type to search..."
-                                                    fullWidth
-                                                    InputProps={{
-                                                        startAdornment: (
-                                                            <InputAdornment position="start">
-                                                                <Search />
-                                                            </InputAdornment>
-                                                        ),
-                                                    }}
-                                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key !== 'Escape') {
-                                                            e.stopPropagation();
-                                                        }
-                                                    }}
-                                                />
-                                            </ListSubheader>
-                                            <MenuItem value="">
-                                                <em>Select Menu</em>
-                                            </MenuItem>
-                                            {Array.isArray(CatalogData) && CatalogData.length > 0 ? (
-                                                CatalogData.filter(option =>
-                                                    option.id.toLowerCase().includes(searchTerm.toLowerCase())
-                                                ).map(option => (
-                                                    <MenuItem key={option.id} value={option.id}>
-                                                        {option.id}
-                                                    </MenuItem>
-                                                ))
-                                            ) : (
-                                                <MenuItem value="">No Menu available</MenuItem>
-                                            )}
-                                        </Select>
-                                        {touched.tagName && errors.tagName && (
-                                            <Alert severity="error">{errors.tagName}</Alert>
-                                        )}
-                                    </FormControl>
-
-                                </Box>
-
-                            </form>
-                        )}
-                    </Formik>
-
-
-                </DialogContent> */}
 
                 <Dialog
                     open={showAssignRoleModal}

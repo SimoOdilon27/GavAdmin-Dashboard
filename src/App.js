@@ -74,7 +74,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/team"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <Team />
                     </RoleProtectedComponent>
                   }
@@ -85,7 +85,7 @@ function App() {
                 <Route
                   path="/corporation"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <Corporation />
                     </RoleProtectedComponent>
                   }
@@ -93,7 +93,7 @@ function App() {
                 <Route
                   path="/corporation/add"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <CorporationForm />
                     </RoleProtectedComponent>
                   }
@@ -101,7 +101,7 @@ function App() {
                 <Route
                   path="/corporation/edit/:id"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <CorporationForm />
                     </RoleProtectedComponent>
                   }
@@ -109,7 +109,7 @@ function App() {
                 <Route
                   path="/corporation/view/:accounts"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <ViewCorporationDetails />
                     </RoleProtectedComponent>
                   }
@@ -117,7 +117,7 @@ function App() {
                 <Route
                   path="/bank"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <Bank />
                     </RoleProtectedComponent>
                   }
@@ -125,7 +125,7 @@ function App() {
                 <Route
                   path="/bank/edit/:id"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <BankForm />
                     </RoleProtectedComponent>
                   }
@@ -134,7 +134,7 @@ function App() {
                 <Route
                   path="/bank/add"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <BankForm />
                     </RoleProtectedComponent>
                   }
@@ -143,7 +143,7 @@ function App() {
                 <Route
                   path="/bank/view/:accounts"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <ViewBankDetails />
                     </RoleProtectedComponent>
                   }
@@ -151,7 +151,7 @@ function App() {
                 <Route
                   path="/bankaccount"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <BankAccounts />
                     </RoleProtectedComponent>
                   }
@@ -160,7 +160,7 @@ function App() {
                 <Route
                   path="/bankaccount/view/:accountId"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <ViewAccountDetails />
                     </RoleProtectedComponent>
                   }
@@ -168,7 +168,7 @@ function App() {
                 <Route
                   path="/bankinvestment"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <BankInvestments />
                     </RoleProtectedComponent>
                   }
@@ -176,7 +176,7 @@ function App() {
                 <Route
                   path="/viewtransactions"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "TELLER"]}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER", "TELLER"]}>
                       <ViewTransactions />
                     </RoleProtectedComponent>
                   }
@@ -184,7 +184,7 @@ function App() {
                 <Route
                   path="/branches"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <Branches />
                     </RoleProtectedComponent>
                   }
@@ -193,7 +193,7 @@ function App() {
                 <Route
                   path="/branches/add"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <BranchesForm />
                     </RoleProtectedComponent>
                   }
@@ -201,7 +201,7 @@ function App() {
                 <Route
                   path="/branches/edit/:id"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <BranchesForm />
                     </RoleProtectedComponent>
                   }
@@ -209,7 +209,7 @@ function App() {
                 <Route
                   path="/branches/view/:accounts"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <ViewBranchesDetails />
                     </RoleProtectedComponent>
                   }
@@ -218,7 +218,7 @@ function App() {
                 <Route
                   path="/tellers"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <Tellers />
                     </RoleProtectedComponent>
                   }
@@ -226,7 +226,7 @@ function App() {
                 <Route
                   path="/tellers/add"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <TellerForm />
                     </RoleProtectedComponent>
                   }
@@ -234,7 +234,7 @@ function App() {
                 <Route
                   path="/tellers/edit/:id"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <TellerForm />
                     </RoleProtectedComponent>
                   }
@@ -243,7 +243,7 @@ function App() {
                 <Route
                   path="/tellers/view/:accountId"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <ViewTellerDetails />
                     </RoleProtectedComponent>
                   }
@@ -251,7 +251,7 @@ function App() {
                 <Route
                   path="/bankmapper"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <BankMapper />
                     </RoleProtectedComponent>
                   }
@@ -259,7 +259,7 @@ function App() {
                 <Route
                   path="/accounts"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <AllAccounts />
                     </RoleProtectedComponent>
                   }
@@ -268,7 +268,7 @@ function App() {
                 <Route
                   path="/menu-catalog"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <MenuCatalog />
                     </RoleProtectedComponent>
                   }
@@ -276,7 +276,7 @@ function App() {
                 <Route
                   path="/menu-catalog/add"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <CatalogForm />
                     </RoleProtectedComponent>
                   }
@@ -284,7 +284,7 @@ function App() {
                 <Route
                   path="/menu-catalog/edit/:id"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <CatalogForm />
                     </RoleProtectedComponent>
                   }
@@ -292,7 +292,7 @@ function App() {
                 <Route
                   path="/client"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <Clients />
                     </RoleProtectedComponent>
                   }
@@ -300,7 +300,7 @@ function App() {
                 <Route
                   path="/client/add-client"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <ClientForm />
                     </RoleProtectedComponent>
                   }
@@ -308,7 +308,7 @@ function App() {
                 <Route
                   path="/client/edit/:msisdn"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <ClientForm />
                     </RoleProtectedComponent>
                   }
@@ -316,7 +316,7 @@ function App() {
                 <Route
                   path="/client/view/:msisdn"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <ViewClientDetails />
                     </RoleProtectedComponent>
                   }
@@ -324,7 +324,7 @@ function App() {
                 <Route
                   path="/cashtransactions"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "TELLER"]}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER", "TELLER"]}>
                       <CashOutnIn />
                     </RoleProtectedComponent>
                   }
@@ -332,7 +332,7 @@ function App() {
                 <Route
                   path="/rolemanagement"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <RoleManagement />
                     </RoleProtectedComponent>
                   }
@@ -340,7 +340,7 @@ function App() {
                 <Route
                   path="/usermanagement"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <UserManagement />
                     </RoleProtectedComponent>
                   }
@@ -348,7 +348,7 @@ function App() {
                 <Route
                   path="/usermanagement/adduser"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <UserForm />
                     </RoleProtectedComponent>
                   }
@@ -357,7 +357,7 @@ function App() {
                 <Route
                   path="/charges"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <Pricing />
                     </RoleProtectedComponent>
                   }
@@ -365,7 +365,7 @@ function App() {
                 <Route
                   path="/pricing/configure"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <Charges />
                     </RoleProtectedComponent>
                   }
@@ -373,7 +373,7 @@ function App() {
                 <Route
                   path="/pricing/configurecharges"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <ConfigureCharges />
                     </RoleProtectedComponent>
                   }
@@ -381,7 +381,7 @@ function App() {
                 <Route
                   path="/gimac-wallets"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <GimacWallets />
                     </RoleProtectedComponent>
                   }
@@ -389,7 +389,7 @@ function App() {
                 <Route
                   path="/gimac-wallets/add"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <GimacWalletForm />
                     </RoleProtectedComponent>
                   }
@@ -397,7 +397,7 @@ function App() {
                 <Route
                   path="/gimac-wallets/edit/:id"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <GimacWalletForm />
                     </RoleProtectedComponent>
                   }
@@ -405,7 +405,7 @@ function App() {
                 <Route
                   path="/gimac-countries"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <GimacCountries />
                     </RoleProtectedComponent>
                   }
@@ -413,7 +413,7 @@ function App() {
                 <Route
                   path="/gimac-countries/add"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <GimacCountriesForm />
                     </RoleProtectedComponent>
                   }
@@ -421,7 +421,7 @@ function App() {
                 <Route
                   path="/gimac-countries/edit/:id"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <GimacCountriesForm />
                     </RoleProtectedComponent>
                   }
@@ -429,7 +429,7 @@ function App() {
                 <Route
                   path="/accounttype"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <AccountType />
                     </RoleProtectedComponent>
                   }
@@ -437,7 +437,7 @@ function App() {
                 <Route
                   path="/accounttype/add"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <AccountTypeForm />
                     </RoleProtectedComponent>
                   }
@@ -445,7 +445,7 @@ function App() {
                 <Route
                   path="/accounttype/edit/:id"
                   element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN']}>
+                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
                       <AccountTypeForm />
                     </RoleProtectedComponent>
                   }

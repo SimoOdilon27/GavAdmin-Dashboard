@@ -30,6 +30,8 @@ const UserForm = () => {
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const connectedUserRole = userData.roles; // Assuming the connected user's role is stored here
+    const [filteredRoles, setFilteredRoles] = useState([]);
     const [selectedTeller, setSelectedTeller] = useState(''); // New state for selected lawyer
     const navigate = useNavigate();
     console.log("selectedTe,", selectedTeller);
@@ -51,13 +53,24 @@ const UserForm = () => {
         try {
             const response = await CBS_Services('GATEWAY', 'role/getAllRole', 'GET', null, token);
             if (response && response.status === 200) {
-                setRoleData(response.body.data || []);
+                const allRoles = response.body.data || [];
+                setRoleData(allRoles);
+                filterRoles(allRoles);
             } else {
                 showSnackbar('Error Finding Data.', 'error');
             }
         } catch (error) {
             console.log('Error:', error);
             showSnackbar('Network Error!!! Try again Later.', 'error');
+        }
+    };
+
+    const filterRoles = (allRoles) => {
+        const connectedUserRoleData = allRoles.find(role => role.roleName === connectedUserRole);
+        if (connectedUserRoleData) {
+            const nextLevel = connectedUserRoleData.level + 1;
+            const filteredRoles = allRoles.filter(role => role.level === nextLevel);
+            setFilteredRoles(filteredRoles);
         }
     };
 
@@ -178,11 +191,10 @@ const UserForm = () => {
                                             setInitialValues(prevValues => ({
                                                 ...prevValues,
                                                 roles: e.target.value,
-                                                refId: "", // Clear refId
+                                                refId: "",
                                             }));
-                                            setSelectedTeller(""); // Clear selected teller
-                                            setFieldValue("refId", ""); // Clear Formik's refId value
-                                            // If "TELLER" is selected, reset tellerId
+                                            setSelectedTeller("");
+                                            setFieldValue("refId", "");
                                             if (e.target.value !== "TELLER") {
                                                 setFieldValue("id", "");
                                             }
@@ -192,9 +204,9 @@ const UserForm = () => {
                                         error={!!touched.roles && !!errors.roles}
                                     >
                                         <MenuItem value="" disabled>Select Role</MenuItem>
-                                        {roleData.length > 0
-                                            ? roleData.map((option) => (
-                                                <MenuItem key={option.roleName} value={option.roleName}>
+                                        {filteredRoles.length > 0
+                                            ? filteredRoles.map((option) => (
+                                                <MenuItem key={option.id} value={option.roleName}>
                                                     {option.roleName}
                                                 </MenuItem>
                                             ))

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, IconButton, Menu, useTheme } from '@mui/material';
+import { Box, Button, IconButton, Menu, MenuItem, useTheme } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Add, Delete, EditOutlined } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, RemoveRedEyeSharp } from '@mui/icons-material';
 import { tokens } from '../../../theme';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import Header from '../../../components/Header';
 import { formatValue } from '../../../tools/formatValue';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
 
 const Pricing = () => {
     const theme = useTheme();
@@ -17,6 +19,23 @@ const Pricing = () => {
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const navigate = useNavigate();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentRow, setCurrentRow] = useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setCurrentRow(row); // Store the current row to pass to actions
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setCurrentRow(null);
+    };
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Your delete logic here
+    };
 
     const fetchPricingData = async () => {
         setLoading(true);
@@ -50,9 +69,9 @@ const Pricing = () => {
         navigate('/pricing/configurecharges');
     };
 
-    // const handleEdit = (id) => {
-    //     navigate(`/pricing/edit/${id}`);
-    // };
+    const handleEdit = (id) => {
+        navigate(`/pricing/edit/${id}`);
+    };
 
 
     const columns = [
@@ -61,49 +80,45 @@ const Pricing = () => {
         { field: "description", headerName: "Description", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "chargesType", headerName: "Charges Type", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "percentage", headerName: "Percentage", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "bankId", headerName: "Bank ID", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        // {
-        //     field: "actions",
-        //     headerName: "Actions",
-        //     flex: 1,
-        //     renderCell: (params) => (
-        //         <>
-        //             <IconButton
-        //                 aria-label="more"
-        //                 aria-controls="long-menu"
-        //                 aria-haspopup="true"
-        //                 onClick={(event) => handleClick(event, params.row)}
-        //             >
-        //                 <MoreVertIcon />
-        //             </IconButton>
-        //             <Menu
-        //                 anchorEl={anchorEl}
-        //                 open={open}
-        //                 onClose={handleClose}
-        //                 PaperProps={{
-        //                     style: {
-        //                         maxHeight: 48 * 4.5,
-        //                         width: "20ch",
-        //                         transform: "translateX(-50%)",
-        //                     },
-        //                 }}
-        //             >
-        //                 <MenuItem onClick={() => handleEdit(currentRow)}>
-        //                     <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
-        //                     Edit
-        //                 </MenuItem>
-        //                 <MenuItem onClick={() => handleViewCorp(currentRow)}>
-        //                     <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
-        //                     View
-        //                 </MenuItem>
-        //                 <MenuItem onClick={() => handleDelete(currentRow)}>
-        //                     <Delete fontSize="small" style={{ marginRight: "8px" }} />
-        //                     Delete
-        //                 </MenuItem>
-        //             </Menu>
-        //         </>
-        //     ),
-        // },
+        {
+            field: "actions",
+            headerName: "Actions",
+            flex: 1,
+            renderCell: (params) => (
+                <>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, params.row)}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: "20ch",
+                                transform: "translateX(-50%)",
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={() => handleEdit(currentRow)}>
+                            <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
+                            View
+                        </MenuItem>
+
+                        <MenuItem onClick={() => handleDelete(currentRow)}>
+                            <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                            Delete
+                        </MenuItem>
+                    </Menu>
+                </>
+            ),
+        },
     ];
 
     return (
