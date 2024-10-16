@@ -9,9 +9,11 @@ import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
 import CBS_Services from "../../services/api/GAV_Sercives";
 import Header from "../../components/Header";
+import { tokens } from "../../theme";
 
 const ClientForm = () => {
     const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const { msisdn } = useParams();
     const [formData, setFormData] = useState({

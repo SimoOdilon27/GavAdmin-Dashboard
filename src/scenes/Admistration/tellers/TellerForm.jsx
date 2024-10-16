@@ -9,11 +9,13 @@ import { useSelector } from "react-redux";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
+import { tokens } from "../../../theme";
 
 const TellerForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const { id } = useParams();
     const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
 
     const formFieldStyles = (gridColumn = "span 2") => ({
         gridColumn,
