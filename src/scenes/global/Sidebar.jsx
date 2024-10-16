@@ -172,7 +172,7 @@ const Sidebar = () => {
               closeSubmenu={closeSubmenu}
             />
 
-            {role.includes("ADMIN" && "USER") && (
+            {role.includes("ADMIN", "USER") && (
 
               <>
                 <>
