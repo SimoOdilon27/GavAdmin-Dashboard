@@ -24,6 +24,7 @@ import TagIcon from "@mui/icons-material/Tag";
 import { tokens } from "../../theme";
 import { AccountCircle, ManageAccounts, MapOutlined, Money, SettingsApplicationsOutlined, SupervisedUserCircleOutlined } from "@mui/icons-material";
 import { useSelector } from "react-redux";
+import { formatValue } from "../../tools/formatValue";
 
 const Item = ({ title, to, icon, selected, setSelected, closeSubmenu }) => {
   const theme = useTheme();
@@ -57,6 +58,9 @@ const Sidebar = () => {
   const userData = useSelector((state) => state.users);
   const userName = userData.userName;
   const role = userData.roles;
+
+  console.log("role", role);
+
 
   const handleSubMenuClick = (menuName) => {
     if (openSubmenu === menuName) {
@@ -153,10 +157,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  {userName}
+                  {formatValue(userName)}
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  {role}
+                  {formatValue(role)}
                 </Typography>
               </Box>
             </Box>
@@ -172,9 +176,9 @@ const Sidebar = () => {
               closeSubmenu={closeSubmenu}
             />
 
-            {(role.includes("ADMIN") || role.includes("USER")) && (
 
-              <>
+            <>
+              {(role === "ADMIN" || role === "ADMIN_CORPORATION") &&
                 <>
                   <Typography
                     variant="h6"
@@ -207,16 +211,17 @@ const Sidebar = () => {
                     closeSubmenu={closeSubmenu}
                   />
                 </>
+              }
 
-                <>
-                  <Typography
-                    variant="h6"
-                    color={colors.grey[300]}
-                    sx={{ m: "15px 0 5px 20px" }}
-                  >
-                    Operations
-                  </Typography>
-
+              <>
+                <Typography
+                  variant="h6"
+                  color={colors.grey[300]}
+                  sx={{ m: "15px 0 5px 20px" }}
+                >
+                  Operations
+                </Typography>
+                {(role === "TELLER") && (
                   <Item
                     title="Operations"
                     to="/cashtransactions"
@@ -225,6 +230,9 @@ const Sidebar = () => {
                     setSelected={setSelected}
                     closeSubmenu={closeSubmenu}
                   />
+                )}
+
+                {(role === "ADMIN" || role === "ADMIN_CORPORATION" || role === "ADMIN_BANK" || role === "ADMIN_BRANCH" || role === "TELLER") && (
                   <Item
                     title="Transactions"
                     to="/viewtransactions"
@@ -233,25 +241,32 @@ const Sidebar = () => {
                     setSelected={setSelected}
                     closeSubmenu={closeSubmenu}
                   />
+                )}
+
+              </>
+              {(role === "ADMIN" || role === "ADMIN_CORPORATION" || role === "ADMIN_BANK" || role === "ADMIN_BRANCH") && (
+                <>
+                  <Typography
+                    variant="h6"
+                    color={colors.grey[300]}
+                    sx={{ m: "15px 0 5px 20px" }}
+                  >
+                    Client Management
+                  </Typography>
+
+                  <Item
+                    title="Client"
+                    to="/client"
+                    icon={<PersonOutlinedIcon />}
+                    selected={selected}
+                    setSelected={setSelected}
+                    closeSubmenu={closeSubmenu}
+                  />
                 </>
+              )}
 
-                <Typography
-                  variant="h6"
-                  color={colors.grey[300]}
-                  sx={{ m: "15px 0 5px 20px" }}
-                >
-                  Client Management
-                </Typography>
 
-                <Item
-                  title="Client"
-                  to="/client"
-                  icon={<PersonOutlinedIcon />}
-                  selected={selected}
-                  setSelected={setSelected}
-                  closeSubmenu={closeSubmenu}
-                />
-
+              {role === "ADMIN" && (
                 <>
                   <Typography
                     variant="h6"
@@ -278,110 +293,145 @@ const Sidebar = () => {
                   />
                 </>
 
+              )}
 
 
-                <Typography
-                  variant="h6"
-                  color={colors.grey[300]}
-                  sx={{ m: "15px 0 5px 20px" }}
-                >
-                  SETTINGS
-                </Typography>
+              {(role === "ADMIN" || role === "ADMIN_CORPORATION" || role === "ADMIN_BANK" || role === "ADMIN_BRANCH") && (
 
-                <SubMenu
-                  title="Administration"
-                  icon={<SettingsApplicationsOutlined />}
-                  open={openSubmenu === "settings"}
-                  onOpenChange={() => handleSubMenuClick("settings")}
-                  sx={{ m: "15px 0 5px 20px" }}
-                >
-                  <Item
-                    title="Corporation"
-                    to="/corporation"
-                    icon={<CorporateFareIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
+                <>
+                  <Typography
+                    variant="h6"
+                    color={colors.grey[300]}
                     sx={{ m: "15px 0 5px 20px" }}
-                  />
-                  <Item
-                    title="Bank"
-                    to="/bank"
-                    icon={<AccountBalanceIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                  <Item
-                    title="Branches"
-                    to="/branches"
-                    icon={<PlaceIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                  {/* <Item
-                    title="Bank Mapper"
-                    to="/bankmapper"
-                    icon={<MapOutlined />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  /> */}
-                  <Item
-                    title="Teller"
-                    to="/tellers"
-                    icon={<GroupIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                </SubMenu>
+                  >
+                    SETTINGS
+                  </Typography>
 
-                <SubMenu
-                  title="Authorization"
-                  icon={<CollectionsIcon />}
-                  open={openSubmenu === "authorization"}
-                  onOpenChange={() => handleSubMenuClick("authorization")}
-                >
-                  <Item
-                    title="Roles"
-                    to="/rolemanagement"
-                    icon={<PersonOutlinedIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                  <Item
-                    title="Users"
-                    to="/usermanagement"
-                    icon={<SupervisedUserCircleOutlined />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                  <Item
-                    title="Menus"
-                    to="/menu-catalog"
+                  <SubMenu
+                    title="Administration"
+                    icon={<SettingsApplicationsOutlined />}
+                    open={openSubmenu === "settings"}
+                    onOpenChange={() => handleSubMenuClick("settings")}
+                    sx={{ m: "15px 0 5px 20px" }}
+                  >
+                    {(role === "ADMIN") && (
+                      <>
+                        <Item
+                          title="Corporation"
+                          to="/corporation"
+                          icon={<CorporateFareIcon />}
+                          selected={selected}
+                          setSelected={setSelected}
+                          sx={{ m: "15px 0 5px 20px" }}
+                        />
+                      </>
+
+                    )}
+
+                    {(role === "ADMIN" || role === "ADMIN_CORPORATION") &&
+                      <Item
+                        title="Bank"
+                        to="/bank"
+                        icon={<AccountBalanceIcon />}
+                        selected={selected}
+                        setSelected={setSelected}
+                      />
+                    }
+
+                    {(role === "ADMIN" || role === "ADMIN_CORPORATION" || role === "ADMIN_BANK") && (
+                      <Item
+                        title="Branches"
+                        to="/branches"
+                        icon={<PlaceIcon />}
+                        selected={selected}
+                        setSelected={setSelected}
+                      />
+                    )}
+
+
+                    {(role === "ADMIN" || role === "ADMIN_CORPORATION" || role === "ADMIN_BANK" || role === "ADMIN_BRANCH") && (
+                      <Item
+                        title="Teller"
+                        to="/tellers"
+                        icon={<GroupIcon />}
+                        selected={selected}
+                        setSelected={setSelected}
+                      />
+                    )}
+
+
+                  </SubMenu>
+                </>
+
+              )}
+
+              {(role === "ADMIN" || role === "ADMIN_CORPORATION" || role === "ADMIN_BANK" || role === "ADMIN_BRANCH") && (
+
+                <>
+                  <SubMenu
+                    title="Authorization"
                     icon={<CollectionsIcon />}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
-                </SubMenu>
+                    open={openSubmenu === "authorization"}
+                    onOpenChange={() => handleSubMenuClick("authorization")}
+                  >
+                    {(role === "ADMIN") && (
+                      <Item
+                        title="Roles"
+                        to="/rolemanagement"
+                        icon={<PersonOutlinedIcon />}
+                        selected={selected}
+                        setSelected={setSelected}
+                      />
+                    )}
 
-                <Item
-                  title="Account Type"
-                  to="/accounttype"
-                  icon={<ManageAccounts />}
-                  selected={selected}
-                  setSelected={setSelected}
-                  closeSubmenu={closeSubmenu}
-                />
-                <Item
-                  title="Pricing"
-                  to="/charges"
-                  icon={<TagIcon />}
-                  selected={selected}
-                  setSelected={setSelected}
-                  closeSubmenu={closeSubmenu}
-                />
-              </>
-            )}
+                    {(role === "ADMIN" || role === "ADMIN_CORPORATION" || role === "ADMIN_BANK" || role === "ADMIN_BRANCH") && (
+                      <Item
+                        title="Users"
+                        to="/usermanagement"
+                        icon={<SupervisedUserCircleOutlined />}
+                        selected={selected}
+                        setSelected={setSelected}
+                      />
+                    )}
 
-            {role.includes("TELLER") && (
+                    {(role === "ADMIN") && (
+                      <Item
+                        title="Menus"
+                        to="/menu-catalog"
+                        icon={<CollectionsIcon />}
+                        selected={selected}
+                        setSelected={setSelected}
+                      />
+                    )}
+
+                  </SubMenu>
+
+                  {(role === "ADMIN") && (
+                    <>
+                      <Item
+                        title="Account Type"
+                        to="/accounttype"
+                        icon={<ManageAccounts />}
+                        selected={selected}
+                        setSelected={setSelected}
+                        closeSubmenu={closeSubmenu}
+                      />
+                      <Item
+                        title="Charges"
+                        to="/charges"
+                        icon={<TagIcon />}
+                        selected={selected}
+                        setSelected={setSelected}
+                        closeSubmenu={closeSubmenu}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+            </>
+
+
+            {/* {role.includes("TELLER") && (
               <>
 
                 <Typography
@@ -407,7 +457,7 @@ const Sidebar = () => {
                   setSelected={setSelected}
                 />
               </>
-            )}
+            )} */}
 
 
 
@@ -419,3 +469,12 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
+
+/* <Item
+                    title="Bank Mapper"
+                    to="/bankmapper"
+                    icon={<MapOutlined />}
+                    selected={selected}
+                    setSelected={setSelected}
+                  /> */
