@@ -37,8 +37,7 @@ import GimacWalletForm from "./scenes/gimacServices/wallet/GimacWalletForm";
 import GimacCountries from "./scenes/gimacServices/countries/GimacCountries";
 import GimacCountriesForm from "./scenes/gimacServices/countries/GimacCountriesForm";
 import RoleProtectedComponent from "./tools/ProtectedRoleComponent";
-import AccountType from "./scenes/bankDetails/accounType/AccountType";
-import AccountTypeForm from "./scenes/bankDetails/accounType/AccountTypeForm";
+
 import CorporationForm from "./scenes/Admistration/corporation/CorporationForm";
 import ViewCorporationDetails from "./scenes/Admistration/corporation/ViewCorporationDetails";
 import BankForm from "./scenes/Admistration/bank/BankForm";
@@ -49,6 +48,8 @@ import ViewTellerDetails from "./scenes/Admistration/tellers/ViewTellerDetails";
 import ViewAccountDetails from "./scenes/bankDetails/accounts/ViewAccountDetails";
 import ViewClientDetails from "./scenes/GavClients/ViewClientDetails";
 import ConfigureCharges from "./scenes/Transactions/pricing/ChargesConfigurations/ConfigureCharges";
+import AccountTypeForm from "./scenes/settings/accounType/AccountTypeForm";
+import AccountType from "./scenes/settings/accounType/AccountType";
 
 function App() {
   const [theme, colorMode] = useMode();

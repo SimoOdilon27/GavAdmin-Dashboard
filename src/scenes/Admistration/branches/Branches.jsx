@@ -329,15 +329,15 @@ const Branches = () => {
     }, []);
 
     const columns = [
-        { field: "branchName", headerName: "Branch Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "cbsBranchId", headerName: "CBS Branch ID", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "address", headerName: "Address", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "email", headerName: "Email", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "country", headerName: "Country", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "branchName", headerName: "Branch Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "cbsBranchId", headerName: "CBS Branch ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "address", headerName: "Address", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "email", headerName: "Email", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "country", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
         {
             field: "status",
             headerName: "Status",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => {
                 const isActive = params.row.active; // Access the "active" field from the row data
                 return (
@@ -358,6 +358,7 @@ const Branches = () => {
             field: "actions",
             headerName: "Actions",
             flex: 1,
+            headerAlign: "center", align: "center",
             renderCell: (params) => (
                 <>
                     <IconButton

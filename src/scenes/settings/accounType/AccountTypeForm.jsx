@@ -227,7 +227,7 @@ const AccountTypeForm = () => {
                                         loadingPosition="start"
                                         startIcon={<Save />}
                                     >
-                                        {id ? "Update Teller" : "Create Teller"}
+                                        {id ? "Update Account Type" : "Create Account Type"}
                                     </LoadingButton>
 
                                     <Button

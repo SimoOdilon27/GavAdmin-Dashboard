@@ -98,14 +98,14 @@ const GimacCountries = () => {
 
     const columns = [
         // { field: "countryId", headerName: "Country ID", flex: 1 },
-        { field: "countryCode", headerName: "Country Code", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "country", headerName: "Country", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "serviceProvider", headerName: "Service Provider", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "internationalDialingCode", headerName: "Int Dialing Code", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "countryCode", headerName: "Country Code", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "country", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "serviceProvider", headerName: "Service Provider", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "internationalDialingCode", headerName: "Int Dialing Code", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {
             field: "actions",
             headerName: "Actions",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => (
                 <>
                     <IconButton

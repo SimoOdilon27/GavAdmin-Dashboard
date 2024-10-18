@@ -84,16 +84,16 @@ const Tellers = () => {
 
 
     const columns = [
-        { field: "id", headerName: "Teller ID", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "tellerName", headerName: "Teller Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "branchName", headerName: "Branch Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "balance", headerName: "Balance", flex: 1, valueGetter: (params) => formatValue(params.value) },
-        { field: "virtualBalance", headerName: "Virtual Balance", flex: 1, valueGetter: (params) => formatValue(params.value) },
-        { field: "language", headerName: "Language", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "id", headerName: "Teller ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "tellerName", headerName: "Teller Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "branchName", headerName: "Branch Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "balance", headerName: "Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        { field: "virtualBalance", headerName: "Virtual Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        { field: "language", headerName: "Language", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {
             field: "status",
             headerName: "Status",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => {
                 const isActive = params.row.active; // Access the "active" field from the row data
                 return (
@@ -111,7 +111,7 @@ const Tellers = () => {
         {
             field: "actions",
             headerName: "Actions",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => (
                 <>
                     <IconButton
@@ -207,7 +207,6 @@ const Tellers = () => {
                     rows={tellerData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
                 />

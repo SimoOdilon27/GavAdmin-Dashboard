@@ -86,19 +86,19 @@ const GimacWallets = () => {
 
     const columns = [
         // { field: "id", headerName: "ID", flex: 1 },
-        { field: "name", headerName: "Wallet Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "gimacMemberCode", headerName: "Gimac Member Code", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "walletType", headerName: "Wallet Type", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "countryName", headerName: "Country", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "countryCode", headerName: "Country Code", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "serviceDescription", headerName: "Service Description", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "serviceRef", headerName: "Service Ref", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "queryName", headerName: "Query Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "queryRef", headerName: "Query Ref", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "name", headerName: "Wallet Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "gimacMemberCode", headerName: "Gimac Member Code", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "walletType", headerName: "Wallet Type", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "countryName", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "countryCode", headerName: "Country Code", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "serviceDescription", headerName: "Service Description", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "serviceRef", headerName: "Service Ref", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "queryName", headerName: "Query Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "queryRef", headerName: "Query Ref", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {
             field: "actions",
             headerName: "Actions",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => (
                 <>
                     <IconButton

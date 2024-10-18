@@ -199,6 +199,7 @@ const ViewAccountDetails = () => {
             field: 'dateTime',
             headerName: 'Date & Time',
             flex: 1,
+            headerAlign: "center", align: "center",
             valueGetter: (params) => formatValue(params.value),
         },
 
@@ -206,6 +207,7 @@ const ViewAccountDetails = () => {
             field: 'fromAccount',
             headerName: 'From Account',
             flex: 1,
+            headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>From Account</span>,
 
         },
@@ -213,6 +215,7 @@ const ViewAccountDetails = () => {
             field: 'toAccount',
             headerName: 'To Account',
             flex: 1,
+            headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Account</span>,
         },
 
@@ -220,6 +223,7 @@ const ViewAccountDetails = () => {
             field: 'direction',
             headerName: 'Direction',
             flex: 1,
+            headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction Type</span>,
             valueGetter: (params) => formatValue(params.value),
         },
@@ -227,6 +231,7 @@ const ViewAccountDetails = () => {
             field: 'amount',
             headerName: 'Amount',
             flex: 1,
+            headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Amount</span>,
             valueGetter: (params) => formatValue(params.value),
         },
@@ -237,6 +242,7 @@ const ViewAccountDetails = () => {
             field: 'service',
             headerName: 'Service',
             flex: 1,
+            headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Service</span>,
             valueGetter: (params) => formatValue(params.value),
         },
@@ -245,6 +251,7 @@ const ViewAccountDetails = () => {
             field: 'status',
             headerName: 'Status',
             flex: 1,
+            headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Status</span>,
             renderCell: (params) => (
                 <div

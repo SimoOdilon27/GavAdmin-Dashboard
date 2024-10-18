@@ -162,35 +162,35 @@ const ViewTransactions = () => {
         {
             field: 'dateTime',
             headerName: 'Date & Time',
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             valueGetter: (params) => formatValue(params.value),
         },
 
         {
             field: 'fromAccount',
             headerName: 'From Account',
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>From Account</span>,
 
         },
         {
             field: 'toAccount',
             headerName: 'To Account',
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Account</span>,
         },
 
         {
             field: 'direction',
             headerName: 'Direction',
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction Type</span>,
             valueGetter: (params) => formatValue(params.value),
         },
         {
             field: 'amount',
             headerName: 'Amount',
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Amount</span>,
             valueGetter: (params) => formatValue(params.value),
         },
@@ -199,7 +199,7 @@ const ViewTransactions = () => {
         {
             field: 'service',
             headerName: 'Service',
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Service</span>,
             valueGetter: (params) => formatValue(params.value),
         },
@@ -207,7 +207,7 @@ const ViewTransactions = () => {
         {
             field: 'status',
             headerName: 'Status',
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Status</span>,
             renderCell: (params) => (
                 <div
@@ -231,31 +231,36 @@ const ViewTransactions = () => {
         {
             field: 'service',
             headerName: 'Service',
-            flex: 1
+            flex: 1,
+            headerAlign: "center", align: "center",
 
         },
         {
             field: 'direction',
             headerName: 'Transaction Type',
-            flex: 1
+            flex: 1,
+            headerAlign: "center", align: "center",
 
         },
         {
             field: 'fromAccount',
             headerName: 'From Account',
-            flex: 1
+            flex: 1,
+            headerAlign: "center", align: "center",
 
         },
         {
             field: 'toAccount',
             headerName: 'To Account',
-            flex: 1
+            flex: 1,
+            headerAlign: "center", align: "center",
 
         },
         {
             field: 'amount',
             headerName: 'Amount',
-            flex: 1
+            flex: 1,
+            headerAlign: "center", align: "center",
 
         },
     ]

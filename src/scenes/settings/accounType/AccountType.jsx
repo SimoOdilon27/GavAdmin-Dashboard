@@ -98,16 +98,16 @@ const AccountType = () => {
     };
 
 
+
     const columns = [
-        { field: "type", headerName: "Account type", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "description", headerName: "Description", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "idTag", headerName: " Tag", flex: 1, },
-
-
+        { field: "type", headerName: "Account type", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "description", headerName: "Description", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "idTag", headerName: " Tag", flex: 1, headerAlign: "center", align: "center", },
         {
             field: "actions",
             headerName: "Actions",
             flex: 1,
+            headerAlign: "center", align: "center",
             renderCell: (params) => (
                 <>
                     <IconButton

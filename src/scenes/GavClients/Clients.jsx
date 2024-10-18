@@ -189,19 +189,19 @@ const Clients = () => {
 
 
     const columns = [
-        { field: "name", headerName: "Client Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "msisdn", headerName: "MSISDN", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "language", headerName: "Language", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "dateOfBirth", headerName: "Date of Birth", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "cniNumber", headerName: "Cni", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "initialBalance", headerName: "Initial Balance", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "email", headerName: "Email", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "address", headerName: "Address", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "name", headerName: "Client Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "msisdn", headerName: "MSISDN", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "language", headerName: "Language", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "dateOfBirth", headerName: "Date of Birth", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "cniNumber", headerName: "Cni", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "initialBalance", headerName: "Initial Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "email", headerName: "Email", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "address", headerName: "Address", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         // { field: "email", headerName: "Email", flex: 1 },
         {
             field: "status",
             headerName: "Status",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => {
                 const isActive = params.row.active; // Access the "active" field from the row data
                 return (
@@ -219,7 +219,7 @@ const Clients = () => {
         {
             field: "actions",
             headerName: "Actions",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => {
                 const isActive = params.row.active;
 
@@ -402,7 +402,6 @@ const Clients = () => {
                     rows={clientData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
                 />

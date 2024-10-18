@@ -295,16 +295,16 @@ const Corporation = () => {
 
     const columns = [
         // { field: "corporationId", headerName: "Corporation ID", flex: 1 },
-        { field: "corporationName", headerName: "Name", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "contact", headerName: "Phone Number", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "email", headerName: "Email", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "address", headerName: "Address", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "country", headerName: "Country", flex: 1, valueGetter: (params) => toSentenceCase(params.value) },
+        { field: "corporationName", headerName: "Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "contact", headerName: "Phone Number", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "email", headerName: "Email", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "address", headerName: "Address", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "country", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value) },
 
         {
             field: "creationDateTime",
             headerName: "Creation Date",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             valueGetter: (params) => {
                 const date = new Date(params.value);
                 return date.toLocaleDateString('en-GB', {
@@ -317,7 +317,7 @@ const Corporation = () => {
         {
             field: "status",
             headerName: "Status",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => {
                 const isActive = params.row.active; // Access the "active" field from the row data
                 return (
@@ -335,7 +335,7 @@ const Corporation = () => {
         {
             field: "actions",
             headerName: "Actions",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => (
                 <>
                     <IconButton

@@ -153,13 +153,13 @@ const BankInvestments = () => {
 
     const InvestmentColumns = [
         // { field: 'id', headerName: ' Investment ID', flex: 1 },
-        { field: 'accountName', headerName: 'Account Name', flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: 'amount', headerName: 'Amount', flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: 'investorName', headerName: 'Investor Name', flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: 'accountName', headerName: 'Account Name', flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: 'amount', headerName: 'Amount', flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: 'investorName', headerName: 'Investor Name', flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {
             field: 'approvalStatus',
             headerName: 'Approval Status',
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => (
                 loadingRows.includes(params.row.id) ? (
                     <CircularProgress size={20} />

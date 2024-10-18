@@ -22,6 +22,7 @@ import { useTheme } from '@mui/material/styles';
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Header from "../../../components/Header";
 import CBS_Services from "../../../services/api/GAV_Sercives";
+import { formatValue } from "../../../tools/formatValue";
 
 const ViewTellerDetails = () => {
     const theme = useTheme();
@@ -113,44 +114,87 @@ const ViewTellerDetails = () => {
         </Box>
     );
 
+    const statusBadgeStyles = {
+        PENDING: { backgroundColor: 'orange', color: 'white' },
+        SUCCESSFUL: { backgroundColor: 'green', color: 'white' },
+        FAILED: { backgroundColor: 'red', color: 'white' },
+    };
     const columns = [
         {
-            field: 'id',
-            headerName: 'ID',
-            width: 80,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>ID</span>,
+            field: 'dateTime',
+            headerName: 'Date & Time',
+            flex: 1,
+            headerAlign: "center", align: "center",
+            valueGetter: (params) => formatValue(params.value),
+        },
+
+        {
+            field: 'fromAccount',
+            headerName: 'From Account',
+            flex: 1,
+            headerAlign: "center", align: "center",
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>From Account</span>,
+
         },
         {
-            field: 'transactionId',
-            headerName: 'Transaction ID',
-            width: 150,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction ID</span>,
+            field: 'toAccount',
+            headerName: 'To Account',
+            flex: 1,
+            headerAlign: "center", align: "center",
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Account</span>,
         },
+
         {
-            field: 'transactionType',
-            headerName: 'Type',
-            width: 120,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Type</span>,
+            field: 'direction',
+            headerName: 'Direction',
+            flex: 1,
+            headerAlign: "center", align: "center",
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction Type</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
         {
             field: 'amount',
             headerName: 'Amount',
-            width: 120,
+            flex: 1,
+            headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Amount</span>,
+            valueGetter: (params) => formatValue(params.value),
         },
+
+
+
+        {
+            field: 'service',
+            headerName: 'Service',
+            flex: 1,
+            headerAlign: "center", align: "center",
+            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Service</span>,
+            valueGetter: (params) => formatValue(params.value),
+        },
+
         {
             field: 'status',
             headerName: 'Status',
-            width: 100,
+            flex: 1,
+            headerAlign: "center", align: "center",
             renderHeader: () => <span style={{ fontWeight: 'bold' }}>Status</span>,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        padding: '5px 10px',
+                        borderRadius: '12px',
+                        backgroundColor: statusBadgeStyles[params.value]?.backgroundColor,
+                        color: statusBadgeStyles[params.value]?.color,
+                        textAlign: 'center',
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
         },
-        {
-            field: 'dateTime',
-            headerName: 'Date & Time',
-            width: 180,
-            renderHeader: () => <span style={{ fontWeight: 'bold' }}>Date & Time</span>,
-        },
-    ];
+
+
+    ]
 
     if (!initialValues) return null;
 

@@ -190,20 +190,20 @@ const BankAccount = () => {
     };
 
     const columns = [
-        { field: "name", headerName: "Account Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        // { field: "externalCorpOrBankOrBranchName", headerName: "External Acc Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "type", headerName: "Account Type", flex: 1, valueGetter: (params) => formatValue(params.value), },
-        { field: "totalCapitalInvested", headerName: "Total Capital Invested", flex: 1, valueGetter: (params) => formatValue(params.value) },
-        // { field: "totalDebitBalance", headerName: "Total Debit Balance", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "totalCreditBalance", headerName: "Total Credit Balance", flex: 1, valueGetter: (params) => formatValue(params.value) },
-        { field: "balance", headerName: "Account Balance", flex: 1, valueGetter: (params) => formatValue(params.value) },
-        // { field: "dailyAccountThreshold", headerName: "Daily Account Threshold", flex: 1, valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "name", headerName: "Account Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        // { field: "externalCorpOrBankOrBranchName", headerName: "External Acc Name", flex: 1,  headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "type", headerName: "Account Type", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "totalCapitalInvested", headerName: "Total Capital Invested", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        // { field: "totalDebitBalance", headerName: "Total Debit Balance", flex: 1,  headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "totalCreditBalance", headerName: "Total Credit Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        { field: "balance", headerName: "Account Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        // { field: "dailyAccountThreshold", headerName: "Daily Account Threshold", flex: 1,  headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
 
 
         {
             field: "active",
             headerName: "Status",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => {
                 const isActive = params.row.active; // Access the "active" field from the row data
                 return (
@@ -223,7 +223,7 @@ const BankAccount = () => {
         {
             field: "actions",
             headerName: "Actions",
-            flex: 1,
+            flex: 1, headerAlign: "center", align: "center",
             renderCell: (params) => {
                 const isActive = params.row?.active; // Safely access the 'active' field
 
