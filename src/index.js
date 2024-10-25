@@ -10,6 +10,7 @@ import Login from "./scenes/auth/Login";
 import ErrorBoundary from "./scenes/ErrorBoundary/ErrorBoundary";
 import UpdatePassword from "./scenes/auth/UpdatePassword";
 import ProtectedComponent from "./tools/ProtectedComponent";
+import SpaceSelector from "./scenes/auth/SpaceAuthentication";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -25,6 +26,8 @@ root.render(
               <Route element={<ProtectedComponent />}>
                 <Route path="*" element={<App />} />
                 <Route path="/updatepassword" element={<UpdatePassword />} />
+                <Route path="/select-space" element={<SpaceSelector />} />
+
               </Route>
 
 

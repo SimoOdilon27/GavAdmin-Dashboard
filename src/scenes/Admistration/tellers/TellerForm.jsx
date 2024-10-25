@@ -302,18 +302,7 @@ const TellerForm = () => {
                                     name="tellerName"
                                     error={!!touched.tellerName && !!errors.tellerName}
                                     helperText={touched.tellerName && errors.tellerName}
-                                    sx={{
-                                        gridColumn: "span 3",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 3")}
                                 />
                                 <TextField
                                     fullWidth
@@ -326,32 +315,11 @@ const TellerForm = () => {
                                     name="msisdn"
                                     error={!!touched.msisdn && !!errors.msisdn}
                                     helperText={touched.msisdn && errors.msisdn}
-                                    sx={{
-                                        gridColumn: "span 1",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 1")}
                                 />
 
-                                <FormControl fullWidth variant="filled" sx={{
-                                    gridColumn: "span 1",
-                                    '& .MuiInputLabel-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                    },
-                                    '& .MuiFilledInput-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                    },
-                                }}>
+                                <FormControl fullWidth variant="filled"
+                                    sx={formFieldStyles("span 1")}>
                                     <InputLabel>Corporation</InputLabel>
                                     <Select
                                         label="Corporation"
@@ -373,18 +341,7 @@ const TellerForm = () => {
                                     )}
                                 </FormControl>
 
-                                <FormControl fullWidth variant="filled" sx={{
-                                    gridColumn: "span 1",
-                                    '& .MuiInputLabel-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                    },
-                                    '& .MuiFilledInput-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                    },
-                                }}>
+                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 1")}>
                                     <InputLabel>Bank</InputLabel>
                                     <Select
                                         label="Bank"
@@ -407,18 +364,8 @@ const TellerForm = () => {
                                     )}
                                 </FormControl>
 
-                                <FormControl fullWidth variant="filled" sx={{
-                                    gridColumn: "span 2",
-                                    '& .MuiInputLabel-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                    },
-                                    '& .MuiFilledInput-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                    },
-                                }}>
+                                <FormControl fullWidth variant="filled"
+                                    sx={formFieldStyles("span 2")}>
                                     <InputLabel>Branch</InputLabel>
                                     <Select
                                         label="Branch"
@@ -444,18 +391,7 @@ const TellerForm = () => {
 
 
 
-                                <FormControl fullWidth variant="filled" sx={{
-                                    gridColumn: "span 1",
-                                    '& .MuiInputLabel-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                    },
-                                    '& .MuiFilledInput-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                    },
-                                }}>
+                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 1")}>
                                     <InputLabel>Language</InputLabel>
                                     <Select
                                         label="Language"
@@ -485,18 +421,7 @@ const TellerForm = () => {
                                     name="cbsAccountId"
                                     error={!!touched.cbsAccountId && !!errors.cbsAccountId}
                                     helperText={touched.cbsAccountId && errors.cbsAccountId}
-                                    sx={{
-                                        gridColumn: "span 3",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 3")}
                                 />
 
 
@@ -518,18 +443,7 @@ const TellerForm = () => {
                                             name="accountId"
                                             error={!!touched.accountId && !!errors.accountId}
                                             helperText={touched.accountId && errors.accountId}
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
+                                            sx={formFieldStyles("span 2")}
                                         />
 
 
@@ -545,18 +459,7 @@ const TellerForm = () => {
                                                 />
                                             }
                                             label="Alpha CBS"
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
+                                            sx={formFieldStyles("span 2")}
                                         />
 
                                     </>) : (
@@ -574,18 +477,7 @@ const TellerForm = () => {
                                             name="dailyLimit"
                                             error={!!touched.dailyLimit && !!errors.dailyLimit}
                                             helperText={touched.dailyLimit && errors.dailyLimit}
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
+                                            sx={formFieldStyles("span 2")}
                                         />
                                         <TextField
                                             fullWidth
@@ -598,18 +490,7 @@ const TellerForm = () => {
                                             name="minimumAccountLimit"
                                             error={!!touched.minimumAccountLimit && !!errors.minimumAccountLimit}
                                             helperText={touched.minimumAccountLimit && errors.minimumAccountLimit}
-                                            sx={{
-                                                gridColumn: "span 1",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
+                                            sx={formFieldStyles("span 1")}
                                         />
                                         <TextField
                                             fullWidth
@@ -622,18 +503,7 @@ const TellerForm = () => {
                                             name="maximumAccountLimit"
                                             error={!!touched.maximumAccountLimit && !!errors.maximumAccountLimit}
                                             helperText={touched.maximumAccountLimit && errors.maximumAccountLimit}
-                                            sx={{
-                                                gridColumn: "span 1",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
+                                            sx={formFieldStyles("span 1")}
                                         />
 
                                         <TextField
@@ -647,18 +517,7 @@ const TellerForm = () => {
                                             name="internalId"
                                             error={!!touched.internalId && !!errors.internalId}
                                             helperText={touched.internalId && errors.internalId}
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
+                                            sx={formFieldStyles("span 2")}
 
                                         />
                                         <FormControlLabel
@@ -671,18 +530,7 @@ const TellerForm = () => {
                                                 />
                                             }
                                             label="Alpha CBS"
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
+                                            sx={formFieldStyles("span 2")}
                                         />
                                     </>
                                 )}

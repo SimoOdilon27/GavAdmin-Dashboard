@@ -8,12 +8,10 @@ const initialState = {
     expirationDate: '',
     phoneNumber: '',
     token: '',
-    bearerToken: '',
     refreshToken: '',
     isAuthenticated: false,
-    profilePhoto: '',
     refresh: 0,
-    claims: []
+
 }
 
 function redoxStorage(state = initialState, action) {
@@ -36,6 +34,12 @@ function redoxStorage(state = initialState, action) {
             }
 
             return nextState || state
+
+        case 'SELECT_SPACE':
+            return {
+                ...state,
+                selectedSpace: action.selectedSpace
+            }
 
         case 'LOGOUT':
             return initialState;

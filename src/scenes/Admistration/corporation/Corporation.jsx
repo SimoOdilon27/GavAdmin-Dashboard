@@ -299,7 +299,7 @@ const Corporation = () => {
         { field: "contact", headerName: "Phone Number", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
         { field: "email", headerName: "Email", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
         { field: "address", headerName: "Address", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "country", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value) },
+        // { field: "country", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value) },
 
         {
             field: "creationDateTime",

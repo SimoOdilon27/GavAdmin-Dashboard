@@ -50,6 +50,11 @@ import ViewClientDetails from "./scenes/GavClients/ViewClientDetails";
 import ConfigureCharges from "./scenes/Transactions/pricing/ChargesConfigurations/ConfigureCharges";
 import AccountTypeForm from "./scenes/settings/accounType/AccountTypeForm";
 import AccountType from "./scenes/settings/accounType/AccountType";
+import CreateMenuForm from "./scenes/settings/menucatalog/menuItemManagement/CreateMenu";
+import SpaceForm from "./scenes/settings/Usermanagement/spaceManagement/SpaceForm";
+import SpaceManagement from "./scenes/settings/Usermanagement/spaceManagement/SpaceManagement";
+import TypeManagement from "./scenes/settings/Usermanagement/typeManagement/TypeManagement";
+import SpaceSelector from "./scenes/auth/SpaceAuthentication";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -71,387 +76,63 @@ function App() {
               <Topbar setIsSidebar={setIsSidebar} />
               <Routes>
                 <Route path="*" element={<Dashboard />} />
-
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/team"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <Team />
-                    </RoleProtectedComponent>
-                  }
-                />
+                <Route path="/team" element={<Team />} />
+                <Route path="/createMenu" element={<CreateMenuForm />} />
                 <Route path="/form" element={<Form />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/calendar" element={<Calendar />} />
-                <Route
-                  path="/corporation"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <Corporation />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/corporation/add"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <CorporationForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/corporation/edit/:id"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <CorporationForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/corporation/view/:accounts"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <ViewCorporationDetails />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/bank"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <Bank />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/bank/edit/:id"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <BankForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-
-                <Route
-                  path="/bank/add"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <BankForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-
-                <Route
-                  path="/bank/view/:accounts"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <ViewBankDetails />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/bankaccount"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <BankAccounts />
-                    </RoleProtectedComponent>
-                  }
-                />
-
-                <Route
-                  path="/bankaccount/view/:accountId"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <ViewAccountDetails />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/bankinvestment"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <BankInvestments />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/viewtransactions"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER", "TELLER"]}>
-                      <ViewTransactions />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/branches"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <Branches />
-                    </RoleProtectedComponent>
-                  }
-                />
-
-                <Route
-                  path="/branches/add"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <BranchesForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/branches/edit/:id"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <BranchesForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/branches/view/:accounts"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <ViewBranchesDetails />
-                    </RoleProtectedComponent>
-                  }
-                />
-
-                <Route
-                  path="/tellers"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <Tellers />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/tellers/add"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <TellerForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/tellers/edit/:id"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <TellerForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-
-                <Route
-                  path="/tellers/view/:accountId"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <ViewTellerDetails />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/bankmapper"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <BankMapper />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/accounts"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <AllAccounts />
-                    </RoleProtectedComponent>
-                  }
-                />
-
-                <Route
-                  path="/menu-catalog"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <MenuCatalog />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/menu-catalog/add"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <CatalogForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/menu-catalog/edit/:id"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <CatalogForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/client"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <Clients />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/client/add-client"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <ClientForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/client/edit/:msisdn"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <ClientForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/client/view/:msisdn"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <ViewClientDetails />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/cashtransactions"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER", "TELLER"]}>
-                      <CashOutnIn />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/rolemanagement"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <RoleManagement />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/usermanagement"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <UserManagement />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/usermanagement/adduser"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <UserForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-
-                <Route
-                  path="/charges"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <Pricing />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/pricing/configure"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <Charges />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/pricing/configurecharges"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <ConfigureCharges />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/gimac-wallets"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <GimacWallets />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/gimac-wallets/add"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <GimacWalletForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/gimac-wallets/edit/:id"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <GimacWalletForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/gimac-countries"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <GimacCountries />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/gimac-countries/add"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <GimacCountriesForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/gimac-countries/edit/:id"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <GimacCountriesForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/accounttype"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <AccountType />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/accounttype/add"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <AccountTypeForm />
-                    </RoleProtectedComponent>
-                  }
-                />
-                <Route
-                  path="/accounttype/edit/:id"
-                  element={
-                    <RoleProtectedComponent allowedRoles={['ADMIN', "USER"]}>
-                      <AccountTypeForm />
-                    </RoleProtectedComponent>
-                  }
-                />
+                <Route path="/corporation" element={<Corporation />} />
+                <Route path="/corporation/add" element={<CorporationForm />} />
+                <Route path="/corporation/edit/:id" element={<CorporationForm />} />
+                <Route path="/corporation/view/:accounts" element={<ViewCorporationDetails />} />
+                <Route path="/bank" element={<Bank />} />
+                <Route path="/bank/edit/:id" element={<BankForm />} />
+                <Route path="/bank/add" element={<BankForm />} />
+                <Route path="/bank/view/:accounts" element={<ViewBankDetails />} />
+                <Route path="/bankaccount" element={<BankAccounts />} />
+                <Route path="/bankaccount/view/:accountId" element={<ViewAccountDetails />} />
+                <Route path="/bankinvestment" element={<BankInvestments />} />
+                <Route path="/viewtransactions" element={<ViewTransactions />} />
+                <Route path="/branches" element={<Branches />} />
+                <Route path="/branches/add" element={<BranchesForm />} />
+                <Route path="/branches/edit/:id" element={<BranchesForm />} />
+                <Route path="/branches/view/:accounts" element={<ViewBranchesDetails />} />
+                <Route path="/tellers" element={<Tellers />} />
+                <Route path="/tellers/add" element={<TellerForm />} />
+                <Route path="/tellers/edit/:id" element={<TellerForm />} />
+                <Route path="/tellers/view/:accountId" element={<ViewTellerDetails />} />
+                <Route path="/bankmapper" element={<BankMapper />} />
+                <Route path="/accounts" element={<AllAccounts />} />
+                <Route path="/menu-catalog" element={<MenuCatalog />} />
+                <Route path="/menu-catalog/add" element={<CatalogForm />} />
+                <Route path="/menu-catalog/edit/:id" element={<CatalogForm />} />
+                <Route path="/client" element={<Clients />} />
+                <Route path="/client/add-client" element={<ClientForm />} />
+                <Route path="/client/edit/:msisdn" element={<ClientForm />} />
+                <Route path="/client/view/:msisdn" element={<ViewClientDetails />} />
+                <Route path="/cashtransactions" element={<CashOutnIn />} />
+                <Route path="/rolemanagement" element={<RoleManagement />} />
+                <Route path="/usermanagement" element={<UserManagement />} />
+                <Route path="/usermanagement/adduser" element={<UserForm />} />
+                <Route path="/charges" element={<Pricing />} />
+                <Route path="/pricing/configure" element={<Charges />} />
+                <Route path="/pricing/configurecharges" element={<ConfigureCharges />} />
+                <Route path="/gimac-wallets" element={<GimacWallets />} />
+                <Route path="/gimac-wallets/add" element={<GimacWalletForm />} />
+                <Route path="/gimac-wallets/edit/:id" element={<GimacWalletForm />} />
+                <Route path="/gimac-countries" element={<GimacCountries />} />
+                <Route path="/gimac-countries/add" element={<GimacCountriesForm />} />
+                <Route path="/gimac-countries/edit/:id" element={<GimacCountriesForm />} />
+                <Route path="/accounttype" element={<AccountType />} />
+                <Route path="/accounttype/add" element={<AccountTypeForm />} />
+                <Route path="/accounttype/edit/:id" element={<AccountTypeForm />} />
+                <Route path="/space-management" element={<SpaceManagement />} />
+                <Route path="/space-management/add" element={<SpaceForm />} />
+                <Route path="/space-management/edit/:id" element={<SpaceForm />} />
+                <Route path="/type-management" element={<TypeManagement />} />
               </Routes>
+
               {/* <Routes>
                 <Route path="*" element={<Dashboard />} />
               </Routes> */}

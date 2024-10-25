@@ -1,5 +1,5 @@
-import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, useTheme } from "@mui/material";
-import { Formik } from "formik";
+import { Alert, Box, Button, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, useTheme } from "@mui/material";
+import { FieldArray, Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../../components/Header";
@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
-import { Save } from "@mui/icons-material";
+import { Add, RemoveCircle, Save } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { tokens } from "../../../theme";
 
@@ -19,17 +19,25 @@ const UserForm = () => {
         userName: "",
         password: "",
         email: "",
-        roles: "",
         refId: "",
         actif: true,
         tel: "",
-        language: ""
+        language: "",
+        bankCode: "",
+        spaceRoleDtoList: [
+            {
+                spaceId: "",
+                roleId: ""
+            }
+        ]
+
     })
 
-    console.log("initialValues", initialValues);
+    // console.log("initialValues", initialValues);
 
     const [tellerData, setTellerData] = useState([]);
-    const [roleData, setRoleData] = useState([]);
+    const [spaceData, setSpaceData] = React.useState([])
+    const [roleData, setRoleData] = React.useState([])
 
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
@@ -74,7 +82,8 @@ const UserForm = () => {
 
     const fetchRoleData = async () => {
         try {
-            const response = await CBS_Services('GATEWAY', 'role/getAllRole', 'GET', null, token);
+            const response = await CBS_Services('GATEWAY', 'clientGateWay/role/getAllRole', 'GET', null, token);
+
             if (response && response.status === 200) {
                 const allRoles = response.body.data || [];
                 setRoleData(allRoles);
@@ -120,12 +129,31 @@ const UserForm = () => {
         fetchTellerData();
     }, []);
 
-    const handleFormSubmit = async () => {
+
+    const handleFormSubmit = async (values, { setSubmitting }) => {
         setLoading(true);
         try {
-            const response = await CBS_Services('GATEWAY', `authentification/register`, 'POST', initialValues, token);
+            // Filter out any empty space-role pairs
+            const validSpaceRoles = values.spaceRoleDtoList.filter(
+                item => item.spaceId && item.roleId
+            );
+
+            if (validSpaceRoles.length === 0) {
+                showSnackbar('At least one space-role pair is required', 'error');
+                setLoading(false);
+                return;
+            }
+
+            const submitData = {
+                ...values,
+                spaceRoleDtoList: validSpaceRoles
+            };
+
+            console.log('Submitting data:', submitData);
+
+            const response = await CBS_Services('GATEWAY', `authentification/register`, 'POST', submitData, token);
+
             if (response && response.status === 200) {
-                await fetchRoleData();
                 showSnackbar('User created successfully.', 'success');
                 setTimeout(() => {
                     navigate(-1);
@@ -138,10 +166,11 @@ const UserForm = () => {
         } catch (error) {
             console.error('Error:', error);
             showSnackbar('Network Error!!! Try again Later.', 'error');
+        } finally {
+            setLoading(false);
+            setSubmitting(false);
         }
-        setLoading(false);
     };
-
 
 
     const handleChangeValues = (e) => {
@@ -162,6 +191,32 @@ const UserForm = () => {
     }
 
 
+    const fetchSpaceData = async () => {
+        setLoading(true);
+        try {
+            const response = await CBS_Services('GATEWAY', 'clientGateWay/space/getAllSpaces', 'GET', null, token);
+            console.log("fetchresponse=====", response);
+
+            if (response && response.status === 200) {
+                setSpaceData(response.body.data || []);
+                // setSuccessMessage('');
+                // setErrorMessage('');
+            } else {
+                setSpaceData([]);
+                showSnackbar('Error Finding Data.', 'error');
+            }
+
+        } catch (error) {
+            console.log('Error:', error);
+        }
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        fetchSpaceData();
+    }, []);
+
+
 
     return (
         <Box m="20px">
@@ -170,7 +225,7 @@ const UserForm = () => {
             <Formik
                 onSubmit={handleFormSubmit}
                 initialValues={initialValues}
-                validationSchema={checkoutSchema}
+            // validationSchema={checkoutSchema}
             >
                 {({
                     values,
@@ -203,42 +258,9 @@ const UserForm = () => {
                                 }}
                             >
 
-                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 4")}>
-                                    <InputLabel>Role</InputLabel>
-                                    <Select
-                                        label="Role"
-                                        onBlur={handleBlur}
-                                        onChange={(e) => {
-                                            handleChange(e);
-                                            setFieldValue("roles", e.target.value);
-                                            setInitialValues(prevValues => ({
-                                                ...prevValues,
-                                                roles: e.target.value,
-                                                refId: "",
-                                            }));
-                                            setSelectedTeller("");
-                                            setFieldValue("refId", "");
-                                            if (e.target.value !== "TELLER") {
-                                                setFieldValue("id", "");
-                                            }
-                                        }}
-                                        value={values.roles}
-                                        name="roles"
-                                        error={!!touched.roles && !!errors.roles}
-                                    >
-                                        <MenuItem value="" disabled>Select Role</MenuItem>
-                                        {filteredRoles.length > 0
-                                            ? filteredRoles.map((option) => (
-                                                <MenuItem key={option.id} value={option.roleName}>
-                                                    {option.roleName}
-                                                </MenuItem>
-                                            ))
-                                            : <MenuItem value="">No Roles available</MenuItem>}
-                                    </Select>
-                                    {touched.roles && errors.roles && (
-                                        <Alert severity="error">{errors.roles}</Alert>
-                                    )}
-                                </FormControl>
+
+
+
 
                                 <TextField
                                     fullWidth
@@ -383,6 +405,79 @@ const UserForm = () => {
                                         <Alert severity="error">{errors.language}</Alert>
                                     )}
                                 </FormControl>
+
+
+                                <Divider sx={{ gridColumn: "span 4", my: 2 }} />
+                                <FieldArray name="spaceRoleDtoList">
+                                    {({ push, remove }) => (
+                                        <Box sx={{ gridColumn: "span 4" }}>
+                                            {values.spaceRoleDtoList.map((item, index) => (
+                                                <Box key={index} sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                                                    <FormControl fullWidth variant="filled" sx={formFieldStyles()}>
+                                                        <InputLabel>Space</InputLabel>
+                                                        <Select
+                                                            label="Space"
+                                                            onBlur={handleBlur}
+                                                            onChange={(e) => {
+                                                                setFieldValue(`spaceRoleDtoList.${index}.spaceId`, e.target.value);
+                                                            }}
+                                                            value={item.spaceId}
+                                                            name={`spaceRoleDtoList.${index}.spaceId`}
+                                                            error={!!touched.spaceRoleDtoList?.[index]?.spaceId && !!errors.spaceRoleDtoList?.[index]?.spaceId}
+                                                        >
+                                                            <MenuItem value="" disabled>Select Space</MenuItem>
+                                                            {Array.isArray(spaceData) && spaceData.map((space) => (
+                                                                <MenuItem key={space.id} value={space.id}>
+                                                                    {space.label}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
+
+                                                    <FormControl fullWidth variant="filled" sx={formFieldStyles()}>
+                                                        <InputLabel>Role</InputLabel>
+                                                        <Select
+                                                            label="Role"
+                                                            onBlur={handleBlur}
+                                                            onChange={(e) => {
+                                                                setFieldValue(`spaceRoleDtoList.${index}.roleId`, e.target.value);
+                                                            }}
+                                                            value={item.roleId}
+                                                            name={`spaceRoleDtoList.${index}.roleId`}
+                                                            error={!!touched.spaceRoleDtoList?.[index]?.roleId && !!errors.spaceRoleDtoList?.[index]?.roleId}
+                                                        >
+                                                            <MenuItem value="" disabled>Select Role</MenuItem>
+                                                            {Array.isArray(roleData) && roleData.map((role) => (
+                                                                <MenuItem key={role.id} value={role.id}>
+                                                                    {role.roleName}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
+
+                                                    {index > 0 && (
+                                                        <IconButton
+                                                            color="error"
+                                                            onClick={() => remove(index)}
+                                                            sx={{ alignSelf: 'center' }}
+                                                        >
+                                                            <RemoveCircle />
+                                                        </IconButton>
+                                                    )}
+                                                </Box>
+                                            ))}
+                                            <Button
+                                                color="secondary"
+                                                variant="outlined"
+                                                startIcon={<Add />}
+                                                onClick={() => push({ spaceId: "", roleId: "" })}
+                                                sx={{ mt: 1 }}
+                                            >
+                                                Add Space-Role Pair
+                                            </Button>
+                                        </Box>
+                                    )}
+                                </FieldArray>
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>

@@ -1,8 +1,8 @@
-import { Alert, Box, Button, Checkbox, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputAdornment, InputLabel, List, ListItem, ListItemIcon, ListItemText, ListSubheader, MenuItem, Select, Snackbar, Stack, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Alert, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, List, ListItem, ListItemIcon, ListItemText, Snackbar, Stack, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import Header from '../../../components/Header'
 import { tokens } from '../../../theme';
-import { Add, AdminPanelSettingsOutlined, EditOutlined, HelpOutline, LockOpenOutlined, MenuBook, Save, Search, SecurityOutlined, StarOutlined, SupervisorAccountOutlined, VerifiedUser, VpnKeyOutlined } from '@mui/icons-material';
+import { Add, Save, Search, VerifiedUser } from '@mui/icons-material';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
@@ -142,23 +142,24 @@ const RoleManagement = () => {
     };
 
     const fetchRoleData = async () => {
-
+        setLoading(true);
         try {
             const response = await CBS_Services('GATEWAY', 'role/getAllRole', 'GET', null, token);
             console.log("fetchresponse=====", response);
 
             if (response && response.status === 200) {
-                setRoleData(response.body.data || null);
+                setRoleData(response.body.data || []);
                 // setSuccessMessage('');
                 // setErrorMessage('');
             } else {
+                setRoleData([]);
                 showSnackbar('Error Finding Data.', 'error');
             }
 
         } catch (error) {
             console.log('Error:', error);
         }
-
+        setLoading(false);
     }
 
     const handleConfirmAddRole = async () => {
@@ -190,45 +191,7 @@ const RoleManagement = () => {
 
     // Function to fetch Catalog data
 
-    // const handleConfirmAssignRole = async () => {
-    //     setLoading(true);
-    //     const results = [];
-    //     let hasError = false;
 
-    //     try {
-    //         // Process each tag sequentially
-    //         for (const tagName of assignRoleData.tagNames) {
-    //             const payload = {
-    //                 tagName: tagName,
-    //                 roleName: selectedRow,
-    //             };
-
-    //             const response = await CBS_Services('GATEWAY', `role/addRoleToService`, 'POST', payload, token);
-
-    //             if (response && response.status === 200) {
-    //                 results.push(`Success: ${tagName}`);
-    //             } else {
-    //                 results.push(`Failed: ${tagName} - ${response.body.errors || 'Unknown error'}`);
-    //                 hasError = true;
-    //             }
-    //         }
-
-    //         if (hasError) {
-    //             showSnackbar(`Some role assignments failed. ${results.join(', ')}`, 'warning');
-    //         } else {
-    //             showSnackbar('All roles assigned successfully.', 'success');
-    //         }
-
-    //         handleToggleAssignRoleModal();
-    //         await fetchRoleData();
-
-    //     } catch (error) {
-    //         console.error('Error:', error);
-    //         showSnackbar('Network Error! Try again later.', 'error');
-    //     }
-
-    //     setLoading(false);
-    // };
 
     const handleConfirmAssignRole = async () => {
         setLoading(true);
@@ -280,8 +243,8 @@ const RoleManagement = () => {
                 serviceReference: 'GET_ALL_CATALOG',
                 requestBody: ''
             }
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            // const response = await CBS_Services('APE', 'catalog/get/all', 'GET');
+            // const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            const response = await CBS_Services('APE', 'catalog/get/all', 'GET');
 
             console.log("response", response);
 
@@ -324,7 +287,7 @@ const RoleManagement = () => {
         fetchAssignedRoleData();
     }, []);
 
-    console.log("selectedrow", selectedRow);
+    // console.log("selectedrow", selectedRow);
 
 
     const handleAssignUserRole = (assignrole) => {
@@ -343,11 +306,6 @@ const RoleManagement = () => {
 
     console.log("level", level);
     console.log("roleData", roleData);
-
-
-
-
-
 
 
     const columns = [
@@ -665,11 +623,11 @@ const RoleManagement = () => {
                     <DialogActions>
                         <Box display="flex" justifyContent="space-between" width="100%" px={2}>
                             <Box>
-                                {assignRoleData.tagNames.length > 0 && (
+                                {assignRoleData?.tagNames.length > 0 ? (
                                     <Alert severity="info" sx={{ mr: 2 }}>
-                                        {assignRoleData.tagNames.length} menu(s) selected
+                                        {assignRoleData?.tagNames.length} menu(s) selected
                                     </Alert>
-                                )}
+                                ) : ("")}
                             </Box>
                             <Stack direction="row" spacing={2}>
                                 <LoadingButton
@@ -680,7 +638,7 @@ const RoleManagement = () => {
                                     loadingPosition="start"
                                     startIcon={<VerifiedUser />}
                                     onClick={handleConfirmAssignRole}
-                                    disabled={assignRoleData.tagNames.length === 0}
+                                    disabled={assignRoleData?.tagNames.length === 0}
                                 >
                                     Assign
                                 </LoadingButton>

@@ -24,7 +24,7 @@ function Copyright(props) {
     return (
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
             {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
+            <Link color="inherit" href="/">
                 Your Website
             </Link>{' '}
             {new Date().getFullYear()}
@@ -94,20 +94,42 @@ export default function Login() {
                 dispatch(action);
 
                 const loginCount = data.body.data.loginCount || "0";
+                const userSpaces = data.body.data.listSpaces || [];
+                const roles = data.body.data.userName || [];
+
+
 
                 if (loginCount === "1") {
                     // User is logging in for the first time, redirect to "/updatepassword"
                     navigate('/updatepassword');
                 }
-                else {
-                    // Continue with the login process
-                    // User can navigate freely to the dashboard after authentication
+                else if (userSpaces.length === 0) {
+                    // User has no spaces, redirect to "/createspace"
+                    if (roles === "admin") {
+                        // Admin user with no spaces, redirect to dashboard
+                        navigate('/dashboard');
+                    } else {
+                        // Non-admin user with no spaces, redirect to createspace
+                        navigate('/');
+                        setErrors({ isError: true, description: "No spaces available for this user" });
+                    }
+                }
+                else if (userSpaces.length === 1) {
+                    // If only one space, automatically select it and go to dashboard
+                    dispatch({
+                        type: "SELECT_SPACE",
+                        selectedSpace: userSpaces[0]
+                    });
                     navigate('/dashboard');
-
+                    // navigate('/select-space');
+                }
+                else {
+                    // Multiple spaces - navigate to space selection
+                    navigate('/select-space');
                 }
                 // navigate('/dashboard');
-            } else if (data.status === 401) {
-                setErrors({ isError: true, description: ("Username or password is incorrect" || data.body.message) });
+            } else if (data.status === 400) {
+                setErrors({ isError: true, description: ("Username or password is incorrect") });
                 setUserCredential({ ...userCredential, password: '', isSubmit: false });
             } else {
                 setErrors({ isError: true, description: "An error has occurred please try again later" });

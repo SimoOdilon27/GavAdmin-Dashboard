@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Lock, Refresh } from "@mui/icons-material";
 
-const USER_TIMEOUT = 90 * 60 * 1000; // 1 minute for testing
+const USER_TIMEOUT = 45 * 60 * 1000;
 
 const Topbar = () => {
   const theme = useTheme();

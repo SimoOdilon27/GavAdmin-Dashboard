@@ -70,15 +70,22 @@ const CorporationForm = () => {
 
     const handleFormSubmit = async (values) => {
         setPending(true);
+        const mappedValues = {
+            ...values,
+            name: values.corporationName, // Map "name" to "corporationName"
+        };
         try {
+
             let response;
             if (id) {
                 // Update existing teller
                 const payload = {
                     serviceReference: 'UPDATE_CORPORATION',
-                    requestBody: JSON.stringify(values)
+                    requestBody: JSON.stringify(mappedValues)
                 }
-                console.log("values", values);
+                console.log("values=====", values);
+                console.log("mappedValues", mappedValues);
+
 
                 response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
@@ -96,7 +103,7 @@ const CorporationForm = () => {
 
                 const payload = {
                     serviceReference: 'CREATE_CORPORATION',
-                    requestBody: JSON.stringify(values)
+                    requestBody: JSON.stringify(mappedValues)
                 }
                 console.log("values", values);
                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
@@ -125,7 +132,6 @@ const CorporationForm = () => {
         }
     }, [id, location.state]);
 
-    console.log("initialValues", initialValues);
 
     return (
         <Box m="20px">
@@ -182,18 +188,28 @@ const CorporationForm = () => {
                                     name="corporationName"
                                     error={!!touched.corporationName && !!errors.corporationName}
                                     helperText={touched.corporationName && errors.corporationName}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
+                                    sx={formFieldStyles("span 2")}
+
+                                    InputLabelProps={{
+                                        sx: {
+                                            color: 'white', // Default label color
+                                        }
                                     }}
+
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Corporation Name"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.name}
+                                    name="corporationName"
+                                    error={!!touched.name && !!errors.name}
+                                    helperText={touched.name && errors.name}
+                                    sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -214,18 +230,7 @@ const CorporationForm = () => {
                                     name="cbsCorporationId"
                                     error={!!touched.cbsCorporationId && !!errors.cbsCorporationId}
                                     helperText={touched.cbsCorporationId && errors.cbsCorporationId}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -235,7 +240,7 @@ const CorporationForm = () => {
 
                                 />
 
-                                <FormControl
+                                {/* <FormControl
                                     sx={{
                                         gridColumn: "span 2",
                                         '& .MuiFormLabel-root': {
@@ -269,7 +274,7 @@ const CorporationForm = () => {
                                         <FormControlLabel value="hasCbsAccount" control={<Radio color="secondary" />} label="Trust Soft Account" />
                                         <FormControlLabel value="otherCbs" control={<Radio color="secondary" />} label="Alpha CBS Account" />
                                     </RadioGroup>
-                                </FormControl>
+                                </FormControl> */}
 
                                 <TextField
                                     fullWidth
@@ -282,18 +287,7 @@ const CorporationForm = () => {
                                     name="email"
                                     error={!!touched.email && !!errors.email}
                                     helperText={touched.email && errors.email}
-                                    sx={{
-                                        gridColumn: "span 3",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 3")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -312,18 +306,7 @@ const CorporationForm = () => {
                                     name="contact"
                                     error={!!touched.contact && !!errors.contact}
                                     helperText={touched.contact && errors.contact}
-                                    sx={{
-                                        gridColumn: "span 1",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 1")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -331,6 +314,8 @@ const CorporationForm = () => {
                                         }
                                     }}
                                 />
+
+
                                 <TextField
                                     fullWidth
                                     variant="filled"
@@ -342,18 +327,7 @@ const CorporationForm = () => {
                                     name="address"
                                     error={!!touched.address && !!errors.address}
                                     helperText={touched.address && errors.address}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -373,18 +347,7 @@ const CorporationForm = () => {
                                     name="corporationAccountThreshold"
                                     // error={!!touched.corporationAccountThreshold && !!errors.corporationAccountThreshold}
                                     // helperText={touched.corporationAccountThreshold && errors.corporationAccountThreshold}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
                                         sx: {
