@@ -32,6 +32,7 @@ const BankMapper = () => {
     const [branchID, setBranchID] = useState([]);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
 
     const filteredMapBanks = bankmapperData ? bankmapperData.filter((bank) =>
         Object.values(bank).some((field) =>
@@ -46,7 +47,8 @@ const BankMapper = () => {
         try {
             const payload = {
                 serviceReference: 'ADD_BANK_MAPPER',
-                requestBody: JSON.stringify(formData)
+                requestBody: JSON.stringify(formData),
+                spaceId: spaceId,
             };
 
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
@@ -74,7 +76,8 @@ const BankMapper = () => {
         try {
             const payload = {
                 serviceReference: 'GET_BANK_MAPPER',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("fetchresponse", response);
@@ -97,7 +100,8 @@ const BankMapper = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BANKS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("fetchbankid", response);
@@ -116,7 +120,8 @@ const BankMapper = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BRANCHES',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("fetchbranchid", response);

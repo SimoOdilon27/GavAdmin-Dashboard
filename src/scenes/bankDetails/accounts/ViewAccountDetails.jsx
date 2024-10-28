@@ -31,6 +31,7 @@ const ViewAccountDetails = () => {
     const colors = tokens(theme.palette.mode);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const { accountId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -90,7 +91,8 @@ const ViewAccountDetails = () => {
                     page: page,
                     size: pageSize,
                     corporationOrBranchOrBankId: accountId
-                })
+                }),
+                spaceId: spaceId,
             };
 
             console.log("payload", payload);
@@ -118,7 +120,8 @@ const ViewAccountDetails = () => {
         try {
             const payload = {
                 serviceReference: 'CREATE_INVESTMENT',
-                requestBody: JSON.stringify(formData)
+                requestBody: JSON.stringify(formData),
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 

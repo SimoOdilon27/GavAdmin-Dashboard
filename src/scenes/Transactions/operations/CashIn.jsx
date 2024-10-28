@@ -19,6 +19,8 @@ const CashIn = () => {
     const [pending, setPending] = useState(false);
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
+    const spaceId = userData?.selectedSpace?.id
+
     const [successDialog, setSuccessDialog] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState(false);
     const [formValues, setFormValues] = useState(null);
@@ -70,7 +72,8 @@ const CashIn = () => {
 
             const payload = {
                 serviceReference: 'CASH_IN',
-                requestBody: JSON.stringify(values)
+                requestBody: JSON.stringify(values),
+                spaceId: spaceId,
             };
             console.log("payload", payload);
 
@@ -107,7 +110,8 @@ const CashIn = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BANKS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
 

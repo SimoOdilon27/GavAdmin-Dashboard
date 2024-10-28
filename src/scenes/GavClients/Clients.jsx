@@ -19,6 +19,7 @@ const Clients = () => {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const [selectedMsisdn, setSelectedMsisdn] = useState('');
     const [showActivateClientModal, setShowActivateClientModal] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
@@ -69,7 +70,8 @@ const Clients = () => {
 
             const payload = {
                 serviceReference: 'GET_ALLCLIENT_ACCOUNTS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             // const response = await CBS_Services('AP', 'api/gav/client/getAllClients', 'POST', null);
@@ -117,6 +119,7 @@ const Clients = () => {
             const payload = {
                 serviceReference: 'ACTIVATE_CLIENT',
                 requestBody: JSON.stringify(activateClientFormData),
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             // const response = await CBS_Services('AP', 'api/gav/client/activateClient', 'POST', activateClientFormData);

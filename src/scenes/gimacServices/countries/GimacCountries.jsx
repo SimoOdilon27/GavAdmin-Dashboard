@@ -18,6 +18,7 @@ const GimacCountries = () => {
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const navigate = useNavigate();
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -48,6 +49,7 @@ const GimacCountries = () => {
             const payload = {
                 serviceReference: 'GIMAC_COUNTRIES',
                 requestBody: JSON.stringify({ internalId: "Back-Office" }),
+                spaceId: spaceId,
             };
 
 

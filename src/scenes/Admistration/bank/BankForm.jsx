@@ -21,6 +21,7 @@ const BankForm = () => {
     const location = useLocation();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const [corpID, setCorpID] = useState('');
     const [countryData, setCountryData] = useState([]);
 
@@ -130,7 +131,8 @@ const BankForm = () => {
 
             const payload = {
                 serviceReference: 'GET_ALL_CORPORATIONS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             // const response = await CBS_Services('AP', 'api/gav/corporation/management/getAll', 'GET', null);
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);

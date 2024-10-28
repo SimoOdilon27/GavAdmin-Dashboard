@@ -1,16 +1,18 @@
 import { useTheme } from '@emotion/react';
-import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputAdornment, InputLabel, ListSubheader, MenuItem, Select, Snackbar, Stack, TextField, Tooltip, useMediaQuery } from '@mui/material'
+import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, ListSubheader, Menu, MenuItem, Select, Snackbar, Stack, TextField, Tooltip, useMediaQuery } from '@mui/material'
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import React, { useEffect, useState } from 'react'
 import { tokens } from '../../../theme';
 import Header from '../../../components/Header';
-import { Add, Assignment, AssuredWorkload, BackupRounded, LocalActivitySharp, MenuBook, Save, Search, VerifiedUser } from '@mui/icons-material';
+import { Add, Assignment, AssuredWorkload, BackupRounded, Delete, EditOutlined, LocalActivitySharp, MenuBook, Save, Search, VerifiedUser } from '@mui/icons-material';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@mui/lab';
 import { Formik } from 'formik';
 import { formatValue } from '../../../tools/formatValue';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
 
 
 
@@ -32,6 +34,7 @@ const UserManagement = () => {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
     const [showModal, setShowModal] = useState(false)
     const [bankCode, setBankCode] = useState('');
@@ -50,6 +53,31 @@ const UserManagement = () => {
             return;
         }
         setSnackbar({ ...snackbar, open: false });
+    };
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentRow, setCurrentRow] = useState(null);
+    const open = Boolean(anchorEl);
+
+    // Define or import the handleEdit and handleDelete functions
+
+
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Your delete logic here
+    };
+    const handleEdit = (row) => {
+        console.log("Edit clicked", row);
+    };
+
+    const handleClick = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setCurrentRow(row); // Store the current row to pass to actions
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setCurrentRow(null);
     };
 
     const ITEM_HEIGHT = 48;
@@ -139,7 +167,8 @@ const UserManagement = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BANKS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
@@ -203,8 +232,8 @@ const UserManagement = () => {
         { field: "bankCode", headerName: "Bank Code", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
 
         {
-            field: "actions",
-            headerName: "Actions",
+            field: "permissions",
+            headerName: "Permissions",
             flex: 1,
             headerAlign: "center", align: "center",
             renderCell: (params) => {
@@ -240,6 +269,45 @@ const UserManagement = () => {
                     </>
                 );
             },
+        },
+        {
+            field: "actions",
+            headerName: "Actions",
+            flex: 1, headerAlign: "center", align: "center",
+            renderCell: (params) => (
+                <>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, params.row)}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: "20ch",
+                                transform: "translateX(-50%)",
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={() => handleEdit(currentRow)}>
+                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                            Edit
+                        </MenuItem>
+
+                        <MenuItem onClick={() => handleDelete(currentRow)}>
+                            <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                            Delete
+                        </MenuItem>
+                    </Menu>
+                </>
+            ),
         },
     ];
 

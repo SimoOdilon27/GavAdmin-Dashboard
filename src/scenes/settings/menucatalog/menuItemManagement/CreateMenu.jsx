@@ -1,4 +1,3 @@
-
 import {
     Alert,
     Box,
@@ -15,6 +14,15 @@ import {
     Typography,
     IconButton,
     Divider,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    InputAdornment,
 } from "@mui/material";
 import { FieldArray, Formik } from "formik";
 import * as yup from "yup";
@@ -24,7 +32,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
-import { Save, Cancel, RemoveCircle, Add } from "@mui/icons-material";
+import { Save, Cancel, RemoveCircle, Add, Label, Search } from "@mui/icons-material";
 import { tokens } from "../../../../theme";
 import { useTheme } from "@emotion/react";
 import IconSelector from "../IconSelector";
@@ -39,9 +47,18 @@ const CreateMenuForm = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
+    const [typeData, settypeData] = React.useState([])
+    const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
+    const [showTagModal, setShowTagModal] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [availableTags, setAvailableTags] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
+    const [activeSubItemIndex, setActiveSubItemIndex] = useState(null);
+
 
     const [initialValues, setInitialValues] = useState({
-        hasSubMenu: false,
+        hasSubMenu: true,
         title: "",
         icon: "",
         typeId: "",
@@ -51,6 +68,7 @@ const CreateMenuForm = () => {
             title: "",
             route: "",
             icon: "",
+            tagId: ''
         }],
     });
     const [pending, setPending] = useState(false);
@@ -115,7 +133,7 @@ const CreateMenuForm = () => {
         }
     };
 
-    const handleFormSubmit = async (values) => {
+    const handleFormSubmit = async (values, { resetForm }) => {
         setPending(true);
         try {
             // Prepare the item data
@@ -139,18 +157,39 @@ const CreateMenuForm = () => {
 
                 const itemId = itemResponse.body.data.title; // Adjust based on your API response structure
 
+
                 // Create all subitems sequentially
                 for (const subItem of values.subItems) {
                     await createSubItem({
                         itemId: itemId,
                         title: subItem.title,
                         route: subItem.route,
-                        icon: subItem.icon
+                        icon: subItem.icon,
+                        tagId: subItem.tagId || [],
                     });
                 }
 
                 showSnackbar("Item and subitems created successfully", "success");
                 // setTimeout(() => navigate("/items-management"), 2000);
+                resetForm({
+                    values: {
+                        hasSubMenu: true,
+                        title: "",
+                        icon: "",
+                        typeId: "",
+                        category: "",
+                        menuOrder: "",
+                        subItems: [{
+                            title: "",
+                            route: "",
+                            icon: "",
+                            tagId: []
+                        }],
+                    }
+                });
+                setActiveSubItemIndex(null);
+                setSelectAll(false);
+                setSearchTerm("");
             }
         } catch (error) {
             console.error("Error:", error);
@@ -158,6 +197,101 @@ const CreateMenuForm = () => {
         } finally {
             setPending(false);
         }
+    };
+
+    const fetchtypeData = async () => {
+
+        try {
+            const response = await CBS_Services('GATEWAY', 'clientGateWay/type/getAllType', 'GET', null, token);
+            console.log("fetchresponse=====", response);
+
+            if (response && response.status === 200) {
+                settypeData(response.body.data || []);
+                // setSuccessMessage('');
+                // setErrorMessage('');
+            } else {
+                settypeData([]);
+                showSnackbar('Error Finding Data.', 'error');
+            }
+
+        } catch (error) {
+            console.log('Error:', error);
+        }
+
+    }
+
+    useEffect(() => {
+        fetchtypeData();
+    }, [])
+
+    const fetchTags = async () => {
+        try {
+            const response = await CBS_Services('APE', 'catalog/get/all', 'GET', null, token);
+            if (response && response.status === 200) {
+                setAvailableTags(response.body.data || []);
+            } else {
+                showSnackbar('Error fetching tags.', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showSnackbar('Error fetching tags.', 'error');
+        }
+    };
+
+    useEffect(() => {
+        fetchTags();
+    }, []);
+
+    // Add handlers for tag modal
+    const handleOpenTagModal = (index) => {
+        setActiveSubItemIndex(index);
+        setShowTagModal(true);
+    };
+
+    const handleCloseTagModal = () => {
+        setShowTagModal(false);
+        setActiveSubItemIndex(null);
+        setSearchTerm("");
+        setSelectAll(false);
+    };
+
+    const handleSelectAll = (setFieldValue) => {
+        const newSelectAll = !selectAll;
+        setSelectAll(newSelectAll);
+
+        if (newSelectAll) {
+            const allTags = availableTags.map(tag => tag.id);
+            setFieldValue(`subItems.${activeSubItemIndex}.tagId`, allTags);
+        } else {
+            setFieldValue(`subItems.${activeSubItemIndex}.tagId`, []);
+        }
+    };
+
+
+
+    const handleUnselectAll = (setFieldValue) => {
+        console.log("Clearing all tags for subitem:", activeSubItemIndex); // Debug log
+        setFieldValue(`subItems.${activeSubItemIndex}.tagId`, []);
+        setSelectAll(false);
+    };
+
+    // const handleToggleTag = (tagId, values, setFieldValue) => {
+    //     const currentTags = values.subItems[activeSubItemIndex].tagId || [];
+    //     const newTags = currentTags.includes(tagId)
+    //         ? currentTags.filter(id => id !== tagId)
+    //         : [...currentTags, tagId];
+
+    //     setFieldValue(`subItems.${activeSubItemIndex}.tagId`, newTags);
+    // };
+
+    const handleToggleTag = (tagId, values, setFieldValue) => {
+        const currentTags = values.subItems[activeSubItemIndex].tagId || [];
+        const newTags = currentTags.includes(tagId)
+            ? currentTags.filter(id => id !== tagId)
+            : [...currentTags, tagId];
+
+        console.log("Updating tags for subitem", activeSubItemIndex, "to:", newTags); // Debug log
+        setFieldValue(`subItems.${activeSubItemIndex}.tagId`, newTags);
     };
 
 
@@ -191,7 +325,7 @@ const CreateMenuForm = () => {
                     >
                         <form onSubmit={handleSubmit}>
                             {/* Menu Type Selection */}
-                            <Box
+                            {/* <Box
                                 display="grid"
                                 gap="30px"
                                 gridTemplateColumns="repeat(4, minmax(0, 1fr))"
@@ -226,7 +360,7 @@ const CreateMenuForm = () => {
                                     label="This item has subitems"
                                     sx={{ gridColumn: "span 4" }}
                                 />
-                            </Box>
+                            </Box> */}
 
                             {/* Main Item Form */}
                             <Box
@@ -245,18 +379,42 @@ const CreateMenuForm = () => {
                                     Item Details
                                 </Typography>
 
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    label="Type ID"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.typeId}
-                                    name="typeId"
-                                    error={!!touched.typeId && !!errors.typeId}
-                                    helperText={touched.typeId && errors.typeId}
+
+
+                                <FormControl fullWidth variant="filled"
                                     sx={formFieldStyles("span 2")}
-                                />
+
+                                    InputLabelProps={{
+                                        sx: {
+                                            color: 'white', // Default label color
+                                        }
+                                    }}
+                                >
+                                    <InputLabel>Type</InputLabel>
+                                    <Select
+                                        label="Type"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.typeId}
+                                        name="typeId"
+                                        error={!!touched.typeId && !!errors.typeId}
+
+                                    >
+                                        <MenuItem value="" disabled>Select Type</MenuItem>
+                                        {Array.isArray(typeData) && typeData.length > 0 ? (
+                                            typeData.map(option => (
+                                                <MenuItem key={option.intitule} value={option.intitule}>
+                                                    {option.intitule}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem value="">No Types available</MenuItem>
+                                        )}
+                                    </Select>
+                                    {touched.typeId && errors.typeId && (
+                                        <Alert severity="error">{errors.typeId}</Alert>
+                                    )}
+                                </FormControl>
 
                                 <TextField
                                     fullWidth
@@ -298,7 +456,7 @@ const CreateMenuForm = () => {
                                     sx={formFieldStyles("span 2")}
                                 />
 
-                                <Box sx={formFieldStyles("span 4")}>
+                                {/* <Box sx={formFieldStyles("span 4")}>
                                     <IconSelector
                                         value={values.icon}
                                         onChange={(newValue) => setFieldValue('icon', newValue)}
@@ -306,7 +464,7 @@ const CreateMenuForm = () => {
                                         helperText={touched.icon && errors.icon}
                                         label="Select Icon"
                                     />
-                                </Box>
+                                </Box> */}
 
                                 <Divider sx={{ gridColumn: "span 4", my: 2 }} />
 
@@ -322,7 +480,16 @@ const CreateMenuForm = () => {
                                                 </Typography>
 
                                                 {values.subItems.map((subItem, index) => (
-                                                    <Box key={index} sx={{ display: 'grid', gridTemplateColumns: "1fr 1fr 1fr auto", gap: 2, mb: 2 }}>
+                                                    <Box key={index} sx={{
+                                                        display: 'grid',
+                                                        gridTemplateColumns: "2fr 2fr 2fr 1fr auto",
+                                                        gap: 2,
+                                                        mb: 3,
+                                                        alignItems: 'start',
+                                                        backgroundColor: colors.primary[400],
+                                                        padding: "20px",
+                                                        borderRadius: "8px"
+                                                    }}>
                                                         {/* Subitem Title Field */}
                                                         <TextField
                                                             fullWidth
@@ -337,19 +504,7 @@ const CreateMenuForm = () => {
                                                             sx={formFieldStyles("span 1")}
                                                         />
 
-                                                        {/* Route Field */}
-                                                        {/* <TextField
-                                                            fullWidth
-                                                            variant="filled"
-                                                            label="Route"
-                                                            name={`subItems.${index}.route`}
-                                                            value={subItem.route}
-                                                            onChange={handleChange}
-                                                            onBlur={handleBlur}
-                                                            error={touched.subItems?.[index]?.route && errors.subItems?.[index]?.route}
-                                                            helperText={touched.subItems?.[index]?.route && errors.subItems?.[index]?.route}
-                                                            sx={formFieldStyles("span 1")}
-                                                        /> */}
+
 
                                                         <FormControl fullWidth variant="filled"
                                                             sx={formFieldStyles("span 1")}>
@@ -376,7 +531,7 @@ const CreateMenuForm = () => {
                                                         </FormControl>
 
                                                         {/* Icon Selector */}
-                                                        <Box sx={{ gridColumn: "span 1" }}>
+                                                        <Box sx={formFieldStyles("span 1")}>
                                                             <IconSelector
                                                                 value={subItem.icon}
                                                                 onChange={(newValue) => setFieldValue(`subItems.${index}.icon`, newValue)}
@@ -385,6 +540,16 @@ const CreateMenuForm = () => {
                                                                 label="Select Icon"
                                                             />
                                                         </Box>
+
+                                                        <Button
+                                                            color="secondary"
+                                                            variant="outlined"
+                                                            startIcon={<Label />}
+                                                            onClick={() => handleOpenTagModal(index)}
+                                                            sx={{ mt: 0 }}
+                                                        >
+                                                            Select Tags ({(subItem.tagId || []).length})
+                                                        </Button>
 
                                                         {/* Remove Button */}
                                                         {values.subItems.length > 1 && (
@@ -418,8 +583,6 @@ const CreateMenuForm = () => {
                             </Box>
 
 
-
-
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>
                                     <LoadingButton
@@ -442,9 +605,91 @@ const CreateMenuForm = () => {
                                     </Button>
                                 </Stack>
                             </Box>
+
+
                         </form>
+
+                        <Dialog
+                            open={showTagModal}
+                            onClose={handleCloseTagModal}
+                            fullWidth
+                            maxWidth="md"
+                        >
+                            <DialogTitle>Select Tags</DialogTitle>
+                            <DialogContent>
+                                <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                                    <TextField
+                                        fullWidth
+                                        sx={{ mb: 2 }}
+                                        placeholder="Search tags..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Search />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                    <List sx={{
+                                        width: '100%',
+                                        bgcolor: 'background.paper',
+                                        maxHeight: 300,
+                                        overflow: 'auto'
+                                    }}>
+                                        <ListItem dense>
+                                            <ListItemIcon>
+                                                <Checkbox
+                                                    edge="start"
+                                                    checked={selectAll}
+                                                    tabIndex={-1}
+                                                    disableRipple
+                                                    onChange={() => handleSelectAll(setFieldValue)}
+                                                    color='secondary'
+                                                />
+                                            </ListItemIcon>
+                                            <ListItemText primary="Select All" />
+                                        </ListItem>
+                                        {availableTags
+                                            .filter(tag => tag.id.toLowerCase().includes(searchTerm.toLowerCase()))
+                                            .map((tag) => {
+                                                const isSelected = values.subItems[activeSubItemIndex]?.tagId?.includes(tag.id);
+                                                return (
+                                                    <ListItem
+                                                        key={tag.id}
+                                                        dense
+                                                        button
+                                                        onClick={() => handleToggleTag(tag.id, values, setFieldValue)}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <Checkbox
+                                                                edge="start"
+                                                                checked={isSelected}
+                                                                tabIndex={-1}
+                                                                disableRipple
+                                                                color='secondary'
+                                                            />
+                                                        </ListItemIcon>
+                                                        <ListItemText primary={tag.id} />
+                                                    </ListItem>
+                                                );
+                                            })}
+                                    </List>
+                                </Box>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleCloseTagModal} color="primary" variant="contained">
+                                    Done
+                                </Button>
+                                <Button onClick={handleUnselectAll} color="secondary" variant="contained">
+                                    Clear Selected Tags
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
                     </Box>
                 )}
+
             </Formik>
 
             <Snackbar
@@ -460,520 +705,29 @@ const CreateMenuForm = () => {
     );
 };
 
-export default CreateMenuForm;
-
 const itemSchema = yup.object().shape({
-    hasSubMenu: yup.boolean(),
-    title: yup.string().required('Title is required'),
+    hasSubMenu: yup.boolean().required(),
+    title: yup.string().required('Title is required').min(2, 'Title must be at least 2 characters'),
     typeId: yup.string().required('Type ID is required'),
-    icon: yup.string().required('Icon is required'),
+    icon: yup.string().nullable(),
     category: yup.string().required('Category is required'),
-    menuOrder: yup.number().required('Menu order is required'),
+    menuOrder: yup.number().required('Menu order is required').min(0, 'Order must be positive'),
     subItems: yup.array().when('hasSubMenu', {
         is: true,
         then: yup.array().of(
             yup.object().shape({
                 title: yup.string().required('Subitem title is required'),
                 route: yup.string().required('Route is required'),
-                icon: yup.string().required('Icon is required'),
+                icon: yup.string().nullable(),
+                tagId: yup.array().of(yup.string()).nullable()
             })
         ),
+        otherwise: yup.array().nullable()
     }),
 });
 
-
-
-// import {
-//     Alert,
-//     Box,
-//     Button,
-//     FormControl,
-//     InputLabel,
-//     MenuItem,
-//     Select,
-//     Snackbar,
-//     Stack,
-//     TextField,
-//     Checkbox,
-//     FormControlLabel,
-//     Typography,
-// } from "@mui/material";
-// import { Formik } from "formik";
-// import * as yup from "yup";
-// import useMediaQuery from "@mui/material/useMediaQuery";
-// import Header from "../../../components/Header";
-// import { useParams, useNavigate } from "react-router-dom";
-// import React, { useEffect, useState } from "react";
-// import { useSelector } from "react-redux";
-// import { LoadingButton } from "@mui/lab";
-// import { Save, Cancel } from "@mui/icons-material";
-// import { tokens } from "../../../theme";
-// import { useTheme } from "@emotion/react";
-// import CBS_Services from "../../../services/api/GAV_Sercives";
-// import IconSelector from "./IconSelector";
-// import { MenuLinks } from "../../global/SideBarLinks";
-// import { formatValue } from "../../../tools/formatValue";
-
-
-// const CreateMenuForm = () => {
-//     const theme = useTheme();
-//     const colors = tokens(theme.palette.mode);
-//     const isNonMobile = useMediaQuery("(min-width:600px)");
-//     const { id } = useParams();
-//     const navigate = useNavigate();
-//     const userData = useSelector((state) => state.users);
-//     const token = userData.token;
-
-//     const [initialValues, setInitialValues] = useState({
-//         hasSubMenu: false,
-//         title: "",
-//         icon: "",
-//         route: "",
-//         category: "",
-//         menuOrder: "",
-//         subItems: [{
-//             itemId: "", // id of the item
-//             title: "",
-//             route: "",
-//             icon: "",
-//         }],
-//     });
-//     const [pending, setPending] = useState(false);
-//     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "" });
-
-//     const formFieldStyles = (gridColumn = "span 2") => ({
-//         gridColumn,
-//         "& .MuiInputLabel-root": {
-//             color: theme.palette.mode === "dark" ? colors.grey[100] : colors.black[700],
-//         },
-//         "& .MuiFilledInput-root": {
-//             color: theme.palette.mode === "dark" ? colors.grey[100] : colors.black[700],
-//         },
-//         "& .MuiInputLabel-root.Mui-focused": {
-//             color: theme.palette.mode === "dark" ? colors.grey[100] : colors.black[100],
-//         },
-//     });
-
-//     const showSnackbar = (message, severity) => {
-//         setSnackbar({ open: true, message, severity });
-//     };
-
-//     const handleSnackbarClose = (event, reason) => {
-//         if (reason === "clickaway") {
-//             return;
-//         }
-//         setSnackbar({ ...snackbar, open: false });
-//     };
-
-//     const handleFormSubmit = async (values) => {
-//         setPending(true);
-//         try {
-//             let response;
-
-//             console.log("values", values);
-
-//             if (id) {
-//                 // Update existing menu
-//                 response = await CBS_Services("POST", "menu/addOrUpdate", values);
-//                 if (response?.status === 200) {
-//                     showSnackbar("Menu Updated Successfully", "success");
-//                     setTimeout(() => navigate("/menu-management"), 2000);
-//                 } else {
-//                     showSnackbar(response?.body?.errors || "Error Updating Menu", "error");
-//                 }
-//             } else {
-//                 // Add new menu
-//                 response = await CBS_Services("POST", "menu/addOrUpdate", values);
-//                 if (response?.status === 200) {
-//                     showSnackbar("Menu Created Successfully", "success");
-//                     setTimeout(() => navigate("/menu-management"), 2000);
-//                 } else {
-//                     showSnackbar(response?.body?.errors || "Error Adding Menu", "error");
-//                 }
-//             }
-//         } catch (error) {
-//             console.error("Error:", error);
-//             showSnackbar("Error Try Again Later", "error");
-//         }
-//         setPending(false);
-//     };
-
-//     useEffect(() => {
-//         if (id) {
-//             // Fetch the existing menu item by ID
-//             CBS_Services("GET", `menu/get/${id}`, null)
-//                 .then((response) => {
-//                     if (response?.status === 200) {
-//                         setInitialValues(response.body.data);
-//                     }
-//                 })
-//                 .catch((error) => console.error("Error fetching menu item:", error));
-//         }
-//     }, [id]);
-
-//     return (
-//         <Box m="20px">
-//             <Header
-//                 title={id ? "EDIT MENU ITEM" : "ADD MENU ITEM"}
-//                 subtitle={id ? "Edit the menu item" : "Add a new menu item"}
-//             />
-//             <Formik
-//                 onSubmit={handleFormSubmit}
-//                 initialValues={initialValues}
-//                 enableReinitialize={true}
-//                 validationSchema={menuSchema}
-//             >
-//                 {({
-//                     values,
-//                     errors,
-//                     touched,
-//                     handleBlur,
-//                     handleChange,
-//                     handleSubmit,
-//                     setFieldValue
-//                 }) => (
-//                     <Box
-//                         display="grid"
-//                         sx={{
-//                             px: 2,
-//                             padding: "10px 100px 20px 100px",
-//                         }}
-//                     >
-//                         <form onSubmit={handleSubmit}>
-//                             {/* Initial Menu Type Selection */}
-//                             <Box
-//                                 display="grid"
-//                                 gap="30px"
-//                                 gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-//                                 sx={{
-//                                     boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
-//                                     borderRadius: "10px",
-//                                     padding: "40px",
-//                                     marginBottom: "20px",
-//                                     "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-//                                 }}
-//                             >
-//                                 <Typography
-//                                     variant="h5"
-//                                     sx={{
-//                                         gridColumn: "span 4",
-//                                         color: theme.palette.mode === "dark" ? colors.grey[100] : colors.black[700],
-//                                         marginBottom: "20px"
-//                                     }}
-//                                 >
-//                                     Menu Type Selection
-//                                 </Typography>
-//                                 <FormControlLabel
-//                                     control={
-//                                         <Checkbox
-//                                             checked={values.hasSubMenu}
-//                                             onChange={(e) => {
-//                                                 const isChecked = e.target.checked;
-//                                                 setFieldValue("hasSubMenu", isChecked);
-//                                                 // Reset form fields if checked or unchecked
-//                                                 if (!isChecked) {
-//                                                     setFieldValue("title", "");
-//                                                     setFieldValue("icon", "");
-//                                                     setFieldValue("route", "");
-//                                                     setFieldValue("subItems", [{
-//                                                         title: "",
-//                                                         route: "",
-//                                                         icon: "",
-//                                                     }]);
-//                                                     setFieldValue("menuOrder", "");
-//                                                     setFieldValue("category", "");
-//                                                 } else {
-//                                                     // Optionally reset specific fields if needed
-//                                                     setFieldValue("subItems", [{ title: "", route: "", icon: "" }]);
-//                                                 }
-//                                             }}
-//                                             name="hasSubMenu"
-//                                             color="secondary"
-//                                         />
-//                                     }
-//                                     label="This menu has submenu items"
-//                                     sx={{ gridColumn: "span 4" }}
-//                                 />
-//                             </Box>
-
-//                             {/* Conditional Form Fields */}
-//                             {!values.hasSubMenu ? (
-//                                 // Single Menu Form
-//                                 <Box
-//                                     display="grid"
-//                                     gap="30px"
-//                                     gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-//                                     sx={{
-//                                         boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
-//                                         borderRadius: "10px",
-//                                         padding: "40px",
-//                                         "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-//                                     }}
-//                                 >
-
-//                                     <TextField
-//                                         fullWidth
-//                                         variant="filled"
-//                                         label="Category"
-//                                         onBlur={handleBlur}
-//                                         onChange={handleChange}
-//                                         value={values.category}
-//                                         name="category"
-//                                         error={!!touched.category && !!errors.category}
-//                                         helperText={touched.category && errors.category}
-//                                         sx={formFieldStyles("span 3")}
-//                                     />
-//                                     <TextField
-//                                         fullWidth
-//                                         variant="filled"
-//                                         label="Menu Order"
-//                                         onBlur={handleBlur}
-//                                         onChange={handleChange}
-//                                         value={values.menuOrder}
-//                                         name="menuOrder"
-//                                         error={!!touched.menuOrder && !!errors.menuOrder}
-//                                         helperText={touched.menuOrder && errors.menuOrder}
-//                                         sx={formFieldStyles("span 1")}
-//                                     />
-//                                     <TextField
-//                                         fullWidth
-//                                         variant="filled"
-//                                         label="Menu Name"
-//                                         onBlur={handleBlur}
-//                                         onChange={handleChange}
-//                                         value={values.title}
-//                                         name="title"
-//                                         error={!!touched.title && !!errors.title}
-//                                         helperText={touched.title && errors.title}
-//                                         sx={formFieldStyles("span 2")}
-//                                     />
-
-//                                     <Box sx={formFieldStyles("span 2")}>
-//                                         <IconSelector
-//                                             value={values.icon}
-//                                             onChange={(newValue) => setFieldValue('icon', newValue)}
-//                                             error={!!touched.icon && !!errors.icon}
-//                                             helperText={touched.icon && errors.icon}
-//                                             label="Select Icon"
-//                                         />
-//                                     </Box>
-
-//                                     {/* <TextField
-//                                         fullWidth
-//                                         variant="filled"
-//                                         label="Route"
-//                                         onBlur={handleBlur}
-//                                         onChange={handleChange}
-//                                         value={values.route}
-//                                         name="route"
-//                                         error={!!touched.route && !!errors.route}
-//                                         helperText={touched.route && errors.route}
-//                                         sx={formFieldStyles("span 4")}
-//                                     /> */}
-
-//                                     <FormControl fullWidth variant="filled"
-//                                         sx={formFieldStyles("span 4")}>
-//                                         <InputLabel>Route</InputLabel>
-//                                         <Select
-//                                             label="Route"
-//                                             onBlur={handleBlur}
-//                                             onChange={handleChange}
-//                                             value={values.route}
-//                                             name="route"
-//                                             error={!!touched.route && !!errors.route}
-
-//                                         >
-//                                             <MenuItem value="" disabled>Select Path</MenuItem>
-//                                             {MenuLinks.map((menu) => (
-//                                                 <MenuItem key={menu.value} value={menu.value} disabled={!menu.value}>
-//                                                     {formatValue(menu.linkname)}
-//                                                 </MenuItem>
-//                                             ))}
-//                                         </Select>
-//                                         {touched.route && errors.route && (
-//                                             <Alert severity="error">{errors.route}</Alert>
-//                                         )}
-//                                     </FormControl>
-//                                 </Box>
-//                             ) : (
-//                                 // Submenu Form
-//                                 <>
-//                                     {/* Parent Menu Details */}
-//                                     <Box
-//                                         display="grid"
-//                                         gap="30px"
-//                                         gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-//                                         sx={{
-//                                             boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
-//                                             borderRadius: "10px",
-//                                             padding: "40px",
-//                                             marginBottom: "20px",
-//                                             "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-//                                         }}
-//                                     >
-//                                         <Typography
-//                                             variant="h5"
-//                                             sx={{
-//                                                 gridColumn: "span 4",
-//                                                 color: theme.palette.mode === "dark" ? colors.grey[100] : colors.black[700],
-//                                                 marginBottom: "20px"
-//                                             }}
-//                                         >
-//                                             Parent Menu Details
-//                                         </Typography>
-//                                         <TextField
-//                                             fullWidth
-//                                             variant="filled"
-//                                             label="Category"
-//                                             onBlur={handleBlur}
-//                                             onChange={handleChange}
-//                                             value={values.category}
-//                                             name="category"
-//                                             error={!!touched.category && !!errors.category}
-//                                             helperText={touched.category && errors.category}
-//                                             sx={formFieldStyles("span 2")}
-//                                         />
-//                                         <TextField
-//                                             fullWidth
-//                                             variant="filled"
-//                                             label="Menu Order"
-//                                             onBlur={handleBlur}
-//                                             onChange={handleChange}
-//                                             value={values.menuOrder}
-//                                             name="menuOrder"
-//                                             error={!!touched.menuOrder && !!errors.menuOrder}
-//                                             helperText={touched.menuOrder && errors.menuOrder}
-//                                             sx={formFieldStyles("span 2")}
-//                                         />
-//                                     </Box>
-
-//                                     {/* Submenu Details */}
-//                                     <Box
-//                                         display="grid"
-//                                         gap="30px"
-//                                         gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-//                                         sx={{
-//                                             boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
-//                                             borderRadius: "10px",
-//                                             padding: "40px",
-//                                             "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-//                                         }}
-//                                     >
-//                                         <Typography
-//                                             variant="h5"
-//                                             sx={{
-//                                                 gridColumn: "span 4",
-//                                                 color: theme.palette.mode === "dark" ? colors.grey[100] : colors.black[700],
-//                                                 marginBottom: "20px"
-//                                             }}
-//                                         >
-//                                             Submenu Details
-//                                         </Typography>
-//                                         {values.subItems.map((_, index) => (
-//                                             <React.Fragment key={index}>
-//                                                 <TextField
-//                                                     fullWidth
-//                                                     variant="filled"
-//                                                     label="Submenu Title"
-//                                                     onBlur={handleBlur}
-//                                                     onChange={handleChange}
-//                                                     value={values.subItems[index].title}
-//                                                     name={`subItems.${index}.title`}
-//                                                     sx={formFieldStyles("span 2")}
-//                                                 />
-//                                                 <Box sx={formFieldStyles("span 2")}>
-//                                                     <IconSelector
-//                                                         value={values.subItems[index].icon}
-//                                                         onChange={handleChange}
-//                                                         error={!!touched.icon && !!errors.icon}
-//                                                         helperText={touched.icon && errors.icon}
-//                                                         label="Select Icon"
-//                                                     />
-//                                                 </Box>
-//                                                 <TextField
-//                                                     fullWidth
-//                                                     variant="filled"
-//                                                     label="Submenu Route"
-//                                                     onBlur={handleBlur}
-//                                                     onChange={handleChange}
-//                                                     value={values.subItems[index].route}
-//                                                     name={`subItems.${index}.route`}
-//                                                     sx={formFieldStyles("span 4")}
-//                                                 />
+export default CreateMenuForm;
 
 
 
-//                                             </React.Fragment>
-//                                         ))}
-//                                     </Box>
-//                                 </>
-//                             )}
-
-
-
-//                             <Box display="flex" justifyContent="end" mt="20px">
-//                                 <Stack direction="row" spacing={2}>
-
-//                                     <LoadingButton
-//                                         type="submit"
-//                                         color="secondary"
-//                                         variant="contained"
-//                                         loading={pending}
-//                                         startIcon={<Save />}
-//                                     >
-//                                         {id ? "Update Menu" : "Add Menu"}
-//                                     </LoadingButton>
-
-//                                     <Button color="primary" variant="contained" disabled={pending} onClick={() => navigate(-1)}>
-//                                         Cancel
-//                                     </Button>
-//                                 </Stack>
-//                             </Box>
-//                         </form>
-//                     </Box>
-//                 )}
-//             </Formik>
-
-//             <Snackbar
-//                 open={snackbar.open}
-//                 autoHideDuration={6000}
-//                 onClose={handleSnackbarClose}
-//             >
-//                 <Alert onClose={handleSnackbarClose} severity={snackbar.severity}>
-//                     {snackbar.message}
-//                 </Alert>
-//             </Snackbar>
-//         </Box>
-//     );
-// };
-
-// export default CreateMenuForm;
-
-// const menuSchema = yup.object().shape({
-//     hasSubMenu: yup.boolean(),
-//     title: yup.string().when('hasSubMenu', {
-//         is: false,
-//         then: yup.string().required('Menu name is required'),
-//     }),
-//     icon: yup.string().when('hasSubMenu', {
-//         is: false,
-//         then: yup.string().required('Icon is required'),
-//     }),
-//     route: yup.string().when('hasSubMenu', {
-//         is: false,
-//         then: yup.string().required('Route is required'),
-//     }),
-//     category: yup.string().required('Category is required'),
-//     menuOrder: yup.string().required('Menu order is required'),
-//     subItems: yup.array().when('hasSubMenu', {
-//         is: true,
-//         then: yup.array().of(
-//             yup.object().shape({
-//                 title: yup.string().required('Submenu title is required'),
-//                 route: yup.string().required('Submenu route is required'),
-//                 icon: yup.string().required('Submenu icon is required'),
-//             })
-//         ),
-//     }),
-// });
 

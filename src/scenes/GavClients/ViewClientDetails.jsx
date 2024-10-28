@@ -31,6 +31,7 @@ const ViewClientDetails = () => {
     const colors = tokens(theme.palette.mode);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const { msisdn } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -51,7 +52,8 @@ const ViewClientDetails = () => {
         try {
             const payload = {
                 serviceReference: 'GET_TRANSACTION_BY_ACCOUNT_NUMBER',
-                requestBody: msisdn
+                requestBody: msisdn,
+                spaceId: spaceId,
             };
 
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);

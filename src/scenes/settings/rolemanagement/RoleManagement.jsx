@@ -1,8 +1,8 @@
-import { Alert, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, List, ListItem, ListItemIcon, ListItemText, Snackbar, Stack, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Alert, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Snackbar, Stack, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import Header from '../../../components/Header'
 import { tokens } from '../../../theme';
-import { Add, Save, Search, VerifiedUser } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, Save, Search, VerifiedUser } from '@mui/icons-material';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
@@ -10,12 +10,16 @@ import { LoadingButton } from '@mui/lab';
 import { Formik } from 'formik';
 import * as yup from "yup";
 import { formatValue } from '../../../tools/formatValue';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
 
 const RoleManagement = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const { id } = useParams();
     const isNonMobile = useMediaQuery("(min-width:600px)");
-
+    const navigate = useNavigate();
     const [roleData, setRoleData] = React.useState([])
     const [loading, setLoading] = useState(false);
     const [CatalogData, setCatalogData] = useState([]);
@@ -24,7 +28,7 @@ const RoleManagement = () => {
     const [showAssignRoleModal, setShowAssignRoleModal] = React.useState(false)
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
     const [selectedRow, setSelectedRow] = useState(null);
-
+    const location = useLocation();
 
 
     const [assignRoleData, setAssignRoleData] = React.useState(
@@ -48,6 +52,42 @@ const RoleManagement = () => {
     const [selectAll, setSelectAll] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentRow, setCurrentRow] = useState(null);
+    const open = Boolean(anchorEl);
+
+    // Define or import the handleEdit and handleDelete functions
+
+
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Your delete logic here
+    };
+    const handleEdit = (row) => {
+        navigate(`/rolemanagement/edit/${row.id}`, { state: { roleData: row } });
+    }
+    const handleAssignMenu = (row) => {
+        navigate(`/rolemanagement/assignmenu/${row.roleName}`);
+    }
+
+    const handleClick = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setCurrentRow(row); // Store the current row to pass to actions
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setCurrentRow(null);
+    };
+
+
+    useEffect(() => {
+        if (id && location.state && location.state.roleData) {
+            setFormData(location.state.roleData);
+        }
+    }, [id, location.state]);
 
     const handleSelectAll = () => {
         setSelectAll(!selectAll);
@@ -144,7 +184,7 @@ const RoleManagement = () => {
     const fetchRoleData = async () => {
         setLoading(true);
         try {
-            const response = await CBS_Services('GATEWAY', 'role/getAllRole', 'GET', null, token);
+            const response = await CBS_Services('GATEWAY', 'clientGateWay/role/getAllRole', 'GET', null, token);
             console.log("fetchresponse=====", response);
 
             if (response && response.status === 200) {
@@ -188,10 +228,6 @@ const RoleManagement = () => {
 
         setLoading(false);
     };
-
-    // Function to fetch Catalog data
-
-
 
     const handleConfirmAssignRole = async () => {
         setLoading(true);
@@ -241,7 +277,8 @@ const RoleManagement = () => {
 
             const payload = {
                 serviceReference: 'GET_ALL_CATALOG',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             // const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             const response = await CBS_Services('APE', 'catalog/get/all', 'GET');
@@ -301,11 +338,11 @@ const RoleManagement = () => {
         setShowAssignRoleModal(!showAssignRoleModal);
     };
 
+    const handleAddRole = () => {
+        navigate('/rolemanagement/addrole')
+    }
 
-    const level = "1";
 
-    console.log("level", level);
-    console.log("roleData", roleData);
 
 
     const columns = [
@@ -336,8 +373,34 @@ const RoleManagement = () => {
             ),
         },
         {
-            field: "actions",
-            headerName: "Actions",
+            field: "type",
+            headerName: "Type",
+            flex: 1,
+            headerAlign: "center", // Center the header
+            align: "center", // Center the content
+            valueGetter: (params) => formatValue(params.value),
+            renderCell: (params) => (
+                <Typography variant="body2" style={{ fontWeight: 'medium' }}>
+                    {params.value}
+                </Typography>
+            ),
+        },
+        {
+            field: "description",
+            headerName: "Description",
+            flex: 1,
+            headerAlign: "center", // Center the header
+            align: "center", // Center the content
+            valueGetter: (params) => formatValue(params.value),
+            renderCell: (params) => (
+                <Typography variant="body2" style={{ fontWeight: 'medium' }}>
+                    {params.value}
+                </Typography>
+            ),
+        },
+        {
+            field: "permissions",
+            headerName: "Permissions",
             flex: 1,
             headerAlign: "center", // Center the header
             align: "center", // Center the content
@@ -362,6 +425,50 @@ const RoleManagement = () => {
                 );
             },
         },
+
+        {
+            field: "actions",
+            headerName: "Actions",
+            flex: 1, headerAlign: "center", align: "center",
+            renderCell: (params) => (
+                <>
+                    <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={(event) => handleClick(event, params.row)}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: "20ch",
+                                transform: "translateX(-50%)",
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={() => handleEdit(currentRow)}>
+                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                            Edit
+                        </MenuItem>
+                        <MenuItem onClick={() => handleAssignMenu(currentRow)}>
+                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                            Assign Menu
+                        </MenuItem>
+
+                        <MenuItem onClick={() => handleDelete(currentRow)}>
+                            <Delete fontSize="small" style={{ marginRight: "8px" }} />
+                            Delete
+                        </MenuItem>
+                    </Menu>
+                </>
+            ),
+        },
     ];
 
     return (
@@ -378,7 +485,7 @@ const RoleManagement = () => {
                             padding: "10px 20px",
                             marginRight: "10px",
                         }}
-                        onClick={handleToggleRoleModal}
+                        onClick={handleAddRole}
                     >
                         <Add sx={{ mr: "10px" }} />
                         Add Role
@@ -575,7 +682,7 @@ const RoleManagement = () => {
                                     </ListItemIcon>
                                     <ListItemText primary="Select All" />
                                 </ListItem>
-                                {Array.isArray(CatalogData) && CatalogData.length > 0 ? (
+                                {Array.isArray(CatalogData) && CatalogData?.length > 0 ? (
                                     CatalogData
                                         .filter(option =>
                                             option.id.toLowerCase().includes(searchTerm.toLowerCase())

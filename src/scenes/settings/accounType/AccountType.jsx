@@ -23,6 +23,7 @@ const AccountType = () => {
     const [globalMessage, setGlobalMessage] = useState({ type: '', content: '' });
     const navigate = useNavigate();
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
@@ -51,7 +52,8 @@ const AccountType = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ACCOUNT_TYPE',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("response", response);

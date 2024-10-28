@@ -25,6 +25,7 @@ const ViewTransactions = () => {
     const [pending, setPending] = React.useState(true);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
 
     const [pageInput, setPageInput] = useState("1");
     const [sizeInput, setSizeInput] = useState("10");
@@ -68,7 +69,8 @@ const ViewTransactions = () => {
             if (userData.roles === 'TELLER') {
                 payload = {
                     serviceReference: 'GET_TRANSACTION_BY_ACCOUNT_NUMBER',
-                    requestBody: telletAccountID
+                    requestBody: telletAccountID,
+                    spaceId: spaceId,
                 }
             }
             else {
@@ -78,7 +80,8 @@ const ViewTransactions = () => {
                         page: page,
                         size: pageSize,
 
-                    })
+                    }),
+                    spaceId: spaceId
                 }
             }
 

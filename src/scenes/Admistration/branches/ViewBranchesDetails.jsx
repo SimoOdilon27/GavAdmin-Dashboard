@@ -28,6 +28,7 @@ const ViewBranchesDetails = () => {
     const colors = tokens(theme.palette.mode);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const { accounts } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -50,7 +51,8 @@ const ViewBranchesDetails = () => {
                     page: page,
                     size: pageSize,
                     corporationOrBranchOrBankId: accounts
-                })
+                }),
+                spaceId: spaceId,
             };
 
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);

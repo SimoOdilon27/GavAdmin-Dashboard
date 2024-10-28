@@ -639,7 +639,7 @@ const Sidebar = () => {
                   return (
                     <SubMenu
                       key={index}
-                      // title={menu.category}
+                      title={menu.title}
                       icon={menu.icon}
                       open={openSubmenu === menu.category}
                       onOpenChange={() => handleSubMenuClick(menu.category)}

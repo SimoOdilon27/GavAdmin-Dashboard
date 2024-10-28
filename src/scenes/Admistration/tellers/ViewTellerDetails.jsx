@@ -29,6 +29,7 @@ const ViewTellerDetails = () => {
     const colors = tokens(theme.palette.mode);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const { accountId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -51,7 +52,8 @@ const ViewTellerDetails = () => {
                     page: page,
                     size: pageSize,
                     corporationOrBranchOrBankId: accountId
-                })
+                }),
+                spaceId: spaceId,
             };
             console.log("payload", payload); // Add this line to log the payload
 

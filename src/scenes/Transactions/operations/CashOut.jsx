@@ -16,6 +16,8 @@ const CashOut = () => {
     const [withdrawWithCni, setWithdrawWithCni] = useState(false); // State to track checkbox
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
+    const spaceId = userData?.selectedSpace?.id
+
     const [bankCode, setBankCode] = useState('');
     const [successDialog, setSuccessDialog] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState({
@@ -71,7 +73,8 @@ const CashOut = () => {
         try {
             const payload = {
                 serviceReference: withdrawWithCni ? 'CASH_OUT_WITH_CNI' : 'CASH_OUT',
-                requestBody: JSON.stringify(values)
+                requestBody: JSON.stringify(values),
+                spaceId: spaceId,
             };
 
             console.log("payload", payload);
@@ -113,7 +116,8 @@ const CashOut = () => {
         try {
             const payload = {
                 serviceReference: 'CONFIRM_CASHOUT',
-                requestBody: JSON.stringify(ConfirmcashOutFormData)
+                requestBody: JSON.stringify(ConfirmcashOutFormData),
+                spaceId: spaceId,
             };
 
             console.log("payload", payload);
@@ -158,7 +162,8 @@ const CashOut = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BANKS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
 

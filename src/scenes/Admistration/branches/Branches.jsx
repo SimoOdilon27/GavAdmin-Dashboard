@@ -44,6 +44,7 @@ const Branches = () => {
 
     console.log("formada", formData);
     const token = userData.token
+    const spaceId = userData?.selectedSpace?.id
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
@@ -144,7 +145,8 @@ const Branches = () => {
 
             const payload = {
                 serviceReference: 'ADD_BANK_BRANCH',
-                requestBody: JSON.stringify(formData)
+                requestBody: JSON.stringify(formData),
+                spaceId: spaceId,
             }
 
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
@@ -195,7 +197,8 @@ const Branches = () => {
 
             const payload = {
                 serviceReference: 'UPDATE_BRANCH',
-                requestBody: JSON.stringify(formData)
+                requestBody: JSON.stringify(formData),
+                spaceId: spaceId,
             }
 
             console.log(payload);
@@ -253,7 +256,8 @@ const Branches = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BRANCHES',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
@@ -281,7 +285,8 @@ const Branches = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BANKS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 

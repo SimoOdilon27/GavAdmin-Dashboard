@@ -42,6 +42,7 @@ const UserForm = () => {
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const connectedUserRole = userData.roles; // Assuming the connected user's role is stored here
     const [filteredRoles, setFilteredRoles] = useState([]);
     const [selectedTeller, setSelectedTeller] = useState(''); // New state for selected lawyer
@@ -110,7 +111,8 @@ const UserForm = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_TELLERS',
-                requestBody: JSON.stringify({ internalId: "string" })
+                requestBody: JSON.stringify({ internalId: "string" }),
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             if (response && response.status === 200) {

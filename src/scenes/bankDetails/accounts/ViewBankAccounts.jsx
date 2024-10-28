@@ -17,6 +17,7 @@ const BankAccount = () => {
     const colors = tokens(theme.palette.mode);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
@@ -62,7 +63,8 @@ const BankAccount = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BANK_ACCOUNT',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("response", response);

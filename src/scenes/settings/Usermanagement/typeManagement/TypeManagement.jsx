@@ -22,9 +22,9 @@ const TypeManagement = () => {
     const [showModal, setShowModal] = React.useState(false)
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
-    const [formData, setFormData] = React.useState(
+    const [initialValues, setInitialValues] = React.useState(
         {
-            intitule: 0,
+            intitule: "",
             level: 0,
         }
     )
@@ -33,6 +33,7 @@ const TypeManagement = () => {
     const [selectAll, setSelectAll] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
 
     const showSnackbar = (message, severity) => {
         setSnackbar({ open: true, message, severity });
@@ -71,7 +72,7 @@ const TypeManagement = () => {
     };
 
     const handleToggletypeModal = () => {
-        setFormData({
+        setInitialValues({
             id: 0,
             typeName: '',
             creationDate: '',
@@ -105,10 +106,14 @@ const TypeManagement = () => {
         fetchtypeData();
     }, [])
 
-    const handleConfirmAddtype = async () => {
+
+
+    const handleConfirmAddtype = async (values) => {
         setLoading(true);
+        console.log("values", values);
+
         try {
-            const response = await CBS_Services('GATEWAY', `clientGateWay/type/createType`, 'POST', formData, token);
+            const response = await CBS_Services('GATEWAY', `clientGateWay/type/createType`, 'POST', values, token);
 
             console.log("response", response);
             if (response && response.status === 200) {
@@ -265,7 +270,7 @@ const TypeManagement = () => {
 
                     <Formik
                         onSubmit={handleConfirmAddtype}
-                        initialValues={formData}
+                        initialValues={initialValues}
                         enableReinitialize={true}
                         validationSchema={checkoutSchema}
                     >
@@ -316,24 +321,27 @@ const TypeManagement = () => {
                                     />
 
                                 </Box>
+                                <Box display="flex" justifyContent="end" mt="20px">
+                                    <Stack direction="row" spacing={2}>
+
+                                        <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
+                                            startIcon={<Save />} >
+                                            Add
+                                        </LoadingButton>
+
+                                        <Button color="primary" variant="contained" disabled={loading} onClick={handleToggletypeModal}>
+                                            Cancel
+                                        </Button>
+                                    </Stack>
+                                </Box>
                             </form>
+
                         )}
+
                     </Formik>
                 </DialogContent>
                 <DialogActions>
-                    <Box display="flex" justifyContent="end" mt="20px">
-                        <Stack direction="row" spacing={2}>
 
-                            <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
-                                startIcon={<Save />} onClick={handleConfirmAddtype}>
-                                Add
-                            </LoadingButton>
-
-                            <Button color="primary" variant="contained" disabled={loading} onClick={handleToggletypeModal}>
-                                Cancel
-                            </Button>
-                        </Stack>
-                    </Box>
                 </DialogActions>
             </Dialog>
 

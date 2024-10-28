@@ -20,6 +20,7 @@ const CorpAccount = () => {
 
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -35,6 +36,7 @@ const CorpAccount = () => {
             const payload = {
                 serviceReference: 'CREATE_CORP_ACCOUNT',
                 requestBody: JSON.stringify(formData),
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("addresponse", response);

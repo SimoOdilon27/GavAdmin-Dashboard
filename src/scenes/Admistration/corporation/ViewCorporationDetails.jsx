@@ -37,6 +37,7 @@ const ViewCorporationDetails = () => {
     const location = useLocation();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
 
     const [initialValues, setInitialValues] = useState({})
     const [transactionData, setTransactionData] = useState([]);
@@ -79,7 +80,8 @@ const ViewCorporationDetails = () => {
                     page: page, // DataGrid uses 0-based indexing
                     size: pageSize,
                     corporationOrBranchOrBankId: accounts
-                })
+                }),
+                spaceId: spaceId,
             };
 
 

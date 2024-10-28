@@ -21,6 +21,7 @@ const AccountTypeForm = () => {
     const location = useLocation();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
 
     const [initialValues, setInitialValues] = useState({
         type: "",

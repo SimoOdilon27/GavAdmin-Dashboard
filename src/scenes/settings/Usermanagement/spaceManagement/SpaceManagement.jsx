@@ -23,6 +23,7 @@ const SpaceManagement = () => {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
     const [selectedRow, setSelectedRow] = useState(null);

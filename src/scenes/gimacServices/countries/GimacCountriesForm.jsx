@@ -18,6 +18,7 @@ const GimacCountriesForm = () => {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
 
     console.log("id", id);
 

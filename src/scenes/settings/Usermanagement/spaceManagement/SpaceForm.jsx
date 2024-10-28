@@ -23,12 +23,16 @@ const SpaceForm = () => {
     const location = useLocation();
     const userData = useSelector((state) => state.users);
     const [typeData, settypeData] = useState([]);
+    const [spaceType, setSpaceType] = useState([]);
+
+
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const [initialValues, setInitialValues] = useState({
-        id: "",
+        spaceId: "",
         type: "",
         description: "",
-        intitule: "",
+        label: "",
     });
 
     const [pending, setPending] = useState(false);
@@ -67,11 +71,14 @@ const SpaceForm = () => {
 
     const handleFormSubmit = async (values) => {
         setPending(true);
+
+        console.log("valuess====", values);
+
         try {
             let response;
             if (id) {
                 // Update existing Space item
-                const response = await CBS_Services('APE', 'Space/addOrUpdate', 'POST', values);
+                const response = await CBS_Services('GATEWAY', 'clientGateWay/space/updateSpaces', 'POST', values);
                 console.log("editresponse", response);
 
 
@@ -87,7 +94,8 @@ const SpaceForm = () => {
                 }
             } else {
                 // Add new Space item
-                const response = await CBS_Services('APE', 'Space/addOrUpdate', 'POST', values);
+                const response = await CBS_Services('GATEWAY', 'clientGateWay/space/createSpaces', 'POST', values);
+                console.log("addresponse", response);
 
                 if (response && response.status === 200) {
                     showSnackbar('Space Created Successfully.', 'success');
@@ -112,11 +120,107 @@ const SpaceForm = () => {
         setPending(false);
     };
 
+    const fetchSpaceId = async (selectedspace) => {
+        let url = {};
+        let service = {};
+        let request = {};
+        let requestBody = {};
+
+        if (selectedspace === "CORPORATION") {
+            service = "AP"
+            url = "api/gav/corporation/management/getAll"
+            request = "GET"
+        }
+        else if (selectedspace === "BRANCH") {
+            service = "AP"
+            url = "api/gav/bankBranch/getAll"
+            request = "GET"
+        }
+        else if (selectedspace === "BANK") {
+            service = "AP"
+            url = "api/gav/bank/getAll"
+            request = "GET"
+        }
+        else if (selectedspace === "TELLER") {
+            service = "CLIENT"
+            url = "api/gav/teller/tellers"
+            request = "POST"
+            requestBody = {
+                internalId: "Back Office"
+            }
+        }
+
+        console.log("url", url);
+
+        try {
+
+            const response = await CBS_Services(service, url, request, requestBody);
+            console.log("responsespaceid", response);
+
+            if (response.body.meta.statusCode === 200) {
+                setSpaceType(response.body.data);
+            }
+            else {
+                showSnackbar('Error Try Again Later', 'error');
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+            showSnackbar('Error Try Again Later', 'error');
+        }
+
+    }
+
+    const handleTypeChange = async (event, setFieldValue) => {
+        const newType = event.target.value;
+        setFieldValue('type', newType);
+        setFieldValue('spaceId', '');
+        if (newType) {
+            await fetchSpaceId(newType);
+        }
+    };
+
+    const getIdKeyForType = (type) => {
+        switch (type) {
+            case 'CORPORATION':
+                return 'corporationId';
+            case 'BANK':
+                return 'bankId';
+            case 'BRANCH':
+                return 'branchId';
+            case 'TELLER':
+                return 'id';
+            default:
+                return '';
+        }
+    };
+    const getNameKeyForType = (type) => {
+        switch (type) {
+            case 'CORPORATION':
+                return 'corporationName';
+            case 'BANK':
+                return 'bankName';
+            case 'BRANCH':
+                return 'branchName';
+            case 'TELLER':
+                return 'tellerName';
+            default:
+                return '';
+        }
+    };
+
+    // useEffect(() => {
+    //     if (id && location.state && location.state.spaceData) {
+    //         // Use the data passed from the spaceData component
+    //         setInitialValues(location.state.spaceData);
+    //     }
+    // }, [id, location.state]);
 
     useEffect(() => {
-        if (id && location.state && location.state.spaceData) {
-            // Use the data passed from the spaceData component
+        fetchtypeData();
+        if (id && location.state?.spaceData) {
             setInitialValues(location.state.spaceData);
+            fetchSpaceId(location.state.spaceData.type);
         }
     }, [id, location.state]);
 
@@ -143,6 +247,7 @@ const SpaceForm = () => {
 
     useEffect(() => {
         fetchtypeData();
+
     }, []);
     return (
         <Box m="20px">
@@ -164,6 +269,7 @@ const SpaceForm = () => {
                     handleBlur,
                     handleChange,
                     handleSubmit,
+                    setFieldValue,
                 }) => (
 
                     <Box
@@ -187,19 +293,53 @@ const SpaceForm = () => {
                                 }}
                             >
 
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Space Name"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.id}
-                                    name="id"
-                                    error={!!touched.id && !!errors.id}
-                                    helperText={touched.id && errors.id}
-                                    sx={formFieldStyles("span 2")}
-                                />
+                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 2")}>
+                                    <InputLabel>Space</InputLabel>
+                                    <Select
+                                        label="Type"
+                                        onBlur={handleBlur}
+                                        onChange={(e) => handleTypeChange(e, setFieldValue)}
+                                        value={values.type}
+                                        name="type"
+                                        error={!!touched.type && !!errors.type}
+                                    >
+                                        <MenuItem value="" disabled>Select type</MenuItem>
+                                        <MenuItem value="CORPORATION"> CORPORATION </MenuItem>
+                                        <MenuItem value="BANK"> BANK </MenuItem>
+                                        <MenuItem value="BRANCH"> BRANCH </MenuItem>
+                                        <MenuItem value="TELLER"> TELLER </MenuItem>
+
+                                    </Select>
+                                    {touched.type && errors.type && (
+                                        <Alert severity="error">{errors.type}</Alert>
+                                    )}
+                                </FormControl>
+
+                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 2")}>
+                                    <InputLabel>{values.type || "Space"} ID</InputLabel>
+                                    <Select
+                                        label={`${values.type || "Space"} ID`}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.spaceId}
+                                        name="spaceId"
+                                        error={!!touched.spaceId && !!errors.spaceId}
+                                        disabled={!values.type}
+                                    >
+                                        <MenuItem value="">Select {values.type || "Space"}</MenuItem>
+                                        {spaceType.map((option) => (
+                                            <MenuItem
+                                                key={option[getIdKeyForType(values.type)]}
+                                                value={option[getIdKeyForType(values.type)]}
+                                            >
+                                                {option[getNameKeyForType(values.type)]}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                    {touched.spaceId && errors.spaceId && (
+                                        <Alert severity="error">{errors.spaceId}</Alert>
+                                    )}
+                                </FormControl>
 
                                 <FormControl fullWidth variant="filled"
                                     sx={formFieldStyles("span 2")}>
@@ -223,7 +363,19 @@ const SpaceForm = () => {
                                         <Alert severity="error">{errors.type}</Alert>
                                     )}
                                 </FormControl>
-
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Label"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.label}
+                                    name="label"
+                                    error={!!touched.label && !!errors.label}
+                                    helperText={touched.label && errors.label}
+                                    sx={formFieldStyles("span 2")}
+                                />
                                 <TextField
                                     fullWidth
                                     variant="filled"
@@ -235,21 +387,9 @@ const SpaceForm = () => {
                                     name="description"
                                     error={!!touched.description && !!errors.description}
                                     helperText={touched.description && errors.description}
-                                    sx={formFieldStyles("span 3")}
+                                    sx={formFieldStyles("span 4")}
                                 />
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Label"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.intitule}
-                                    name="intitule"
-                                    error={!!touched.intitule && !!errors.intitule}
-                                    helperText={touched.intitule && errors.intitule}
-                                    sx={formFieldStyles("span 1")}
-                                />
+
 
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
@@ -284,9 +424,9 @@ const SpaceForm = () => {
     )
 }
 const checkoutSchema = yup.object().shape({
-    id: yup.string().required("required"),
+    spaceId: yup.string().required("required"),
     type: yup.string().required("required"),
-    intitule: yup.string().required("required"),
+    label: yup.string().required("required"),
     description: yup.string().required("required"),
 
 });

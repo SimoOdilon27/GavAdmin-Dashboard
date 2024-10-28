@@ -25,6 +25,7 @@ const ClientForm = () => {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const [initialValues, setInitialValues] = useState({
         id: "",
         msisdn: "",
@@ -183,7 +184,8 @@ const ClientForm = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BANKS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("fetchbankid", response);
@@ -202,7 +204,8 @@ const ClientForm = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BRANCHES',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("fetchbranchid", response);
@@ -273,6 +276,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
+
                                                 sx={{
 
                                                     '& .MuiInputLabel-root': {

@@ -41,6 +41,7 @@ const BranchesForm = () => {
     const location = useLocation();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const [bankID, setBankID] = useState('');
 
     const [initialValues, setInitialValues] = useState({
@@ -126,7 +127,8 @@ const BranchesForm = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BANKS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 

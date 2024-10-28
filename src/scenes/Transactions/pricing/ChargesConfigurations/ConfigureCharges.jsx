@@ -36,6 +36,8 @@ const ConfigureCharges = () => {
     const [pending, setPending] = useState(false);
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
+    const spaceId = userData?.selectedSpace?.id
+
     const [banks, setBanks] = useState([]);
     const [pricingData, setPricingData] = useState([]);
     const navigate = useNavigate();
@@ -78,7 +80,8 @@ const ConfigureCharges = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BANKS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
             if (response && response.body.meta.statusCode === 200) {
@@ -96,7 +99,8 @@ const ConfigureCharges = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_CHARGES',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
 

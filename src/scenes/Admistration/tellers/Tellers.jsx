@@ -18,6 +18,7 @@ const Tellers = () => {
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
@@ -30,6 +31,7 @@ const Tellers = () => {
             const payload = {
                 serviceReference: 'GET_ALL_TELLERS',
                 requestBody: JSON.stringify({ internalId: "Back-Office" }),
+                spaceId: spaceId,
             }
 
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);

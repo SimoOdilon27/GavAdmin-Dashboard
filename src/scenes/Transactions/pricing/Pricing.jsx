@@ -18,6 +18,7 @@ const Pricing = () => {
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
@@ -42,7 +43,8 @@ const Pricing = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_CHARGES',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 

@@ -94,7 +94,7 @@ const menuData = [
                 title: "Corporation",
                 to: "/corporation",
                 icon: <CorporateFareIcon />,
-                roles: ["ADMIN"]
+
             },
             {
                 title: "Bank",

@@ -32,6 +32,7 @@ const ViewBankDetails = () => {
     const colors = tokens(theme.palette.mode);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const { accounts } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -56,7 +57,8 @@ const ViewBankDetails = () => {
                     page: page,
                     size: pageSize,
                     corporationOrBranchOrBankId: accounts
-                })
+                }),
+                spaceId: spaceId,
             };
 
 

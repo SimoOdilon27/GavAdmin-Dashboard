@@ -55,6 +55,8 @@ import SpaceForm from "./scenes/settings/Usermanagement/spaceManagement/SpaceFor
 import SpaceManagement from "./scenes/settings/Usermanagement/spaceManagement/SpaceManagement";
 import TypeManagement from "./scenes/settings/Usermanagement/typeManagement/TypeManagement";
 import SpaceSelector from "./scenes/auth/SpaceAuthentication";
+import RoleForm from "./scenes/settings/rolemanagement/RoleForm";
+import AssignRoleMenu from "./scenes/settings/rolemanagement/AssignRoleMenu";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -113,6 +115,9 @@ function App() {
                 <Route path="/client/view/:msisdn" element={<ViewClientDetails />} />
                 <Route path="/cashtransactions" element={<CashOutnIn />} />
                 <Route path="/rolemanagement" element={<RoleManagement />} />
+                <Route path="/rolemanagement/addrole" element={<RoleForm />} />
+                <Route path="/rolemanagement/edit/:id" element={<RoleForm />} />
+                <Route path="/rolemanagement/assignmenu/:roleName" element={<AssignRoleMenu />} />
                 <Route path="/usermanagement" element={<UserManagement />} />
                 <Route path="/usermanagement/adduser" element={<UserForm />} />
                 <Route path="/charges" element={<Pricing />} />

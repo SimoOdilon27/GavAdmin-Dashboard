@@ -14,6 +14,8 @@ const OtherCharges = () => {
     const [pending, setPending] = useState(false);
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
+    const spaceId = userData?.selectedSpace?.id
+
 
     const [initialValues, setInitialValues] = useState({
         description: "",
@@ -41,7 +43,8 @@ const OtherCharges = () => {
         try {
             const payload = {
                 serviceReference: 'OTHER_CHARGES1',
-                requestBody: JSON.stringify(values)
+                requestBody: JSON.stringify(values),
+                spaceId: spaceId,
             };
 
             console.log("Values", values);

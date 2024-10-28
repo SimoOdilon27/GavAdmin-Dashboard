@@ -41,6 +41,7 @@ const CorporationForm = () => {
     const location = useLocation();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
 
     const [initialValues, setInitialValues] = useState({
         corporationId: '',
@@ -81,7 +82,8 @@ const CorporationForm = () => {
                 // Update existing teller
                 const payload = {
                     serviceReference: 'UPDATE_CORPORATION',
-                    requestBody: JSON.stringify(mappedValues)
+                    requestBody: JSON.stringify(mappedValues),
+                    spaceId: spaceId
                 }
                 console.log("values=====", values);
                 console.log("mappedValues", mappedValues);
@@ -103,7 +105,8 @@ const CorporationForm = () => {
 
                 const payload = {
                     serviceReference: 'CREATE_CORPORATION',
-                    requestBody: JSON.stringify(mappedValues)
+                    requestBody: JSON.stringify(mappedValues),
+                    spaceId: spaceId
                 }
                 console.log("values", values);
                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);

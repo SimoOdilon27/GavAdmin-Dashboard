@@ -18,6 +18,7 @@ const GimacWalletForm = () => {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const [countryData, setCountryData] = useState([]);
 
     const [initialValues, setInitialValues] = useState({

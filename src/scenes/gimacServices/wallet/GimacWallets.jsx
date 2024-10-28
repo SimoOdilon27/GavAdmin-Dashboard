@@ -19,6 +19,7 @@ const GimacWallets = () => {
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const navigate = useNavigate();
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -49,6 +50,7 @@ const GimacWallets = () => {
             const payload = {
                 serviceReference: 'GET_GIMAC_WALLETS',
                 requestBody: JSON.stringify({ internalId: "Back-Office" }),
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 

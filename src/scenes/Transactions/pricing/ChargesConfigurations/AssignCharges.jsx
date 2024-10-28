@@ -14,6 +14,8 @@ const AssignCharges = () => {
     const [pending, setPending] = useState(false);
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
+    const spaceId = userData?.selectedSpace?.id
+
     const [servicesID, setServicesID] = useState([]);
     const [pricingData, setPricingData] = useState([]);
 
@@ -40,7 +42,8 @@ const AssignCharges = () => {
         try {
             const payload = {
                 serviceReference: 'ASSIGN_CHARGES1',
-                requestBody: JSON.stringify(values)
+                requestBody: JSON.stringify(values),
+                spaceId: spaceId,
             };
 
             console.log("Values", values);
@@ -67,7 +70,8 @@ const AssignCharges = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_CONFIGURED_SERVICES',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
             console.log("fetchbankid", response);
@@ -87,7 +91,8 @@ const AssignCharges = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_CHARGES',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
 

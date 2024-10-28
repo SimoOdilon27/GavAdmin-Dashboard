@@ -46,6 +46,7 @@ const Bank = () => {
     const navigate = useNavigate();
 
     const token = userData.token
+    const spaceId = userData?.selectedSpace?.id
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
     const showSnackbar = (message, severity) => {
@@ -137,7 +138,8 @@ const Bank = () => {
 
             const payload = {
                 serviceReference: 'ADD_BANK',
-                requestBody: JSON.stringify(formData)
+                requestBody: JSON.stringify(formData),
+                spaceId: spaceId,
             }
 
             console.log("formData", formData);
@@ -171,7 +173,9 @@ const Bank = () => {
 
             const payload = {
                 serviceReference: 'UPDATE_BANK',
-                requestBody: JSON.stringify(formData)
+                requestBody: JSON.stringify(formData),
+                spaceId: spaceId,
+
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("editresp", response);
@@ -205,7 +209,8 @@ const Bank = () => {
 
             const payload = {
                 serviceReference: 'GET_ALL_BANKS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             // const response = await CBS_Services('AP', 'api/gav/bank/getAll', 'GET', null);
@@ -230,7 +235,8 @@ const Bank = () => {
 
             const payload = {
                 serviceReference: 'GET_ALL_CORPORATIONS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             // const response = await CBS_Services('AP', 'api/gav/corporation/management/getAll', 'GET', null);
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);

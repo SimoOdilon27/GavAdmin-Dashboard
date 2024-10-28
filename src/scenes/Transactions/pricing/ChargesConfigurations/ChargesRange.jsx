@@ -14,6 +14,8 @@ const ChargesRange = () => {
     const [pending, setPending] = useState(false);
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
+    const spaceId = userData?.selectedSpace?.id
+
     const [pricingData, setPricingData] = useState([]);
 
 
@@ -42,7 +44,8 @@ const ChargesRange = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_CHARGES',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
 
@@ -67,7 +70,8 @@ const ChargesRange = () => {
         try {
             const payload = {
                 serviceReference: 'CHARGES_RANGE',
-                requestBody: JSON.stringify(values)
+                requestBody: JSON.stringify(values),
+                spaceId: spaceId,
             };
 
             console.log("Values", values);

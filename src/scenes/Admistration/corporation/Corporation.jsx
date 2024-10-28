@@ -44,6 +44,8 @@ const Corporation = () => {
     const userData = useSelector((state) => state.users)
     const navigate = useNavigate();
     const token = userData.token
+    const spaceId = userData?.selectedSpace?.id
+
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
     const showSnackbar = (message, severity) => {
@@ -86,7 +88,8 @@ const Corporation = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_CORPORATIONS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             // const response = await CBS_Services('AP', 'api/gav/corporation/management/getAll', 'GET', null);
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
@@ -117,7 +120,8 @@ const Corporation = () => {
 
             const payload = {
                 serviceReference: 'GET_ALL_BRANCHES',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
@@ -147,11 +151,9 @@ const Corporation = () => {
         try {
             const payload = {
                 serviceReference: 'UPDATE_CORPORATION',
-                requestBody: JSON.stringify(formData)
+                requestBody: JSON.stringify(formData),
+                spaceId: spaceId,
             }
-
-            console.log("payload", payload);
-
 
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("editresp", response);
@@ -192,7 +194,8 @@ const Corporation = () => {
 
             const payload = {
                 serviceReference: 'CREATE_CORPORATION',
-                requestBody: JSON.stringify(formData)
+                requestBody: JSON.stringify(formData),
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("addresponse", response);

@@ -39,6 +39,7 @@ const TellerForm = () => {
     const location = useLocation();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
     const [corporations, setCorporations] = useState([]);
     const [banks, setBanks] = useState([]);
     const [branches, setBranches] = useState([]);
@@ -164,7 +165,8 @@ const TellerForm = () => {
 
             const payload = {
                 serviceReference: 'GET_ALL_BRANCHES',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("response Branch", response);
@@ -185,7 +187,8 @@ const TellerForm = () => {
         try {
             const payload = {
                 serviceReference: 'GET_ALL_BANKS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("response Bank", response);
@@ -213,7 +216,8 @@ const TellerForm = () => {
 
             const payload = {
                 serviceReference: 'GET_ALL_CORPORATIONS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("response Corporation", response);

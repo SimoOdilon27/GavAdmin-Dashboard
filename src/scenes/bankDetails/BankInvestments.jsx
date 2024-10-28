@@ -34,6 +34,8 @@ const BankInvestments = () => {
 
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const spaceId = userData?.selectedSpace?.id
+
 
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
@@ -70,7 +72,8 @@ const BankInvestments = () => {
 
             const payload = {
                 serviceReference: 'GET_ALL_BANK_INVESTMENTS',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             // const response = await CBS_Services('AP', 'api/gav/account/investment/getAll', 'GET', null, token);
@@ -95,7 +98,8 @@ const BankInvestments = () => {
 
             const payload = {
                 serviceReference: 'APPROVE_INVESTMENTS',
-                requestBody: JSON.stringify({ request: id })
+                requestBody: JSON.stringify({ request: id }),
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
@@ -125,7 +129,8 @@ const BankInvestments = () => {
 
             const payload = {
                 serviceReference: 'GET_ALL_AWAITING_INVESTMENT_APPROVAL',
-                requestBody: ''
+                requestBody: '',
+                spaceId: spaceId,
             };
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
