@@ -95,10 +95,10 @@ const SpaceManagement = () => {
 
 
     const columns = [
-        { field: "id", headerName: "Space Id", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        // { field: "id", headerName: "Space Id", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "type", headerName: "Type", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "description", headerName: "Description", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "intitule", headerName: "Label", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "label", headerName: "Label", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {
             field: "actions",
             headerName: "Actions",
@@ -125,10 +125,10 @@ const SpaceManagement = () => {
                             },
                         }}
                     >
-                        <MenuItem onClick={() => handleEdit(currentRow)}>
+                        {/* <MenuItem onClick={() => handleEdit(currentRow)}>
                             <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
                             Edit
-                        </MenuItem>
+                        </MenuItem> */}
 
                         <MenuItem onClick={() => handleDelete(currentRow)}>
                             <Delete fontSize="small" style={{ marginRight: "8px" }} />

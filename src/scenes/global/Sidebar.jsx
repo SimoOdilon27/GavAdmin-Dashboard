@@ -28,6 +28,7 @@ import { formatValue } from "../../tools/formatValue";
 import menuData from "./menumock";
 import CBS_Services from "../../services/api/GAV_Sercives";
 import { AVAILABLE_ICONS } from "../settings/menucatalog/IconSelector";
+import FullscreenLoader from "../../tools/FullscreenLoader";
 
 
 
@@ -453,12 +454,16 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
   const [openSubmenu, setOpenSubmenu] = useState(null);
-  const [menus, setMenus] = useState([]);
   const userData = useSelector((state) => state.users);
   const role = userData.userName;
   const userName = userData.userName;
   const UserSpace = userData?.selectedSpace?.id;
   const UserId = userData.userId;
+  const token = userData.token;
+  const storeMenus = useSelector((state) => state.users.menus);
+  const [menus, setMenus] = useState(storeMenus || []);
+  const [loading, setLoading] = useState(false)
+
 
   const filterMenusByRole = (menu) => {
     if (!menu.roles || menu.roles.includes(role)) {
@@ -484,9 +489,10 @@ const Sidebar = () => {
   };
 
   const handleGetUserMenus = async () => {
+    setLoading(true);
     try {
 
-      const response = await CBS_Services("GATEWAY", `clientGateWay/items/searchItems/${UserId}/${UserSpace}`)
+      const response = await CBS_Services("GATEWAY", `clientGateWay/items/searchItems/${UserId}/${UserSpace}`, "GET", null, token)
       console.log("response", response);
 
       if (response.status === 200) {
@@ -499,11 +505,16 @@ const Sidebar = () => {
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   }
 
   useEffect(() => {
     handleGetUserMenus();
   }, [])
+
+  useEffect(() => {
+    setMenus(storeMenus);
+  }, [storeMenus]);
 
   return (
     <Box
@@ -631,48 +642,50 @@ const Sidebar = () => {
             </Box>
           }
 
+          {loading ? <FullscreenLoader /> :
 
-          <Box paddingLeft={isCollapsed ? undefined : "10%"}>
-            {menus
-              .map((menu, index) => {
-                if (menu.subItemList) {
-                  return (
-                    <SubMenu
-                      key={index}
-                      title={menu.title}
-                      icon={menu.icon}
-                      open={openSubmenu === menu.category}
-                      onOpenChange={() => handleSubMenuClick(menu.category)}
-                    >
-                      {menu.subItemList
-                        .map((subItem, idx) => (
-                          <Item
-                            key={idx}
-                            title={subItem.title}
-                            route={subItem.route}
-                            icon={subItem.icon}
-                            selected={selected}
-                            setSelected={setSelected}
-                            closeSubmenu={closeSubmenu}
-                          />
-                        ))}
-                    </SubMenu>
-                  );
-                } else {
-                  return (
-                    <Item
-                      key={index}
-                      title={menu.title}
-                      route={menu.route}
-                      icon={menu.icon}
-                      selected={selected}
-                      setSelected={setSelected}
-                      closeSubmenu={closeSubmenu}
-                    />
-                  );
-                }
-              })}
-          </Box>
+            <Box paddingLeft={isCollapsed ? undefined : "10%"}>
+              {menus
+                .map((menu, index) => {
+                  if (menu.subItemList) {
+                    return (
+                      <SubMenu
+                        key={index}
+                        title={menu.title}
+                        icon={menu.icon}
+                        open={openSubmenu === menu.category}
+                        onOpenChange={() => handleSubMenuClick(menu.category)}
+                      >
+                        {menu.subItemList
+                          .map((subItem, idx) => (
+                            <Item
+                              key={idx}
+                              title={subItem.title}
+                              route={subItem.route}
+                              icon={subItem.icon}
+                              selected={selected}
+                              setSelected={setSelected}
+                              closeSubmenu={closeSubmenu}
+                            />
+                          ))}
+                      </SubMenu>
+                    );
+                  } else {
+                    return (
+                      <Item
+                        key={index}
+                        title={menu.title}
+                        route={menu.route}
+                        icon={menu.icon}
+                        selected={selected}
+                        setSelected={setSelected}
+                        closeSubmenu={closeSubmenu}
+                      />
+                    );
+                  }
+                })}
+            </Box>
+          }
         </Menu>
       </ProSidebar>
     </Box>

@@ -46,16 +46,14 @@ const CreateMenuForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const { id } = useParams();
     const navigate = useNavigate();
-    const userData = useSelector((state) => state.users);
     const [typeData, settypeData] = React.useState([])
-    const token = userData.token;
-    const spaceId = userData?.selectedSpace?.id
     const [showTagModal, setShowTagModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [availableTags, setAvailableTags] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [activeSubItemIndex, setActiveSubItemIndex] = useState(null);
-
+    const userData = useSelector((state) => state.users);
+    const token = userData.token;
 
     const [initialValues, setInitialValues] = useState({
         hasSubMenu: true,
@@ -100,7 +98,7 @@ const CreateMenuForm = () => {
         try {
             console.log("itemdata", itemData);
 
-            const response = await CBS_Services('GATEWAY', 'clientGateWay/items/createItem', 'POST', itemData);
+            const response = await CBS_Services('GATEWAY', 'clientGateWay/items/createItem', 'POST', itemData, token);
             console.log("response", response);
 
             if (response.status === 200) {
@@ -119,7 +117,7 @@ const CreateMenuForm = () => {
         console.log("subItemData", subItemData);
 
         try {
-            const response = await CBS_Services('GATEWAY', 'clientGateWay/subItem/createSubItem', 'POST', subItemData);
+            const response = await CBS_Services('GATEWAY', 'clientGateWay/subItem/createSubItem', 'POST', subItemData, token);
             console.log("responsesubItemData", response);
 
             if (response.status === 200) {

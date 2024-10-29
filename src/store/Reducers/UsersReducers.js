@@ -41,6 +41,13 @@ function redoxStorage(state = initialState, action) {
                 selectedSpace: action.selectedSpace
             }
 
+        case "SET_MENUS":
+            return {
+                ...state,
+                menus: action.menus,
+
+            };
+
         case 'LOGOUT':
             return initialState;
 

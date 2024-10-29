@@ -109,7 +109,7 @@ const SpaceForm = () => {
             }
 
             if (response && response.status === 200) {
-                navigate("/menu-Space"); // Navigate back to the Space list
+                navigate(-1); // Navigate back to the Space list
             }
         } catch (error) {
             console.error("Error:", error);
@@ -223,6 +223,8 @@ const SpaceForm = () => {
             fetchSpaceId(location.state.spaceData.type);
         }
     }, [id, location.state]);
+    console.log("initialValues=====", initialValues);
+
 
     const fetchtypeData = async () => {
         setPending(true);
@@ -341,8 +343,7 @@ const SpaceForm = () => {
                                     )}
                                 </FormControl>
 
-                                <FormControl fullWidth variant="filled"
-                                    sx={formFieldStyles("span 2")}>
+                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 2")}>
                                     <InputLabel>Type</InputLabel>
                                     <Select
                                         label="Type"
@@ -352,7 +353,7 @@ const SpaceForm = () => {
                                         name="type"
                                         error={!!touched.type && !!errors.type}
                                     >
-                                        <MenuItem value="">Select type</MenuItem>
+                                        <MenuItem value="" disabled>Select type</MenuItem>
                                         {typeData.map((type) => (
                                             <MenuItem key={type.intitule} value={type.intitule}>
                                                 {type.intitule}
