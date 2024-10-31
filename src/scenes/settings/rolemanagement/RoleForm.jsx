@@ -165,12 +165,9 @@ const RoleForm = () => {
     };
 
     const handleItemChange = (formikProps, selectedItems) => {
-        // selectedItems will already be an array because of multiple prop
         formikProps.setFieldValue('itemId', selectedItems);
-        // Reset subItemId as empty array
-        formikProps.setFieldValue('subItemId', []);
+        formikProps.setFieldValue('subItemId', []); // Reset as empty array
 
-        // Filter subitems based on selected items
         const filteredSubs = subItemData.filter(subItem =>
             selectedItems.some(selectedItemId => {
                 const selectedItemData = itemData.find(item => item.id === selectedItemId);
@@ -179,6 +176,19 @@ const RoleForm = () => {
         );
         setFilteredSubItems(filteredSubs);
     };
+
+
+    useEffect(() => {
+        if (id && location.state && location.state.roleData) {
+            const roleData = location.state.roleData;
+            setInitialValues({
+                ...roleData,
+                itemId: Array.isArray(roleData.itemId) ? roleData.itemId : [], // Ensure array
+                subItemId: Array.isArray(roleData.subItemId) ? roleData.subItemId : [] // Ensure array
+            });
+        }
+    }, [id, location.state]);
+
 
 
     return (
@@ -330,7 +340,7 @@ const RoleForm = () => {
                                         label="Items"
                                         onBlur={handleBlur}
                                         onChange={(e) => handleItemChange({ setFieldValue }, e.target.value)}
-                                        value={values.itemId}
+                                        value={Array.isArray(values.itemId) ? values.itemId : []} // Ensure array
                                         name="itemId"
                                         error={!!touched.itemId && !!errors.itemId}
                                     >
@@ -358,7 +368,7 @@ const RoleForm = () => {
                                         label="Sub Items"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        value={values.subItemId}
+                                        value={Array.isArray(values.subItemId) ? values.subItemId : []} // Ensure array
                                         name="subItemId"
                                         error={!!touched.subItemId && !!errors.subItemId}
                                     >

@@ -46,6 +46,7 @@ const Item = ({ title, route, icon, selected, setSelected, closeSubmenu }) => {
       active={selected === title}
       style={{
         color: colors.grey[100],
+
       }}
       onClick={() => {
         setSelected(title);
@@ -644,7 +645,7 @@ const Sidebar = () => {
 
           {loading ? <FullscreenLoader /> :
 
-            <Box paddingLeft={isCollapsed ? undefined : "10%"}>
+            <Box paddingLeft={isCollapsed ? undefined : "5%"}>
               {menus
                 .sort((a, b) => a.menuOrder - b.menuOrder)  // Sort main menus by descending menuOrder
                 .map((menu) => {

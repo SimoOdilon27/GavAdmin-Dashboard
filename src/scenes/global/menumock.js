@@ -23,7 +23,6 @@ const menuData = [
     },
     {
         category: "Operations",
-        roles: ["TELLER", "ADMIN", "ADMIN_CORPORATION", "ADMIN_BANK", "ADMIN_BRANCH"],
         subItems: [
             {
                 title: "Operations",

@@ -102,7 +102,7 @@ const AssignUsertoSpace = () => {
             const currentSpaceId = isInSpace ? spaceId : selectedSpaceId;
 
             if (!currentSpaceId) {
-                showSnackbar('Please select a space first.', 'error');
+                showSnackbar('Please select a space first.', 'info');
                 return;
             }
 
@@ -232,7 +232,7 @@ const AssignUsertoSpace = () => {
             fetchRoleData();
             fetchSpaceData();
         }
-    }, [isInSpace, spaceId]);
+    }, [isInSpace, spaceId, initialValues.spaceId]);
 
     return (
         <Box m="20px">
