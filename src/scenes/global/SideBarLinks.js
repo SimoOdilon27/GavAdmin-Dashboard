@@ -1,45 +1,39 @@
 export const MenuLinks = [
-
     { linkname: "Dashboard", value: "/dashboard" },
 
     { linkname: "* * * * * * * Account Settings * * * * * * *", value: "" },
-
     { linkname: "Account type", value: "/accounttype" },
     { linkname: "Charges", value: "/charges" },
+    { linkname: "Pricing Configuration", value: "/pricing/configure" },
+    { linkname: "Configure Charges", value: "/pricing/configurecharges" },
 
     { linkname: "* * * * * * * GAV Accounts * * * * * * *", value: "" },
-
-    { linkname: "accounts", value: "/bankaccount" },
-    { linkname: "investments", value: "/bankinvestment" },
+    { linkname: "Accounts", value: "/bankaccount" },
+    { linkname: "Investments", value: "/bankinvestment" },
 
     { linkname: "* * * * * * * Administration * * * * * * *", value: "" },
-
-    { linkname: "bank", value: "/bank" },
-    { linkname: "branches", value: "/branches" },
-    { linkname: "corporation", value: "/corporation" },
-    { linkname: "teller", value: "/tellers" },
+    { linkname: "Bank", value: "/bank" },
+    { linkname: "Branches", value: "/branches" },
+    { linkname: "Corporation", value: "/corporation" },
+    { linkname: "Teller", value: "/tellers" },
+    { linkname: "Bank Mapper", value: "/bankmapper" },
+    { linkname: "Space Management", value: "/space-management" },
+    { linkname: "Type Management", value: "/type-management" },
 
     { linkname: "* * * * * * * Authorization * * * * * * *", value: "" },
-
-    { linkname: "menu creation", value: "/menu-catalog" },
-    { linkname: "menu management", value: "/menu-catalog" },
-    { linkname: "role management", value: "/rolemanagement" },
-    { linkname: "user management", value: "/usermanagement" },
+    { linkname: "Menu Creation", value: "/menu-catalog" },
+    { linkname: "Menu Management", value: "/menu-catalog" },
+    { linkname: "Role Management", value: "/rolemanagement" },
+    { linkname: "User Management", value: "/usermanagement" },
 
     { linkname: "* * * * * * * Client Management * * * * * * *", value: "" },
-
-    { linkname: "clients", value: "/client" },
+    { linkname: "Clients", value: "/client" },
 
     { linkname: "* * * * * * * Gimac Services * * * * * * *", value: "" },
-
-    { linkname: "countries", value: "/gimac-countries" },
-    { linkname: "gimac services - wallet", value: "/gimac-wallets" },
+    { linkname: "Countries", value: "/gimac-countries" },
+    { linkname: "GIMAC Services - Wallet", value: "/gimac-wallets" },
 
     { linkname: "* * * * * * * Operations * * * * * * *", value: "" },
-
-
-    { linkname: "operations", value: "/cashtransactions" },
-    { linkname: "transactions", value: "/viewtransactions" }
+    { linkname: "Operations", value: "/cashtransactions" },
+    { linkname: "Transactions", value: "/viewtransactions" },
 ];
-
-

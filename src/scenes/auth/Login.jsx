@@ -103,17 +103,7 @@ export default function Login() {
                     // User is logging in for the first time, redirect to "/updatepassword"
                     navigate('/updatepassword');
                 }
-                else if (userSpaces.length === 0) {
-                    // User has no spaces, redirect to "/createspace"
-                    if (roles === "admin") {
-                        // Admin user with no spaces, redirect to dashboard
-                        navigate('/dashboard');
-                    } else {
-                        // Non-admin user with no spaces, redirect to createspace
-                        navigate('/');
-                        setErrors({ isError: true, description: "No spaces available for this user" });
-                    }
-                }
+
                 else if (userSpaces.length === 1) {
                     // If only one space, automatically select it and go to dashboard
                     dispatch({

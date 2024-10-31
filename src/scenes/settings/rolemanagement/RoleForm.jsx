@@ -27,6 +27,7 @@ const RoleForm = () => {
     const [initialValues, setInitialValues] = useState({
         roleName: "",
         description: "",
+        categorie: "",
         typeId: "",
         itemId: [],
         subItemId: []
@@ -290,57 +291,32 @@ const RoleForm = () => {
                                     name="description"
                                     error={!!touched.description && !!errors.description}
                                     helperText={touched.description && errors.description}
-                                    sx={formFieldStyles("span 4")}
+                                    sx={formFieldStyles("span 3")}
                                 />
 
-                                {/* <FormControl fullWidth variant="filled" sx={formFieldStyles("span 2")}>
-                                    <InputLabel>Items</InputLabel>
+
+                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 1")}>
+                                    <InputLabel>Category</InputLabel>
                                     <Select
                                         // multiple
                                         label="Items"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        value={values.itemId}
-                                        name="itemId"
-                                        error={!!touched.itemId && !!errors.itemId}
+                                        value={values.categorie}
+                                        name="categorie"
+                                        error={!!touched.categorie && !!errors.categorie}
                                     >
-                                        {itemData.map((item) => (
-                                            <MenuItem key={item.id} value={item.id}>
-                                                {item.title}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {touched.itemId && errors.itemId && (
-                                        <Alert severity="error">{errors.itemId}</Alert>
-                                    )}
-                                </FormControl> */}
+                                        <MenuItem value="" disabled>Select Category </MenuItem>
+                                        <MenuItem value="ADMIN">ADMIN</MenuItem>
+                                        <MenuItem value="OTHER"> OTHER </MenuItem>
 
-                                {/* <FormControl
-                                    fullWidth
-                                    variant="filled"
-                                    sx={formFieldStyles("span 2")}
-                                    disabled={!values.typeId}
-                                >
-                                    <InputLabel>Items</InputLabel>
-                                    <Select
-                                        label="Items"
-                                        onBlur={handleBlur}
-                                        onChange={(e) => handleItemChange({ setFieldValue }, e.target.value)}
-                                        value={values.itemId}
-                                        name="itemId"
-                                        error={!!touched.itemId && !!errors.itemId}
-                                    >
-                                        <MenuItem value="">Select an item</MenuItem>
-                                        {filteredItems.map((item) => (
-                                            <MenuItem key={item.id} value={item.id}>
-                                                {item.title}
-                                            </MenuItem>
-                                        ))}
                                     </Select>
-                                    {touched.itemId && errors.itemId && (
-                                        <Alert severity="error">{errors.itemId}</Alert>
+                                    {touched.categorie && errors.categorie && (
+                                        <Alert severity="error">{errors.categorie}</Alert>
                                     )}
-                                </FormControl> */}
+                                </FormControl>
+
+
 
                                 <FormControl
                                     fullWidth
@@ -369,32 +345,6 @@ const RoleForm = () => {
                                     )}
                                 </FormControl>
 
-                                {/* <FormControl
-                                    fullWidth
-                                    variant="filled"
-                                    sx={formFieldStyles("span 2")}
-                                    disabled={!values.itemId}
-                                >
-                                    <InputLabel>Sub Items</InputLabel>
-                                    <Select
-                                        label="Sub Items"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.subItemId}
-                                        name="subItemId"
-                                        error={!!touched.subItemId && !!errors.subItemId}
-                                    >
-                                        <MenuItem value="">Select a sub item</MenuItem>
-                                        {filteredSubItems.map((subItem) => (
-                                            <MenuItem key={subItem.id} value={subItem.id}>
-                                                {subItem.title}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {touched.subItemId && errors.subItemId && (
-                                        <Alert severity="error">{errors.subItemId}</Alert>
-                                    )}
-                                </FormControl> */}
 
                                 <FormControl
                                     fullWidth

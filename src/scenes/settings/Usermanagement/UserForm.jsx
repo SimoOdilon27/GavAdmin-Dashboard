@@ -24,12 +24,7 @@ const UserForm = () => {
         tel: "",
         language: "",
         bankCode: "",
-        spaceRoleDtoList: [
-            {
-                spaceId: "",
-                roleId: ""
-            }
-        ]
+        spaceRoleDtoList: []
 
     })
 
@@ -131,46 +126,37 @@ const UserForm = () => {
         fetchTellerData();
     }, []);
 
+    const handlenavigate = async (userName) => {
+        console.log("userName", userName);
+        navigate(`/usermanagement/userconfig/${userName}`);
+    }
 
     const handleFormSubmit = async (values, { setSubmitting }) => {
         setLoading(true);
         try {
-            // Filter out any empty space-role pairs
-            const validSpaceRoles = values.spaceRoleDtoList.filter(
-                item => item.spaceId && item.roleId
-            );
-
-            if (validSpaceRoles.length === 0) {
-                showSnackbar('At least one space-role pair is required', 'error');
-                setLoading(false);
-                return;
-            }
-
-            const submitData = {
-                ...values,
-                spaceRoleDtoList: validSpaceRoles
-            };
-
-            console.log('Submitting data:', submitData);
-
-            const response = await CBS_Services('GATEWAY', `authentification/register`, 'POST', submitData, token);
+            const response = await CBS_Services('GATEWAY', 'authentification/register', 'POST', values, token);
 
             if (response && response.status === 200) {
                 showSnackbar('User created successfully.', 'success');
+
+                const userName = response.body.data.userName;
+
                 setTimeout(() => {
-                    navigate(-1);
+                    handlenavigate(userName);
                 }, 2000);
+
             } else if (response && response.status === 401) {
                 showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
             } else {
                 showSnackbar(response.body.errors || 'Error Adding User', 'error');
             }
+
         } catch (error) {
             console.error('Error:', error);
             showSnackbar('Network Error!!! Try again Later.', 'error');
         } finally {
             setLoading(false);
-            setSubmitting(false);
+            if (setSubmitting) setSubmitting(false);
         }
     };
 
@@ -409,7 +395,7 @@ const UserForm = () => {
                                 </FormControl>
 
 
-                                <Divider sx={{ gridColumn: "span 4", my: 2 }} />
+                                {/* <Divider sx={{ gridColumn: "span 4", my: 2 }} />
                                 <FieldArray name="spaceRoleDtoList">
                                     {({ push, remove }) => (
                                         <Box sx={{ gridColumn: "span 4" }}>
@@ -479,7 +465,7 @@ const UserForm = () => {
                                             </Button>
                                         </Box>
                                     )}
-                                </FieldArray>
+                                </FieldArray> */}
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>

@@ -57,6 +57,8 @@ import TypeManagement from "./scenes/settings/Usermanagement/typeManagement/Type
 import SpaceSelector from "./scenes/auth/SpaceAuthentication";
 import RoleForm from "./scenes/settings/rolemanagement/RoleForm";
 import AssignRoleMenu from "./scenes/settings/rolemanagement/AssignRoleMenu";
+import AssignUsertoSpace from "./scenes/settings/Usermanagement/AssignUsertoSpace";
+import ProtectedRoute from "./tools/ProtectedRouteComponent";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -79,63 +81,65 @@ function App() {
               <Routes>
                 <Route path="*" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/team" element={<Team />} />
-                <Route path="/createMenu" element={<CreateMenuForm />} />
-                <Route path="/form" element={<Form />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/calendar" element={<Calendar />} />
-                <Route path="/corporation" element={<Corporation />} />
-                <Route path="/corporation/add" element={<CorporationForm />} />
-                <Route path="/corporation/edit/:id" element={<CorporationForm />} />
-                <Route path="/corporation/view/:accounts" element={<ViewCorporationDetails />} />
-                <Route path="/bank" element={<Bank />} />
-                <Route path="/bank/edit/:id" element={<BankForm />} />
-                <Route path="/bank/add" element={<BankForm />} />
-                <Route path="/bank/view/:accounts" element={<ViewBankDetails />} />
-                <Route path="/bankaccount" element={<BankAccounts />} />
-                <Route path="/bankaccount/view/:accountId" element={<ViewAccountDetails />} />
-                <Route path="/bankinvestment" element={<BankInvestments />} />
-                <Route path="/viewtransactions" element={<ViewTransactions />} />
-                <Route path="/branches" element={<Branches />} />
-                <Route path="/branches/add" element={<BranchesForm />} />
-                <Route path="/branches/edit/:id" element={<BranchesForm />} />
-                <Route path="/branches/view/:accounts" element={<ViewBranchesDetails />} />
-                <Route path="/tellers" element={<Tellers />} />
-                <Route path="/tellers/add" element={<TellerForm />} />
-                <Route path="/tellers/edit/:id" element={<TellerForm />} />
-                <Route path="/tellers/view/:accountId" element={<ViewTellerDetails />} />
-                <Route path="/bankmapper" element={<BankMapper />} />
-                <Route path="/accounts" element={<AllAccounts />} />
-                <Route path="/menu-catalog" element={<MenuCatalog />} />
-                <Route path="/menu-catalog/add" element={<CatalogForm />} />
-                <Route path="/menu-catalog/edit/:id" element={<CatalogForm />} />
-                <Route path="/client" element={<Clients />} />
-                <Route path="/client/add-client" element={<ClientForm />} />
-                <Route path="/client/edit/:msisdn" element={<ClientForm />} />
-                <Route path="/client/view/:msisdn" element={<ViewClientDetails />} />
-                <Route path="/cashtransactions" element={<CashOutnIn />} />
-                <Route path="/rolemanagement" element={<RoleManagement />} />
-                <Route path="/rolemanagement/addrole" element={<RoleForm />} />
-                <Route path="/rolemanagement/edit/:id" element={<RoleForm />} />
-                <Route path="/rolemanagement/assignmenu/:roleName" element={<AssignRoleMenu />} />
-                <Route path="/usermanagement" element={<UserManagement />} />
-                <Route path="/usermanagement/adduser" element={<UserForm />} />
-                <Route path="/charges" element={<Pricing />} />
-                <Route path="/pricing/configure" element={<Charges />} />
-                <Route path="/pricing/configurecharges" element={<ConfigureCharges />} />
-                <Route path="/gimac-wallets" element={<GimacWallets />} />
-                <Route path="/gimac-wallets/add" element={<GimacWalletForm />} />
-                <Route path="/gimac-wallets/edit/:id" element={<GimacWalletForm />} />
-                <Route path="/gimac-countries" element={<GimacCountries />} />
-                <Route path="/gimac-countries/add" element={<GimacCountriesForm />} />
-                <Route path="/gimac-countries/edit/:id" element={<GimacCountriesForm />} />
-                <Route path="/accounttype" element={<AccountType />} />
-                <Route path="/accounttype/add" element={<AccountTypeForm />} />
-                <Route path="/accounttype/edit/:id" element={<AccountTypeForm />} />
-                <Route path="/space-management" element={<SpaceManagement />} />
-                <Route path="/space-management/add" element={<SpaceForm />} />
-                <Route path="/space-management/edit/:id" element={<SpaceForm />} />
-                <Route path="/type-management" element={<TypeManagement />} />
+                <Route path="/team" element={<ProtectedRoute><Team /></ProtectedRoute>} />
+                <Route path="/createMenu" element={<ProtectedRoute><CreateMenuForm /></ProtectedRoute>} />
+                <Route path="/form" element={<ProtectedRoute><Form /></ProtectedRoute>} />
+                <Route path="/faq" element={<ProtectedRoute><FAQ /></ProtectedRoute>} />
+                <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+                <Route path="/corporation" element={<ProtectedRoute><Corporation /></ProtectedRoute>} />
+                <Route path="/corporation/add" element={<ProtectedRoute><CorporationForm /></ProtectedRoute>} />
+                <Route path="/corporation/edit/:id" element={<ProtectedRoute><CorporationForm /></ProtectedRoute>} />
+                <Route path="/corporation/view/:accounts" element={<ProtectedRoute><ViewCorporationDetails /></ProtectedRoute>} />
+                <Route path="/bank" element={<ProtectedRoute><Bank /></ProtectedRoute>} />
+                <Route path="/bank/edit/:id" element={<ProtectedRoute><BankForm /></ProtectedRoute>} />
+                <Route path="/bank/add" element={<ProtectedRoute><BankForm /></ProtectedRoute>} />
+                <Route path="/bank/view/:accounts" element={<ProtectedRoute><ViewBankDetails /></ProtectedRoute>} />
+                <Route path="/bankaccount" element={<ProtectedRoute><BankAccounts /></ProtectedRoute>} />
+                <Route path="/bankaccount/view/:accountId" element={<ProtectedRoute><ViewAccountDetails /></ProtectedRoute>} />
+                <Route path="/bankinvestment" element={<ProtectedRoute><BankInvestments /></ProtectedRoute>} />
+                <Route path="/viewtransactions" element={<ProtectedRoute><ViewTransactions /></ProtectedRoute>} />
+                <Route path="/branches" element={<ProtectedRoute><Branches /></ProtectedRoute>} />
+                <Route path="/branches/add" element={<ProtectedRoute><BranchesForm /></ProtectedRoute>} />
+                <Route path="/branches/edit/:id" element={<ProtectedRoute><BranchesForm /></ProtectedRoute>} />
+                <Route path="/branches/view/:accounts" element={<ProtectedRoute><ViewBranchesDetails /></ProtectedRoute>} />
+                <Route path="/tellers" element={<ProtectedRoute><Tellers /></ProtectedRoute>} />
+                <Route path="/tellers/add" element={<ProtectedRoute><TellerForm /></ProtectedRoute>} />
+                <Route path="/tellers/edit/:id" element={<ProtectedRoute><TellerForm /></ProtectedRoute>} />
+                <Route path="/tellers/view/:accountId" element={<ProtectedRoute><ViewTellerDetails /></ProtectedRoute>} />
+                <Route path="/bankmapper" element={<ProtectedRoute><BankMapper /></ProtectedRoute>} />
+                <Route path="/accounts" element={<ProtectedRoute><AllAccounts /></ProtectedRoute>} />
+                <Route path="/menu-catalog" element={<ProtectedRoute><MenuCatalog /></ProtectedRoute>} />
+                <Route path="/menu-catalog/add" element={<ProtectedRoute><CatalogForm /></ProtectedRoute>} />
+                <Route path="/menu-catalog/edit/:id" element={<ProtectedRoute><CatalogForm /></ProtectedRoute>} />
+                <Route path="/client" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
+                <Route path="/client/add-client" element={<ProtectedRoute><ClientForm /></ProtectedRoute>} />
+                <Route path="/client/edit/:msisdn" element={<ProtectedRoute><ClientForm /></ProtectedRoute>} />
+                <Route path="/client/view/:msisdn" element={<ProtectedRoute><ViewClientDetails /></ProtectedRoute>} />
+                <Route path="/cashtransactions" element={<ProtectedRoute><CashOutnIn /></ProtectedRoute>} />
+                <Route path="/rolemanagement" element={<ProtectedRoute><RoleManagement /></ProtectedRoute>} />
+                <Route path="/rolemanagement/addrole" element={<ProtectedRoute><RoleForm /></ProtectedRoute>} />
+                <Route path="/rolemanagement/edit/:id" element={<ProtectedRoute><RoleForm /></ProtectedRoute>} />
+                <Route path="/rolemanagement/assignmenu/:roleName" element={<ProtectedRoute><AssignRoleMenu /></ProtectedRoute>} />
+                <Route path="/usermanagement" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
+                <Route path="/usermanagement/adduser" element={<ProtectedRoute><UserForm /></ProtectedRoute>} />
+                <Route path="/usermanagement/userconfig/:userName" element={<ProtectedRoute><AssignUsertoSpace /></ProtectedRoute>} />
+                <Route path="/charges" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
+                <Route path="/pricing/configure" element={<ProtectedRoute><Charges /></ProtectedRoute>} />
+                <Route path="/pricing/configurecharges" element={<ProtectedRoute><ConfigureCharges /></ProtectedRoute>} />
+                <Route path="/gimac-wallets" element={<ProtectedRoute><GimacWallets /></ProtectedRoute>} />
+                <Route path="/gimac-wallets/add" element={<ProtectedRoute><GimacWalletForm /></ProtectedRoute>} />
+                <Route path="/gimac-wallets/edit/:id" element={<ProtectedRoute><GimacWalletForm /></ProtectedRoute>} />
+                <Route path="/gimac-countries" element={<ProtectedRoute><GimacCountries /></ProtectedRoute>} />
+                <Route path="/gimac-countries/add" element={<ProtectedRoute><GimacCountriesForm /></ProtectedRoute>} />
+                <Route path="/gimac-countries/edit/:id" element={<ProtectedRoute><GimacCountriesForm /></ProtectedRoute>} />
+                <Route path="/accounttype" element={<ProtectedRoute><AccountType /></ProtectedRoute>} />
+                <Route path="/accounttype/add" element={<ProtectedRoute><AccountTypeForm /></ProtectedRoute>} />
+                <Route path="/accounttype/edit/:id" element={<ProtectedRoute><AccountTypeForm /></ProtectedRoute>} />
+                <Route path="/space-management" element={<ProtectedRoute><SpaceManagement /></ProtectedRoute>} />
+                <Route path="/space-management/add" element={<ProtectedRoute><SpaceForm /></ProtectedRoute>} />
+                <Route path="/space-management/edit/:id" element={<ProtectedRoute><SpaceForm /></ProtectedRoute>} />
+                <Route path="/type-management" element={<ProtectedRoute><TypeManagement /></ProtectedRoute>} />
+
               </Routes>
 
               {/* <Routes>

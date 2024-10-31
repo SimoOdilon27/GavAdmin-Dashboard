@@ -303,7 +303,7 @@ const CreateMenuForm = () => {
                 onSubmit={handleFormSubmit}
                 initialValues={initialValues}
                 enableReinitialize={true}
-                validationSchema={itemSchema}
+            // validationSchema={itemSchema}
             >
                 {({
                     values,
@@ -323,7 +323,7 @@ const CreateMenuForm = () => {
                     >
                         <form onSubmit={handleSubmit}>
                             {/* Menu Type Selection */}
-                            {/* <Box
+                            <Box
                                 display="grid"
                                 gap="30px"
                                 gridTemplateColumns="repeat(4, minmax(0, 1fr))"
@@ -358,7 +358,7 @@ const CreateMenuForm = () => {
                                     label="This item has subitems"
                                     sx={{ gridColumn: "span 4" }}
                                 />
-                            </Box> */}
+                            </Box>
 
                             {/* Main Item Form */}
                             <Box
@@ -454,15 +454,18 @@ const CreateMenuForm = () => {
                                     sx={formFieldStyles("span 2")}
                                 />
 
-                                {/* <Box sx={formFieldStyles("span 4")}>
-                                    <IconSelector
-                                        value={values.icon}
-                                        onChange={(newValue) => setFieldValue('icon', newValue)}
-                                        error={!!touched.icon && !!errors.icon}
-                                        helperText={touched.icon && errors.icon}
-                                        label="Select Icon"
-                                    />
-                                </Box> */}
+                                {!values.hasSubMenu && (
+                                    <Box sx={formFieldStyles("span 4")}>
+                                        <IconSelector
+                                            value={values.icon}
+                                            onChange={(newValue) => setFieldValue('icon', newValue)}
+                                            error={!!touched.icon && !!errors.icon}
+                                            helperText={touched.icon && errors.icon}
+                                            label="Select Icon"
+
+                                        />
+                                    </Box>
+                                )}
 
                                 <Divider sx={{ gridColumn: "span 4", my: 2 }} />
 

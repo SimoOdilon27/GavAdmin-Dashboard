@@ -1,44 +1,23 @@
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
-import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import CorporateFareIcon from "@mui/icons-material/CorporateFare";
-import BusinessIcon from "@mui/icons-material/Business";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import PlaceIcon from "@mui/icons-material/Place";
-import GroupIcon from "@mui/icons-material/Group";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import WalletIcon from "@mui/icons-material/Wallet";
-import PublicIcon from "@mui/icons-material/Public";
-import CollectionsIcon from "@mui/icons-material/Collections";
-import TagIcon from "@mui/icons-material/Tag";
-import { AccountCircle, ManageAccounts, MapOutlined, Money, SettingsApplicationsOutlined, SupervisedUserCircleOutlined } from "@mui/icons-material";
-
-
 const menuData = [
     {
         title: "Dashboard",
         to: "/dashboard",
-        icon: <HomeOutlinedIcon />,
-        roles: ["ADMIN", "ADMIN_CORPORATION", "TELLER"]
+        icon: "HomeOutlinedIcon",
+
     },
     {
         category: "Accounts",
-        roles: ["ADMIN", "ADMIN_CORPORATION"],
+
         subItems: [
             {
                 title: "Accounts",
                 to: "/bankaccount",
-                icon: <AttachMoneyIcon />
+                icon: "AttachMoneyIcon"
             },
             {
                 title: "Investments",
                 to: "/bankinvestment",
-                icon: <TrendingDownIcon />
+                icon: "TrendingDownIcon"
             }
         ]
     },
@@ -49,108 +28,108 @@ const menuData = [
             {
                 title: "Operations",
                 to: "/cashtransactions",
-                icon: <WalletIcon />,
-                roles: ["TELLER"]
+                icon: "WalletIcon",
+
             },
             {
                 title: "Transactions",
                 to: "/viewtransactions",
-                icon: <TrendingDownIcon />
+                icon: "TrendingDownIcon"
             }
         ]
     },
     {
         category: "Client Management",
-        roles: ["ADMIN", "ADMIN_CORPORATION", "ADMIN_BANK", "ADMIN_BRANCH"],
+
         subItems: [
             {
                 title: "Clients",
                 to: "/client",
-                icon: <PersonOutlinedIcon />
+                icon: "PersonOutlinedIcon"
             }
         ]
     },
     {
         category: "GIMAC Services",
-        roles: ["ADMIN"],
+
         subItems: [
             {
                 title: "Wallet",
                 to: "/gimac-wallets",
-                icon: <WalletIcon />
+                icon: "WalletIcon"
             },
             {
                 title: "Countries",
                 to: "/gimac-countries",
-                icon: <PublicIcon />
+                icon: "PublicIcon"
             }
         ]
     },
     {
         category: "Administration",
-        roles: ["ADMIN", "ADMIN_CORPORATION", "ADMIN_BANK", "ADMIN_BRANCH"],
+
         subItems: [
             {
                 title: "Corporation",
                 to: "/corporation",
-                icon: <CorporateFareIcon />,
+                icon: "CorporateFareIcon",
 
             },
             {
                 title: "Bank",
                 to: "/bank",
-                icon: <AccountBalanceIcon />
+                icon: "AccountBalanceIcon"
             },
             {
                 title: "Branches",
                 to: "/branches",
-                icon: <PlaceIcon />
+                icon: "PlaceIcon"
             },
             {
                 title: "Teller",
                 to: "/tellers",
-                icon: <GroupIcon />
+                icon: "GroupIcon"
             }
         ]
 
     },
     {
         category: "Authorization",
-        roles: ["ADMIN", "ADMIN_CORPORATION", "ADMIN_BANK", "ADMIN_BRANCH"],
+
         subItems: [
             {
                 title: "Roles",
                 to: "/rolemanagement",
-                icon: <PersonOutlinedIcon />,
+                icon: "PersonOutlinedIcon",
 
             },
             {
                 title: "Users",
                 to: "/usermanagement",
-                icon: <SupervisedUserCircleOutlined />
+                icon: "SupervisedUserCircleOutlined"
             },
             {
                 title: "Menus",
                 to: "/menu-catalog",
-                icon: <CollectionsIcon />,
+                icon: "CollectionsIcon",
 
             },
             {
                 title: " Create Menu",
                 to: "/createmenu",
-                icon: <CollectionsIcon />,
+                icon: "CollectionsIcon",
 
             },
             {
                 title: "Space Management",
                 to: "/space-management",
-                icon: <CollectionsIcon />,
+                icon: "CollectionsIcon",
 
             },
             {
                 title: "Type Management",
                 to: "/type-management",
-                icon: <CollectionsIcon />,
+                icon: "CollectionsIcon",
 
             }
         ]
@@ -158,17 +137,17 @@ const menuData = [
     },
     {
         category: "Account Settings",
-        roles: ["ADMIN"],
+
         subItems: [
             {
                 title: "Account Type",
                 to: "/accounttype",
-                icon: <ManageAccounts />
+                icon: "ManageAccounts"
             },
             {
                 title: "Charges",
                 to: "/charges",
-                icon: <TagIcon />
+                icon: "TagIcon"
             }
         ]
     }

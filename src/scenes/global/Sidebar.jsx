@@ -597,7 +597,7 @@ const Sidebar = () => {
           )}
 
 
-          {role === "admin" &&
+          {/* {role === "admin" &&
             <Box paddingLeft={isCollapsed ? undefined : "10%"}>
               {menuData
                 .map((menu, index) => {
@@ -640,26 +640,27 @@ const Sidebar = () => {
                   }
                 })}
             </Box>
-          }
+          } */}
 
           {loading ? <FullscreenLoader /> :
 
             <Box paddingLeft={isCollapsed ? undefined : "10%"}>
               {menus
-                .map((menu, index) => {
-                  if (menu.subItemList) {
+                .sort((a, b) => a.menuOrder - b.menuOrder)  // Sort main menus by descending menuOrder
+                .map((menu) => {
+                  if (menu.subItemList && menu.subItemList.length > 0) {
                     return (
                       <SubMenu
-                        key={index}
+                        key={menu.id}
                         title={menu.title}
                         icon={menu.icon}
                         open={openSubmenu === menu.category}
                         onOpenChange={() => handleSubMenuClick(menu.category)}
                       >
                         {menu.subItemList
-                          .map((subItem, idx) => (
+                          .map((subItem) => (
                             <Item
-                              key={idx}
+                              key={subItem.id}
                               title={subItem.title}
                               route={subItem.route}
                               icon={subItem.icon}
@@ -673,9 +674,9 @@ const Sidebar = () => {
                   } else {
                     return (
                       <Item
-                        key={index}
+                        key={menu.id}
                         title={menu.title}
-                        route={menu.route}
+                        route={menu.route || "/default-route"}
                         icon={menu.icon}
                         selected={selected}
                         setSelected={setSelected}
@@ -685,6 +686,9 @@ const Sidebar = () => {
                   }
                 })}
             </Box>
+
+
+
           }
         </Menu>
       </ProSidebar>

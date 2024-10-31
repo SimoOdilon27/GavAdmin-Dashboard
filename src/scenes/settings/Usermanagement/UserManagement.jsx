@@ -154,6 +154,9 @@ const UserManagement = () => {
     const handleAddUser = () => {
         navigate('/usermanagement/adduser');
     };
+    const handleEditUser = (row) => {
+        navigate(`/usermanagement/userconfig/${row.userName}`);
+    };
 
     const handleToggleModal = () => {
         setShowModal(!showModal);
@@ -296,7 +299,7 @@ const UserManagement = () => {
                             },
                         }}
                     >
-                        <MenuItem onClick={() => handleEdit(currentRow)}>
+                        <MenuItem onClick={() => handleEditUser(currentRow)}>
                             <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
                             Edit
                         </MenuItem>

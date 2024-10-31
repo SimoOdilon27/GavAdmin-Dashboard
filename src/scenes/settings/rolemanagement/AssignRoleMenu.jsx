@@ -29,7 +29,7 @@ const AssignRoleMenu = () => {
     const [initialValues, setInitialValues] = useState({
         roleName: roleName,
         itemId: [],
-        subItemId: []
+        subsItemId: []
     });
 
     const [filteredItems, setFilteredItems] = useState([]);
@@ -135,7 +135,7 @@ const AssignRoleMenu = () => {
         // selectedItems will already be an array because of multiple prop
         formikProps.setFieldValue('itemId', selectedItems);
         // Reset subItemId as empty array
-        formikProps.setFieldValue('subItemId', []);
+        // formikProps.setFieldValue('subItemId', []);
 
         // Filter subitems based on selected items
         const filteredSubs = subItemData.filter(subItem =>
@@ -149,7 +149,7 @@ const AssignRoleMenu = () => {
     return (
         <Box m="20px">
             <Header
-                title={"ROLE UPDATE"}
+                title={"ROLE ASSIGNMENT"}
                 subtitle={"Assign Menu to role"}
             />
 
@@ -157,7 +157,7 @@ const AssignRoleMenu = () => {
                 onSubmit={handleFormSubmit}
                 initialValues={initialValues}
                 enableReinitialize={true}
-                validationSchema={checkoutSchema}
+            // validationSchema={checkoutSchema}
             >
                 {({
                     values,
@@ -218,7 +218,7 @@ const AssignRoleMenu = () => {
                                     fullWidth
                                     variant="filled"
                                     sx={formFieldStyles("span 4")}
-                                    disabled={!values.itemId?.length}
+                                // disabled={!values.itemId?.length}
                                 >
                                     <InputLabel>Sub Items</InputLabel>
                                     <Select
@@ -226,18 +226,18 @@ const AssignRoleMenu = () => {
                                         label="Sub Items"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        value={values.subItemId}
+                                        value={values.subsItemId}
                                         name="subItemId"
-                                        error={!!touched.subItemId && !!errors.subItemId}
+                                        error={!!touched.subsItemId && !!errors.subsItemId}
                                     >
-                                        {filteredSubItems.map((subItem) => (
+                                        {subItemData.map((subItem) => (
                                             <MenuItem key={subItem.id} value={subItem.id}>
                                                 {subItem.title}
                                             </MenuItem>
                                         ))}
                                     </Select>
-                                    {touched.subItemId && errors.subItemId && (
-                                        <Alert severity="error">{errors.subItemId}</Alert>
+                                    {touched.subsItemId && errors.subsItemId && (
+                                        <Alert severity="error">{errors.subsItemId}</Alert>
                                     )}
                                 </FormControl>
 
@@ -288,7 +288,7 @@ const AssignRoleMenu = () => {
 
 const checkoutSchema = yup.object().shape({
     itemId: yup.array().of(yup.string()).required("required"),
-    subItemId: yup.array().of(yup.string()).required("required")
+    subsItemId: yup.array()
 });
 
 export default AssignRoleMenu
