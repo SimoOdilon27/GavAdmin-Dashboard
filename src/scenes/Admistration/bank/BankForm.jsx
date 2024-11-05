@@ -47,26 +47,17 @@ const BankForm = () => {
     });
 
     const [formData, setFormData] = useState({
-        id: "",
         address: "",
         contact: "",
-        categoryId: "",
         bankEmail: "",
-        email: "",
         bankName: "",
-        cbsBankId: "",
-        bankCode: "",
-        bankSignature: "",
-        bankSite: "",
         corporationId: "",
-        accountType: "",
-        dailyLimit: 0,
+        cbsBankId: "",
+        bankManager: "",
+        region: "",
         country: "",
-        bankManger: "",
-        region: '',
-        bankId: '',
-        accountNumber: '',
-        active: false
+        accountNumber: "",
+        hasCbsAccount: false
     });
 
     const [pending, setPending] = useState(false);
@@ -87,13 +78,23 @@ const BankForm = () => {
     const handleFormSubmit = async (values) => {
         setPending(true);
         try {
+
+            const submitData = {
+                ...values,
+                hasCbsAccount: false,
+                corporationId: spaceId,
+
+            }
             let response;
             if (id) {
                 const payload = {
                     serviceReference: 'UPDATE_BANK',
-                    requestBody: JSON.stringify(values)
+                    requestBody: JSON.stringify(submitData),
+                    spaceId: spaceId,
                 };
                 response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+
+                console.log("responseadd", response);
 
                 if (response && response.body.meta.statusCode === 200) {
                     showSnackbar('Bank Updated Successfully.', 'success');
@@ -106,17 +107,26 @@ const BankForm = () => {
             } else {
                 const payload = {
                     serviceReference: 'ADD_BANK',
-                    requestBody: JSON.stringify(values)
+                    requestBody: JSON.stringify(submitData),
+                    spaceId: spaceId,
                 };
+                console.log("submitData", submitData);
+                console.log("payload", payload);
+
                 response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+                console.log("responseadd", response);
 
                 if (response && response.body.meta.statusCode === 200) {
                     showSnackbar('Bank Created Successfully.', 'success');
                     setTimeout(() => {
                         navigate('/bank');
                     }, 2000);
-                } else {
-                    showSnackbar(response.body.errors || 'Error Adding Bank', 'error');
+                }
+                else if (response && response.body.meta.statusCode === 401) {
+                    showSnackbar(response.body.meta.message || 'Unauthourized', 'error');
+                }
+                else {
+                    showSnackbar(response.body.meta.message || 'Error Adding Bank', 'error');
                 }
             }
         } catch (error) {
@@ -134,8 +144,10 @@ const BankForm = () => {
                 requestBody: '',
                 spaceId: spaceId,
             }
+
             // const response = await CBS_Services('AP', 'api/gav/corporation/management/getAll', 'GET', null);
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            console.log("response", response);
 
             if (response && response.body.meta.statusCode === 200) {
                 setCorpID(response.body.data);
@@ -224,7 +236,7 @@ const BankForm = () => {
 
 
 
-                                <FormControl fullWidth variant="filled"
+                                {/* <FormControl fullWidth variant="filled"
                                     sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
@@ -257,7 +269,7 @@ const BankForm = () => {
                                     {touched.corporationId && errors.corporationId && (
                                         <Alert severity="error">{errors.corporationId}</Alert>
                                     )}
-                                </FormControl>
+                                </FormControl> */}
 
                                 <TextField
                                     fullWidth
@@ -270,6 +282,44 @@ const BankForm = () => {
                                     name="bankName"
                                     error={!!touched.bankName && !!errors.bankName}
                                     helperText={touched.bankName && errors.bankName}
+                                    sx={formFieldStyles("span 2")}
+
+                                    InputLabelProps={{
+                                        sx: {
+                                            color: 'white', // Default label color
+                                        }
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Bank Email"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.bankEmail}
+                                    name="bankEmail"
+                                    error={!!touched.bankEmail && !!errors.bankEmail}
+                                    helperText={touched.bankEmail && errors.bankEmail}
+                                    sx={formFieldStyles("span 2")}
+
+                                    InputLabelProps={{
+                                        sx: {
+                                            color: 'white', // Default label color
+                                        }
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Account Number"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.accountNumber}
+                                    name="accountNumber"
+                                    error={!!touched.accountNumber && !!errors.accountNumber}
+                                    helperText={touched.accountNumber && errors.accountNumber}
                                     sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
@@ -323,29 +373,6 @@ const BankForm = () => {
                                 />
 
 
-                                <FormControl
-                                    sx={formFieldStyles("span 2")}
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                >
-                                    <FormLabel >CBS Account Type</FormLabel>
-                                    <RadioGroup
-                                        name="cbsAccountType"
-                                        value={values.hasCbsAccount ? "hasCbsAccount" : values.otherCbs ? "otherCbs" : ""}
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-                                            setFieldValue("hasCbsAccount", value === "hasCbsAccount");
-                                            setFieldValue("otherCbs", value === "otherCbs");
-                                        }}
-                                        row
-                                    >
-                                        <FormControlLabel value="hasCbsAccount" control={<Radio color="secondary" />} label="Trust Soft Account" />
-                                        <FormControlLabel value="otherCbs" control={<Radio color="secondary" />} label="Alpha CBS Account" />
-                                    </RadioGroup>
-                                </FormControl>
 
                                 <TextField
                                     fullWidth
@@ -354,51 +381,10 @@ const BankForm = () => {
                                     label="Bank Manager"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    value={values.bankManger}
-                                    name="bankManger"
-                                    error={!!touched.bankManger && !!errors.bankManger}
-                                    helperText={touched.bankManger && errors.bankManger}
-                                    sx={formFieldStyles("span 3")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="number"
-                                    label="Daily Limit"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.dailyLimit}
-                                    name="dailyLimit"
-                                    error={!!touched.dailyLimit && !!errors.dailyLimit}
-                                    helperText={touched.dailyLimit && errors.dailyLimit}
-                                    sx={formFieldStyles("span 1")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                />
-
-
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Bank Email"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.bankEmail}
-                                    name="bankEmail"
-                                    error={!!touched.bankEmail && !!errors.bankEmail}
-                                    helperText={touched.bankEmail && errors.bankEmail}
+                                    value={values.bankManager}
+                                    name="bankManager"
+                                    error={!!touched.bankManager && !!errors.bankManager}
+                                    helperText={touched.bankManager && errors.bankManager}
                                     sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
@@ -407,6 +393,7 @@ const BankForm = () => {
                                         }
                                     }}
                                 />
+
 
                                 <TextField
                                     fullWidth
@@ -490,7 +477,7 @@ const BankForm = () => {
                                         <MenuItem value="" selected disabled>Select Wallet Type</MenuItem>
                                         {Array.isArray(countryData) && countryData.length > 0 ? (
                                             countryData.map((option) => (
-                                                <MenuItem key={option.countryId} value={option.countryId}>
+                                                <MenuItem key={option.country} value={option.country}>
                                                     {option.country}
                                                 </MenuItem>
                                             ))
@@ -554,11 +541,11 @@ const checkoutSchema = yup.object().shape({
     contact: yup.string().required("required"),
     region: yup.string(),
     address: yup.string().required("required"),
-    bankManger: yup.string().required("required"),
+    bankManager: yup.string().required("required"),
     // dailyLimit: yup.number().required("required"),
     contact: yup.string().required("required"),
     cbsBankId: yup.string().required("required"),
-    corporationId: yup.string().required("required"),
+    // corporationId: yup.string().required("required"),
     // Add other validation rules here
 });
 

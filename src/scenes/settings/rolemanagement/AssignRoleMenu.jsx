@@ -149,8 +149,8 @@ const AssignRoleMenu = () => {
     return (
         <Box m="20px">
             <Header
-                title={"ROLE ASSIGNMENT"}
-                subtitle={"Assign Menu to role"}
+                title={`ROLE ASSIGNMENT `}
+                subtitle={`Assign Menu to ${roleName}`}
             />
 
             <Formik
@@ -227,7 +227,7 @@ const AssignRoleMenu = () => {
                                         onBlur={handleBlur}
                                         onChange={handleChange}
                                         value={values.subsItemId}
-                                        name="subItemId"
+                                        name="subsItemId"
                                         error={!!touched.subsItemId && !!errors.subsItemId}
                                     >
                                         {subItemData.map((subItem) => (

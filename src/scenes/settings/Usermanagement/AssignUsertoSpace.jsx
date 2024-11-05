@@ -144,18 +144,21 @@ const AssignUsertoSpace = () => {
             case "CREDIX":
                 apiConfig.service = "AP";
                 apiConfig.url = "api/gav/corporation/management/getAll";
+
                 break;
             case "CORPORATION":
                 apiConfig.service = "AP";
-                apiConfig.url = `api/gav/bankBranch/getAll/byCorporation/${spaceId}`;
+                apiConfig.url = `api/gav/bank/getAll/corporation/${spaceId}`;
                 break;
             case "BANK":
                 apiConfig.service = "AP";
                 apiConfig.url = `api/gav/bankBranch/getAll/byBank/${spaceId}`;
                 break;
             case "BRANCH":
-                apiConfig.service = "AP";
+                apiConfig.service = "CLIENT";
                 apiConfig.url = "api/gav/teller/tellers";
+                apiConfig.method = "POST";
+                apiConfig.body = { internalId: "Back Office" };
                 break;
             case "TELLER":
                 apiConfig.service = "CLIENT";
@@ -171,6 +174,7 @@ const AssignUsertoSpace = () => {
 
         try {
             const response = await CBS_Services(apiConfig.service, apiConfig.url, apiConfig.method, apiConfig.body, token);
+            console.log("response-========", response);
 
             if (response?.body?.meta?.statusCode === 200) {
                 const formattedData = formatSpaceData(response.body.data || []);
@@ -193,11 +197,11 @@ const AssignUsertoSpace = () => {
             case "CREDIX":
                 return item.corporationId;
             case "CORPORATION":
-                return item.corporationId;
-            case "BANK":
                 return item.bankId;
+            case "BANK":
+                return item.id;
             case "BRANCH":
-                return item.branchId;
+                return item.id;
             case "TELLER":
                 return item.id;
             default:
@@ -212,11 +216,11 @@ const AssignUsertoSpace = () => {
                 return item.corporationName;
 
             case "CORPORATION":
-                return item.corporationName;
-            case "BANK":
                 return item.bankName;
-            case "BRANCH":
+            case "BANK":
                 return item.branchName;
+            case "BRANCH":
+                return item.tellerName;
             case "TELLER":
                 return item.tellerName;
             default:

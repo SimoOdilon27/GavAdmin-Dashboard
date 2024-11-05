@@ -46,19 +46,12 @@ const BranchesForm = () => {
 
     const [initialValues, setInitialValues] = useState({
 
-        bankId: '',
-        branchName: '',
-        address: '',
-        cbsBranchId: '',
-        email: '',
-        country: '',
-        active: false,
-        cbsAccount: '',
-        accountThreshold: 0,
-        hasCbsAccount: false,
-        otherCbs: false,
-        accounts: '',
-        branchId: ''
+        bankId: "",
+        branchName: "",
+        address: "",
+        cbsBranchId: "",
+        email: "",
+        country: ""
     });
 
     const [pending, setPending] = useState(false);
@@ -80,13 +73,19 @@ const BranchesForm = () => {
         setPending(true);
         try {
             let response;
+
+            const submitData = {
+                ...values,
+                bankId: spaceId,
+            }
             if (id) {
                 const payload = {
                     serviceReference: 'UPDATE_BRANCH',
                     requestBody: JSON.stringify({
-                        ...values,
+                        ...submitData,
                         branchId: id // Ensure the ID is correctly set as branchId
-                    })
+                    }),
+                    spaceId: spaceId,
                 };
                 console.log("values", values);
 
@@ -103,7 +102,8 @@ const BranchesForm = () => {
             } else {
                 const payload = {
                     serviceReference: 'ADD_BANK_BRANCH',
-                    requestBody: JSON.stringify(values)
+                    requestBody: JSON.stringify(submitData),
+                    spaceId: spaceId,
                 };
                 response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
@@ -201,53 +201,6 @@ const BranchesForm = () => {
                                 }}
                             >
 
-                                <FormControl fullWidth variant="filled"
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                >
-                                    <InputLabel>Bank</InputLabel>
-                                    <Select
-                                        label="Bank"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.bankId}
-                                        name="bankId"
-                                        error={!!touched.bankId && !!errors.bankId}
-
-                                    >
-                                        <MenuItem value="">Select Bank</MenuItem>
-                                        {Array.isArray(bankID) && bankID.length > 0 ? (
-                                            bankID.map(option => (
-                                                <MenuItem key={option.bankId} value={option.bankId}>
-                                                    {option.bankName}
-                                                </MenuItem>
-                                            ))
-                                        ) : (
-                                            <MenuItem value="">No Bank available</MenuItem>
-                                        )}
-                                    </Select>
-                                    {touched.bankId && errors.bankId && (
-                                        <Alert severity="error">{errors.bankId}</Alert>
-                                    )}
-                                </FormControl>
-
-
                                 <TextField
                                     fullWidth
                                     variant="filled"
@@ -259,18 +212,7 @@ const BranchesForm = () => {
                                     name="branchName"
                                     error={!!touched.branchName && !!errors.branchName}
                                     helperText={touched.branchName && errors.branchName}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -290,49 +232,7 @@ const BranchesForm = () => {
                                     name="cbsBranchId"
                                     error={!!touched.cbsBranchId && !!errors.cbsBranchId}
                                     helperText={touched.cbsBranchId && errors.cbsBranchId}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="CBS Account"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.cbsAccount}
-                                    name="cbsAccount"
-                                    error={!!touched.cbsAccount && !!errors.cbsAccount}
-                                    helperText={touched.cbsAccount && errors.cbsAccount}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -342,42 +242,6 @@ const BranchesForm = () => {
                                 />
 
 
-
-                                <FormControl
-                                    sx={{
-                                        gridColumn: "span 4",
-                                        '& .MuiFormLabel-root': {
-                                            color: 'white', // Ensure label remains white
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: 'white', // Keep the label white when focused
-                                        },
-                                    }}
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                >
-                                    <FormLabel
-                                    >CBS Account Type</FormLabel>
-                                    <RadioGroup
-                                        name="cbsAccountType"
-                                        value={values.hasCbsAccount ? "hasCbsAccount" : values.otherCbs ? "otherCbs" : ""}
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-                                            setFieldValue("hasCbsAccount", value === "hasCbsAccount");
-                                            setFieldValue("otherCbs", value === "otherCbs");
-                                        }}
-                                        row
-                                    >
-                                        <FormControlLabel value="hasCbsAccount" control={<Radio color="secondary" />} label="Trust Soft Account" />
-                                        <FormControlLabel value="otherCbs" control={<Radio color="secondary" />} label="Alpha CBS Account" />
-                                    </RadioGroup>
-                                </FormControl>
 
                                 <TextField
                                     fullWidth
@@ -390,19 +254,7 @@ const BranchesForm = () => {
                                     name="email"
                                     error={!!touched.email && !!errors.email}
                                     helperText={touched.email && errors.email}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
-
+                                    sx={formFieldStyles("span 2")}
                                     InputLabelProps={{
                                         sx: {
                                             color: 'white', // Default label color
@@ -413,34 +265,7 @@ const BranchesForm = () => {
 
 
 
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Account Threshold"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.accountThreshold}
-                                    name="accountThreshold"
-                                    sx={{
-                                        gridColumn: "span 1",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
 
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                />
 
                                 <TextField
                                     fullWidth
@@ -453,18 +278,7 @@ const BranchesForm = () => {
                                     name="country"
                                     error={!!touched.country && !!errors.country}
                                     helperText={touched.country && errors.country}
-                                    sx={{
-                                        gridColumn: "span 1",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 1")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -484,19 +298,7 @@ const BranchesForm = () => {
                                     name="address"
                                     error={!!touched.address && !!errors.address}
                                     helperText={touched.address && errors.address}
-                                    sx={{
-                                        gridColumn: "span 4",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
-
+                                    sx={formFieldStyles("span 1")}
                                     InputLabelProps={{
                                         sx: {
                                             color: 'white', // Default label color

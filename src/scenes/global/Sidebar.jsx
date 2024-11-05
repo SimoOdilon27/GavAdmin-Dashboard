@@ -466,12 +466,7 @@ const Sidebar = () => {
   const [loading, setLoading] = useState(false)
 
 
-  const filterMenusByRole = (menu) => {
-    if (!menu.roles || menu.roles.includes(role)) {
-      return true;
-    }
-    return false;
-  };
+
 
   const handleSubMenuClick = (menuName) => {
     if (openSubmenu === menuName) {
@@ -598,50 +593,6 @@ const Sidebar = () => {
           )}
 
 
-          {/* {role === "admin" &&
-            <Box paddingLeft={isCollapsed ? undefined : "10%"}>
-              {menuData
-                .map((menu, index) => {
-                  if (menu.subItems) {
-                    return (
-                      <SubMenu
-                        key={index}
-                        title={menu.category}
-                        icon={menu.icon}
-                        open={openSubmenu === menu.category}
-                        onOpenChange={() => handleSubMenuClick(menu.category)}
-                      >
-                        {menu.subItems
-                          .filter(filterMenusByRole)
-                          .map((subItem, idx) => (
-                            <Item
-                              key={idx}
-                              title={subItem.title}
-                              route={subItem.to}
-                              icon={subItem.icon}
-                              selected={selected}
-                              setSelected={setSelected}
-                              closeSubmenu={closeSubmenu}
-                            />
-                          ))}
-                      </SubMenu>
-                    );
-                  } else {
-                    return (
-                      <Item
-                        key={index}
-                        title={menu.title}
-                        route={menu.to}
-                        icon={menu.icon}
-                        selected={selected}
-                        setSelected={setSelected}
-                        closeSubmenu={closeSubmenu}
-                      />
-                    );
-                  }
-                })}
-            </Box>
-          } */}
 
           {loading ? <FullscreenLoader /> :
 
@@ -677,7 +628,7 @@ const Sidebar = () => {
                       <Item
                         key={menu.id}
                         title={menu.title}
-                        route={menu.route || "/default-route"}
+                        route={menu.route || "/dashboard"}
                         icon={menu.icon}
                         selected={selected}
                         setSelected={setSelected}

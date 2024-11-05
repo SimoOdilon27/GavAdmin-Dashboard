@@ -161,15 +161,15 @@ const BankMapper = () => {
             const selectedBank = bankID.find(bank => bank.bankId === value);
             setFormData({
                 ...formData,
-                bankIdGav: value,
-                bankNameGav: selectedBank ? selectedBank.bankName : ''
+                // bankIdGav: value,
+                // bankNameGav: selectedBank ? selectedBank.bankName : ''
             });
         } else if (name === 'branchIdGav') {
             const selectedBranch = branchID.find(branch => branch.id === value);
             setFormData({
                 ...formData,
-                branchIdGav: value,
-                branchNameGav: selectedBranch ? selectedBranch.branchName : ''
+                // branchIdGav: value,
+                // branchNameGav: selectedBranch ? selectedBranch.branchName : ''
             });
         } else {
             setFormData({
@@ -178,6 +178,7 @@ const BankMapper = () => {
             });
         }
     };
+
 
     const columns = [
         { field: "bankNameGav", headerName: "GAV Bank Name", flex: 1 },
@@ -301,9 +302,10 @@ const BankMapper = () => {
                             label="GAV Bank Name"
                             value={formData.bankNameGav}
                             name="bankNameGav"
-                            InputProps={{
-                                readOnly: true,
-                            }}
+                        // onChange={handleChange}
+                        // InputProps={{
+                        //     readOnly: true,
+                        // }}
                         />
                         <TextField
                             fullWidth
@@ -340,10 +342,12 @@ const BankMapper = () => {
                             label="GAV Branch Name"
                             value={formData.branchNameGav}
                             name="branchNameGav"
-                            InputProps={{
-                                readOnly: true,
-                            }}
+                            onChange={handleChange}
+                        // InputProps={{
+                        //     readOnly: true,
+                        // }}
                         />
+
                     </form>
                 </DialogContent>
                 <DialogActions>

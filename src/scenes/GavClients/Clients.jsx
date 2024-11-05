@@ -76,7 +76,7 @@ const Clients = () => {
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             // const response = await CBS_Services('AP', 'api/gav/client/getAllClients', 'POST', null);
 
-            console.log("respfetch", response);
+            console.log("respfetch=========", response);
 
             if (response && response.body.meta.statusCode === 200) {
                 setClientData(response.body.data || []);
@@ -157,21 +157,7 @@ const Clients = () => {
         })
     };
 
-    const formatDate = (date) => {
-        const d = new Date(date);
-        let month = '' + (d.getMonth() + 1);
-        let day = '' + d.getDate();
-        let year = d.getFullYear();
-        let hour = d.getHours();
-        let minutes = d.getMinutes();
-        if (month.length < 2) month = '0' + month;
-        if (day.length < 2) day = '0' + day;
 
-        let hours = [hour, minutes].join(':');
-        let days = [year, month, day].join('-');
-
-        return [days, hours].join(' ');
-    }
 
     const handleAddClient = () => {
         navigate('/client/add-client');
@@ -299,55 +285,7 @@ const Clients = () => {
                 );
             },
         }
-        // {
-        //     field: "actions",
-        //     headerName: "Actions",
-        //     flex: 1,
-        //     renderCell: (params) => {
-        //         const row = params.row;
-        //         return (
-        //             <>
-        //                 <Box
-        //                     width="30%"
-        //                     m="0 4px"
-        //                     p="5px"
-        //                     display="flex"
-        //                     justifyContent="center"
-        //                     backgroundColor={colors.greenAccent[600]}
-        //                     borderRadius="4px"
-        //                     onClick={() => handleEdit(row.msisdn)}
 
-        //                 >
-        //                     <EditOutlined />
-        //                 </Box>
-        //                 <Box
-        //                     width="30%"
-        //                     m="0 4px"
-        //                     p="5px"
-        //                     display="flex"
-        //                     justifyContent="center"
-        //                     backgroundColor={row.active ? colors.greenAccent[600] : colors.grey[500]}
-        //                     borderRadius="4px"
-        //                     onClick={() => !row.active && handleToggleActivateClientModal(row.msisdn)}
-        //                     style={{ cursor: row.active ? 'not-allowed' : 'pointer' }}
-        //                 >
-        //                     {row.active ? <Verified /> : <VerifiedOutlined />}
-        //                 </Box>
-        //                 <Box
-        //                     width="30%"
-        //                     m="0 4px"
-        //                     p="5px"
-        //                     display="flex"
-        //                     justifyContent="center"
-        //                     backgroundColor={colors.redAccent[600]}
-        //                     borderRadius="4px"
-        //                 >
-        //                     <Delete />
-        //                 </Box>
-        //             </>
-        //         );
-        //     },
-        // },
     ];
 
     return (
@@ -413,36 +351,37 @@ const Clients = () => {
             <Dialog open={showActivateClientModal} onClose={() => handleToggleActivateClientModal(false)} maxWidth="sm" fullWidth>
                 <DialogTitle>Activate Client</DialogTitle>
                 <DialogContent>
+                    <Box
+                        display="grid"
+                        gap="30px"
+                        padding="10px"
+                        gridTemplateColumns="repeat(4, minmax(0, 1fr))"
 
+                    >
+
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            label="Activation Code"
+                            value={activateClientFormData.activationCode}
+                            onChange={handleChange}
+                            name="activationCode"
+                            required
+                            sx={{ gridColumn: "span 4" }}
+
+                        />
+                    </Box>
                 </DialogContent>
-                <Box
-                    display="grid"
-                    gap="30px"
-                    padding="10px"
-                    gridTemplateColumns="repeat(4, minmax(0, 1fr))"
 
-                >
-
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Activation Code"
-                        value={activateClientFormData.activationCode}
-                        onChange={handleChange}
-                        name="activationCode"
-                        required
-                        sx={{ gridColumn: "span 4" }}
-
-                    />
-                </Box>
 
                 <DialogActions>
-                    <Button onClick={handleConfirmActivate} color="secondary" disabled={loading}>
-                        {loading ? <CircularProgress animation="border" size="sm" /> : "Activate"}
-                    </Button>
-                    <Button onClick={() => handleToggleActivateClientModal(false)} color="primary">
+                    <Button onClick={() => handleToggleActivateClientModal(false)} color="primary" variant='contained'>
                         Cancel
                     </Button>
+                    <Button onClick={handleConfirmActivate} color="secondary" variant='contained'>
+                        {loading ? <CircularProgress animation="border" size="sm" /> : "Activate"}
+                    </Button>
+
                 </DialogActions>
             </Dialog>
 

@@ -295,53 +295,21 @@ const SpaceForm = () => {
                                 }}
                             >
 
-                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 2")}>
-                                    <InputLabel>Space</InputLabel>
-                                    <Select
-                                        label="Type"
-                                        onBlur={handleBlur}
-                                        onChange={(e) => handleTypeChange(e, setFieldValue)}
-                                        value={values.type}
-                                        name="type"
-                                        error={!!touched.type && !!errors.type}
-                                    >
-                                        <MenuItem value="" disabled>Select type</MenuItem>
-                                        <MenuItem value="CORPORATION"> CORPORATION </MenuItem>
-                                        <MenuItem value="BANK"> BANK </MenuItem>
-                                        <MenuItem value="BRANCH"> BRANCH </MenuItem>
-                                        <MenuItem value="TELLER"> TELLER </MenuItem>
 
-                                    </Select>
-                                    {touched.type && errors.type && (
-                                        <Alert severity="error">{errors.type}</Alert>
-                                    )}
-                                </FormControl>
 
-                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 2")}>
-                                    <InputLabel>{values.type || "Space"} ID</InputLabel>
-                                    <Select
-                                        label={`${values.type || "Space"} ID`}
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.spaceId}
-                                        name="spaceId"
-                                        error={!!touched.spaceId && !!errors.spaceId}
-                                        disabled={!values.type}
-                                    >
-                                        <MenuItem value="">Select {values.type || "Space"}</MenuItem>
-                                        {spaceType.map((option) => (
-                                            <MenuItem
-                                                key={option[getIdKeyForType(values.type)]}
-                                                value={option[getIdKeyForType(values.type)]}
-                                            >
-                                                {option[getNameKeyForType(values.type)]}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {touched.spaceId && errors.spaceId && (
-                                        <Alert severity="error">{errors.spaceId}</Alert>
-                                    )}
-                                </FormControl>
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Space Id"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.spaceId}
+                                    name="spaceId"
+                                    error={!!touched.spaceId && !!errors.spaceId}
+                                    helperText={touched.spaceId && errors.spaceId}
+                                    sx={formFieldStyles("span 2")}
+                                />
 
                                 <FormControl fullWidth variant="filled" sx={formFieldStyles("span 2")}>
                                     <InputLabel>Type</InputLabel>
@@ -388,7 +356,7 @@ const SpaceForm = () => {
                                     name="description"
                                     error={!!touched.description && !!errors.description}
                                     helperText={touched.description && errors.description}
-                                    sx={formFieldStyles("span 4")}
+                                    sx={formFieldStyles("span 2")}
                                 />
 
 

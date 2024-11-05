@@ -115,11 +115,18 @@ const ClientForm = () => {
         setPending(true);
         try {
             let response;
+
+            const submitData = {
+                ...values,
+                internalId: spaceId,
+                branchId: spaceId
+            }
             if (msisdn) {
                 // Update existing client account
                 const payload = {
                     serviceReference: 'UPDATE_CLIENT',
                     requestBody: JSON.stringify(values),
+                    spaceId: spaceId,
                 }
                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
                 // response = await CBS_Services('CLIENT', 'client/addOrUpdate', 'POST', values);
@@ -136,7 +143,8 @@ const ClientForm = () => {
                 // Add new client account
                 const payload = {
                     serviceReference: 'ADD_CLIENT_ACCOUNT',
-                    requestBody: JSON.stringify(values),
+                    requestBody: JSON.stringify(submitData),
+                    spaceId: spaceId,
                 }
                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
                 console.log("addresp", response);
@@ -252,7 +260,7 @@ const ClientForm = () => {
                         display="grid"
                         sx={{
                             px: 2, // Optional: horizontal padding for the outer container
-                            padding: "10px 100px 20px 100px"
+                            padding: "10px 200px 20px 200px"
 
                         }}
                     >
@@ -277,18 +285,7 @@ const ClientForm = () => {
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
 
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -303,18 +300,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -329,18 +315,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="date"
@@ -355,18 +330,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -398,18 +362,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -424,18 +377,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -450,18 +392,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="email"
@@ -476,18 +407,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -507,18 +427,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={6}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -533,18 +442,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={6}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -564,18 +462,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={6}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -590,18 +477,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={6}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="date"
@@ -621,18 +497,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -647,18 +512,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -674,18 +528,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={4}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="number"
@@ -767,18 +610,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={6}>
                                             <TextField
-                                                sx={{
-
-                                                    '& .MuiInputLabel-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                    },
-                                                    '& .MuiFilledInput-root': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                    },
-                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                    },
-                                                }}
+                                                sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -804,18 +636,7 @@ const ClientForm = () => {
                                         }}
                                     >
                                         <TextField
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
+                                            sx={formFieldStyles("span 4")}
                                             fullWidth
                                             variant="filled"
                                             type="text"
@@ -829,66 +650,9 @@ const ClientForm = () => {
 
                                         />
 
-                                        <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
-                                            <InputLabel>Bank</InputLabel>
-                                            <Select
-                                                label="Bank"
-                                                onBlur={handleBlur}
-                                                onChange={(e) => handleBankChange(e, setFieldValue)}
-                                                value={values.bankId}
-                                                name="bankId"
-                                                error={!!touched.bankId && !!errors.bankId}
-                                            >
-                                                <MenuItem value="">Select Bank</MenuItem>
-                                                {banks.map((bank) => (
-                                                    <MenuItem key={bank.bankId} value={bank.bankId}>
-                                                        {bank.bankName}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                            {touched.bankId && errors.bankId && (
-                                                <Alert severity="error">{errors.bankId}</Alert>
-                                            )}
-                                        </FormControl>
-
-                                        <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
-                                            <InputLabel>Branch</InputLabel>
-                                            <Select
-                                                label="Branch"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.branchId}
-                                                name="branchId"
-                                                error={!!touched.branchId && !!errors.branchId}
-                                                disabled={!values.bankId}
-                                            >
-                                                <MenuItem value="">Select Branch</MenuItem>
-                                                {filteredBranches.map((branch) => (
-                                                    <MenuItem key={branch.id} value={branch.id}>
-                                                        {branch.branchName}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                            {touched.branchId && errors.branchId && (
-                                                <Alert severity="error">{errors.branchId}</Alert>
-                                            )}
-                                        </FormControl>
-
-
 
                                         <TextField
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
+                                            sx={formFieldStyles("span 4")}
                                             fullWidth
                                             variant="filled"
                                             type="text"
@@ -901,98 +665,10 @@ const ClientForm = () => {
                                             helperText={touched.cbsAccountNumber && errors.cbsAccountNumber}
 
                                         />
-                                        <TextField
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
-                                            fullWidth
-                                            variant="filled"
-                                            type="number"
-                                            label="Maximum Account Limit"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.maximumAccountLimit}
-                                            name="maximumAccountLimit"
-                                            error={!!touched.maximumAccountLimit && !!errors.maximumAccountLimit}
-                                            helperText={touched.maximumAccountLimit && errors.maximumAccountLimit}
 
-                                        />
-                                        <TextField
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
-                                            fullWidth
-                                            variant="filled"
-                                            type="number"
-                                            label="Minimum Account Limit"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.minimumAccountLimit}
-                                            name="minimumAccountLimit"
-                                            error={!!touched.minimumAccountLimit && !!errors.minimumAccountLimit}
-                                            helperText={touched.minimumAccountLimit && errors.minimumAccountLimit}
 
-                                        />
-                                        <TextField
-                                            sx={{
-                                                gridColumn: "span 2",
-                                                '& .MuiInputLabel-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                                },
-                                                '& .MuiFilledInput-root': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                                },
-                                                '& .MuiInputLabel-root.Mui-focused': {
-                                                    color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                                },
-                                            }}
-                                            fullWidth
-                                            variant="filled"
-                                            type="text"
-                                            label="Internal ID"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.internalId}
-                                            name="internalId"
-                                        // error={!!touched.internalId && !!errors.internalId}
-                                        // helperText={touched.internalId && errors.internalId}
 
-                                        />
-                                        <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 2" }}>
-                                            <InputLabel>Other CBS</InputLabel>
-                                            <Select
-                                                label="Other CBS"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.otherCbs}
-                                                name="otherCbs"
-                                                error={!!touched.otherCbs && !!errors.otherCbs}
-                                            >
-                                                <MenuItem value={true}>Yes</MenuItem>
-                                                <MenuItem value={false}>No</MenuItem>
-                                            </Select>
-                                            {touched.otherCbs && errors.otherCbs && (
-                                                <Alert severity="error">{errors.otherCbs}</Alert>
-                                            )}
-                                        </FormControl>
+
                                     </Box>
                                 }
 
@@ -1032,11 +708,8 @@ const ClientForm = () => {
 
 const checkoutSchema = yup.object().shape({
     msisdn: yup.string().required("Required"),
-    branchId: yup.string().required("Required"),
-    bankId: yup.string().required("Required"),
     cbsAccountNumber: yup.string().required("Required"),
-    maximumAccountLimit: yup.string().required("Required"),
-    minimumAccountLimit: yup.string().required("Required"),
+
 
 });
 

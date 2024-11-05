@@ -44,15 +44,12 @@ const CorporationForm = () => {
     const spaceId = userData?.selectedSpace?.id
 
     const [initialValues, setInitialValues] = useState({
-        corporationId: '',
+
         name: '',
         email: '',
         contact: '',
         address: '',
-        cbsCorporationId: '',
         country: '',
-        corporationAccountThreshold: 0,
-        corporationName: '',
 
     });
     const [pending, setPending] = useState(false);
@@ -71,10 +68,7 @@ const CorporationForm = () => {
 
     const handleFormSubmit = async (values) => {
         setPending(true);
-        const mappedValues = {
-            ...values,
-            name: values.corporationName, // Map "name" to "corporationName"
-        };
+
         try {
 
             let response;
@@ -82,11 +76,11 @@ const CorporationForm = () => {
                 // Update existing teller
                 const payload = {
                     serviceReference: 'UPDATE_CORPORATION',
-                    requestBody: JSON.stringify(mappedValues),
+                    requestBody: JSON.stringify(values),
                     spaceId: spaceId
                 }
                 console.log("values=====", values);
-                console.log("mappedValues", mappedValues);
+
 
 
                 response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
@@ -105,11 +99,12 @@ const CorporationForm = () => {
 
                 const payload = {
                     serviceReference: 'CREATE_CORPORATION',
-                    requestBody: JSON.stringify(mappedValues),
+                    requestBody: JSON.stringify(values),
                     spaceId: spaceId
                 }
                 console.log("values", values);
                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+                console.log("response", response);
 
                 // response = await CBS_Services('APE', 'Corporation/create', 'POST', values);
                 if (response && response.body.meta.statusCode === 200) {
@@ -180,26 +175,7 @@ const CorporationForm = () => {
                                 }}
                             >
 
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Corporation Name"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.corporationName}
-                                    name="corporationName"
-                                    error={!!touched.corporationName && !!errors.corporationName}
-                                    helperText={touched.corporationName && errors.corporationName}
-                                    sx={formFieldStyles("span 2")}
 
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-
-                                />
 
                                 <TextField
                                     fullWidth
@@ -209,10 +185,10 @@ const CorporationForm = () => {
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values.name}
-                                    name="corporationName"
+                                    name="name"
                                     error={!!touched.name && !!errors.name}
                                     helperText={touched.name && errors.name}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={formFieldStyles("span 4")}
 
                                     InputLabelProps={{
                                         sx: {
@@ -222,62 +198,8 @@ const CorporationForm = () => {
 
                                 />
 
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="CBS Corporation Account"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.cbsCorporationId}
-                                    name="cbsCorporationId"
-                                    error={!!touched.cbsCorporationId && !!errors.cbsCorporationId}
-                                    helperText={touched.cbsCorporationId && errors.cbsCorporationId}
-                                    sx={formFieldStyles("span 2")}
 
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
 
-                                />
-
-                                {/* <FormControl
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiFormLabel-root': {
-                                            color: 'white', // Ensure label remains white
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: 'white', // Keep the label white when focused
-                                        },
-                                    }}
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                >
-                                    <FormLabel
-                                    >CBS Account Type</FormLabel>
-                                    <RadioGroup
-                                        name="cbsAccountType"
-                                        value={values.hasCbsAccount ? "hasCbsAccount" : values.otherCbs ? "otherCbs" : ""}
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-                                            setFieldValue("hasCbsAccount", value === "hasCbsAccount");
-                                            setFieldValue("otherCbs", value === "otherCbs");
-                                        }}
-                                        row
-                                    >
-                                        <FormControlLabel value="hasCbsAccount" control={<Radio color="secondary" />} label="Trust Soft Account" />
-                                        <FormControlLabel value="otherCbs" control={<Radio color="secondary" />} label="Alpha CBS Account" />
-                                    </RadioGroup>
-                                </FormControl> */}
 
                                 <TextField
                                     fullWidth
@@ -343,13 +265,13 @@ const CorporationForm = () => {
                                     fullWidth
                                     variant="filled"
                                     type="text"
-                                    label="Corporation Account Threshold"
+                                    label="Country"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    value={values.corporationAccountThreshold}
-                                    name="corporationAccountThreshold"
-                                    // error={!!touched.corporationAccountThreshold && !!errors.corporationAccountThreshold}
-                                    // helperText={touched.corporationAccountThreshold && errors.corporationAccountThreshold}
+                                    value={values.country}
+                                    name="country"
+                                    error={!!touched.country && !!errors.country}
+                                    helperText={touched.country && errors.country}
                                     sx={formFieldStyles("span 2")}
 
                                     InputLabelProps={{
@@ -357,7 +279,9 @@ const CorporationForm = () => {
                                             color: 'white', // Default label color
                                         }
                                     }}
+
                                 />
+
 
 
 
@@ -407,11 +331,9 @@ const CorporationForm = () => {
 
 const checkoutSchema = yup.object().shape({
     email: yup.string().required("required"),
-    // corporationAccountThreshold: yup.number().required("required"),
-    cbsCorporationId: yup.string().required("required"),
-    corporationName: yup.string().required("required"),
+    name: yup.string().required("required"),
     address: yup.string().required("required"),
-    cbsCorporationId: yup.string().required("required"),
+
 
 
 });

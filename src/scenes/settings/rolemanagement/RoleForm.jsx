@@ -27,7 +27,6 @@ const RoleForm = () => {
     const [initialValues, setInitialValues] = useState({
         roleName: "",
         description: "",
-        categorie: "",
         typeId: "",
         itemId: [],
         subItemId: []
@@ -301,32 +300,8 @@ const RoleForm = () => {
                                     name="description"
                                     error={!!touched.description && !!errors.description}
                                     helperText={touched.description && errors.description}
-                                    sx={formFieldStyles("span 3")}
+                                    sx={formFieldStyles("span 4")}
                                 />
-
-
-                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 1")}>
-                                    <InputLabel>Category</InputLabel>
-                                    <Select
-                                        // multiple
-                                        label="Items"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.categorie}
-                                        name="categorie"
-                                        error={!!touched.categorie && !!errors.categorie}
-                                    >
-                                        <MenuItem value="" disabled>Select Category </MenuItem>
-                                        <MenuItem value="ADMIN">ADMIN</MenuItem>
-                                        <MenuItem value="OTHER"> OTHER </MenuItem>
-
-                                    </Select>
-                                    {touched.categorie && errors.categorie && (
-                                        <Alert severity="error">{errors.categorie}</Alert>
-                                    )}
-                                </FormControl>
-
-
 
                                 <FormControl
                                     fullWidth
