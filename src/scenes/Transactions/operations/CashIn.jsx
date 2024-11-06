@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useRef, useState } from 'react';
 import { AttachMoney, CheckCircleOutline } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
@@ -16,15 +14,35 @@ const CashIn = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const isNonMobile = useMediaQuery("(min-width:600px)");
+    const formFieldStyles = (gridColumn = "span 2") => ({
+        gridColumn,
+        '& .MuiInputLabel-root': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[700],
+        },
+        '& .MuiFilledInput-root': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[700],
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[100],
+        },
+    });
+
     const [pending, setPending] = useState(false);
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
-    const spaceId = userData?.selectedSpace?.id
+    const spaceId = userData?.selectedSpace?.id;
 
     const [successDialog, setSuccessDialog] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState(false);
     const [formValues, setFormValues] = useState(null);
-    const [bankCode, setBankCode] = useState('');
+    const [availableBanks, setAvailableBanks] = useState([]);
+    const [loadingBanks, setLoadingBanks] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState({
         amount: 0
     });
@@ -35,9 +53,10 @@ const CashIn = () => {
         msisdn: "",
         fee: 0,
         teller: userData?.refId,
-        clientBankCode: "",
+        clientBankCode: '',
         tellerBankCode: userData?.bankCode,
     });
+    console.log("availableBanks,", availableBanks);
 
     const generateProcessingId = (msisdn) => {
         const msisdnSuffix = msisdn.slice(-3);
@@ -56,91 +75,99 @@ const CashIn = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
-    const handleCloseSuccessDialog = () => {
-        setSuccessDialog(false);
-    };
+    const fetchAvailableBanks = async (msisdn) => {
+        setLoadingBanks(true);
+        try {
+            const clientAccountForm = {
+                request: msisdn,
+                internalId: "Cash-In"
+            };
 
-    const handleConfirmDialogClose = () => {
-        setConfirmDialog(false);
+            const payload = {
+                serviceReference: 'GET_CLIENT_ACCOUNT_BY_MSISDN',
+                requestBody: JSON.stringify(clientAccountForm),
+                spaceId: spaceId,
+            };
+
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
+
+            if (response?.body?.meta?.statusCode === 200) {
+                // Assuming the response contains an array of available banks
+                if (Array.isArray(response.body.data)) {
+                    setAvailableBanks(response.body.data);
+                    showSnackbar("Available banks fetched successfully", 'success');
+
+                    // Reset bank selection when new MSISDN is entered
+                    if (formikRef.current) {
+                        formikRef.current.setFieldValue('clientBankCode', '');
+                    }
+                } else {
+                    showSnackbar("No banks available for this MSISDN", 'warning');
+                    setAvailableBanks([]);
+                }
+            } else if (response?.body?.status === 401) {
+                showSnackbar("Unauthorized to perform action", 'error');
+                setAvailableBanks([]);
+            } else {
+                showSnackbar("Error fetching available banks", 'error');
+                setAvailableBanks([]);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showSnackbar('Error fetching available banks', 'error');
+            setAvailableBanks([]);
+        } finally {
+            setLoadingBanks(false);
+        }
     };
 
     const handleCashin = async (values) => {
         setPending(true);
         try {
             const processingId = generateProcessingId(values.msisdn);
-            values.processingId = processingId;
-
             const payload = {
                 serviceReference: 'CASH_IN',
-                requestBody: JSON.stringify(values),
+                requestBody: JSON.stringify({
+                    ...values,
+                    processingId,
+                }),
                 spaceId: spaceId,
             };
-            console.log("payload", payload);
+            console.log("payload000", payload);
 
 
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
 
-            if (response && response.body.meta.statusCode === 200) {
+            if (response?.body?.meta?.statusCode === 200) {
                 showSnackbar("Cash In Successful", 'success');
                 setTransactionDetails({
-                    processingId: values.processingId,
+                    processingId,
                     amount: values.amount
                 });
                 setSuccessDialog(true);
                 if (formikRef.current) {
                     formikRef.current.resetForm();
                 }
-            } else if (response && response.body.status === 401) {
+                setAvailableBanks([]); // Reset available banks after successful transaction
+            } else if (response?.body?.status === 401) {
                 showSnackbar('Unauthorized to perform action', 'error');
             } else {
                 showSnackbar(response.body.errors || 'Error', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            showSnackbar('Error', 'error');
+            showSnackbar('Error processing cash-in', 'error');
         }
         setPending(false);
-    };
-
-    useEffect(() => {
-        fetchBankID();
-    }, [])
-
-    const fetchBankID = async () => {
-        try {
-            const payload = {
-                serviceReference: 'GET_ALL_BANKS',
-                requestBody: '',
-                spaceId: spaceId,
-            }
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
-
-            // const response = await CBS_Services('AP', `api/gav/bank/getAll`, 'GET', null);
-            console.log("fetchbankid", response);
-
-            if (response && response.status === 200) {
-                setBankCode(response.body.data);
-
-            } else if (response && response.body.status === 401) {
-                showSnackbar("Unauthorized to perform action", 'success');
-
-            }
-            else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
     };
 
     return (
         <Box>
             <Box sx={{ marginLeft: '100px', marginBottom: '10px' }}>
-                <Typography variant="h5" color={colors.greenAccent[400]} >
+                <Typography variant="h5" color={colors.greenAccent[400]}>
                     Cash In Transaction (Teller Id: {userData?.refId})
                 </Typography>
             </Box>
-
 
             <Formik
                 innerRef={formikRef}
@@ -162,12 +189,10 @@ const CashIn = () => {
                     <Box
                         display="grid"
                         sx={{
-                            px: 2, // Optional: horizontal padding for the outer container
+                            px: 2,
                             padding: "10px 100px 20px 100px"
-
                         }}
                     >
-
                         <form onSubmit={handleSubmit}>
                             <Box
                                 display="grid"
@@ -186,23 +211,17 @@ const CashIn = () => {
                                     type="text"
                                     label="MSISDN"
                                     onBlur={handleBlur}
-                                    onChange={handleChange}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        if (e.target.value.length >= 9) {
+                                            fetchAvailableBanks(e.target.value);
+                                        }
+                                    }}
                                     value={values.msisdn}
                                     name="msisdn"
                                     error={!!touched.msisdn && !!errors.msisdn}
                                     helperText={touched.msisdn && errors.msisdn}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
                                 />
                                 <TextField
                                     fullWidth
@@ -215,58 +234,37 @@ const CashIn = () => {
                                     name="amount"
                                     error={!!touched.amount && !!errors.amount}
                                     helperText={touched.amount && errors.amount}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
                                 />
 
-
-                                <FormControl fullWidth variant="filled" sx={{
-                                    gridColumn: "span 4",
-                                    '& .MuiInputLabel-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                    },
-                                    '& .MuiFilledInput-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                    },
-                                }}>
-                                    <InputLabel>Bank</InputLabel>
+                                <FormControl
+                                    fullWidth
+                                    variant="filled"
+                                    sx={formFieldStyles("span 4")}
+                                    disabled={loadingBanks || availableBanks.length === 0}
+                                >
+                                    <InputLabel>Select Bank</InputLabel>
                                     <Select
-                                        label="Bank"
+                                        label="Select Bank"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
                                         value={values.clientBankCode}
                                         name="clientBankCode"
                                         error={!!touched.clientBankCode && !!errors.clientBankCode}
                                     >
-                                        <MenuItem value="">Select Bank</MenuItem>
-                                        {Array.isArray(bankCode) && bankCode.length > 0 ? (
-                                            bankCode.map(option => (
-                                                <MenuItem key={option.bankCode} value={option.bankCode}>
-                                                    {option.bankName}
-                                                </MenuItem>
-                                            ))
-                                        ) : (
-                                            <MenuItem value="">No Banks available</MenuItem>
-                                        )}
+                                        <MenuItem value="">
+                                            {loadingBanks ? 'Loading banks...' : 'Select a bank'}
+                                        </MenuItem>
+                                        {availableBanks.map((bank) => (
+                                            <MenuItem key={bank.bankCode} value={bank.bankCode}>
+                                                {bank.bankCode}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                     {touched.clientBankCode && errors.clientBankCode && (
                                         <Alert severity="error">{errors.clientBankCode}</Alert>
                                     )}
                                 </FormControl>
-
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <LoadingButton
@@ -276,6 +274,7 @@ const CashIn = () => {
                                     loading={pending}
                                     loadingPosition="start"
                                     startIcon={<AttachMoney />}
+                                    disabled={!values.clientBankCode || loadingBanks}
                                 >
                                     Proceed
                                 </LoadingButton>
@@ -288,7 +287,7 @@ const CashIn = () => {
             {/* Confirmation Dialog */}
             <Dialog
                 open={confirmDialog}
-                onClose={handleConfirmDialogClose}
+                onClose={() => setConfirmDialog(false)}
                 PaperProps={{
                     style: {
                         borderRadius: 15,
@@ -313,12 +312,17 @@ const CashIn = () => {
                             <Typography variant="body1" color="textSecondary">
                                 MSISDN: <strong>{formValues.msisdn}</strong>
                             </Typography>
+                            <Typography variant="body1" color="textSecondary">
+                                Bank: <strong>
+                                    {availableBanks.find(bank => bank.bankCode === formValues.clientBankCode)?.bankName}
+                                </strong>
+                            </Typography>
                         </Box>
                     )}
                 </DialogContent>
                 <DialogActions style={{ justifyContent: 'center' }}>
                     <Button
-                        onClick={handleConfirmDialogClose}
+                        onClick={() => setConfirmDialog(false)}
                         variant="outlined"
                         color="primary"
                     >
@@ -326,7 +330,7 @@ const CashIn = () => {
                     </Button>
                     <Button
                         onClick={() => {
-                            handleConfirmDialogClose();
+                            setConfirmDialog(false);
                             if (formValues) {
                                 handleCashin(formValues);
                             }
@@ -343,8 +347,7 @@ const CashIn = () => {
             {/* Success Dialog */}
             <Dialog
                 open={successDialog}
-                onClose={handleCloseSuccessDialog}
-                aria-labelledby="success-dialog-title"
+                onClose={() => setSuccessDialog(false)}
                 PaperProps={{
                     style: {
                         borderRadius: 15,
@@ -354,7 +357,7 @@ const CashIn = () => {
                     },
                 }}
             >
-                <DialogTitle id="success-dialog-title" style={{ textAlign: 'center' }}>
+                <DialogTitle style={{ textAlign: 'center' }}>
                     <CheckCircleOutline style={{ fontSize: 60, color: colors.greenAccent[500] }} />
                 </DialogTitle>
                 <DialogContent>
@@ -375,7 +378,7 @@ const CashIn = () => {
                 </DialogContent>
                 <DialogActions style={{ justifyContent: 'center' }}>
                     <Button
-                        onClick={handleCloseSuccessDialog}
+                        onClick={() => setSuccessDialog(false)}
                         variant="contained"
                         style={{
                             backgroundColor: colors.greenAccent[500],
@@ -403,8 +406,4 @@ const CashIn = () => {
     );
 };
 
-export default CashIn;
-
-
-
-
+export default CashIn

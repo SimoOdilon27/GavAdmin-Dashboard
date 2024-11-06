@@ -2,7 +2,7 @@ import { CheckCircleOutline, MoneyOff, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Checkbox, Snackbar, Stack, TextField, Typography, useMediaQuery, useTheme, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Formik } from 'formik';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
@@ -18,8 +18,30 @@ const CashOut = () => {
     const usertoken = userData.token;
     const spaceId = userData?.selectedSpace?.id
 
+    const formFieldStyles = (gridColumn = "span 2") => ({
+        gridColumn,
+        '& .MuiInputLabel-root': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[700],
+        },
+        '& .MuiFilledInput-root': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[700],
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+            color: theme.palette.mode === "dark"
+                ? colors.grey[100]
+                : colors.black[100],
+        },
+    });
     const [bankCode, setBankCode] = useState('');
     const [successDialog, setSuccessDialog] = useState(false);
+    const [availableBanks, setAvailableBanks] = useState([]);
+    const [loadingBanks, setLoadingBanks] = useState(false);
+    const formikRef = useRef();
+
     const [transactionDetails, setTransactionDetails] = useState({
         amount: 0
     });
@@ -66,6 +88,54 @@ const CashOut = () => {
     };
     const handleCloseSuccessDialog = () => {
         setSuccessDialog(false);
+    };
+
+    const fetchAvailableBanks = async (msisdn) => {
+        setLoadingBanks(true);
+        try {
+            const clientAccountForm = {
+                request: msisdn,
+                internalId: "Cash-Out"
+            };
+
+            const payload = {
+                serviceReference: 'GET_CLIENT_ACCOUNT_BY_MSISDN',
+                requestBody: JSON.stringify(clientAccountForm),
+                spaceId: spaceId,
+            };
+
+            console.log("payload-----", payload);
+
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
+
+            if (response?.body?.meta?.statusCode === 200) {
+                // Assuming the response contains an array of available banks
+                if (Array.isArray(response.body.data)) {
+                    setAvailableBanks(response.body.data);
+                    showSnackbar("Available banks fetched successfully", 'success');
+
+                    // Reset bank selection when new MSISDN is entered
+                    if (formikRef.current) {
+                        formikRef.current.setFieldValue('clientBankCode', '');
+                    }
+                } else {
+                    showSnackbar("No banks available for this MSISDN", 'warning');
+                    setAvailableBanks([]);
+                }
+            } else if (response?.body?.status === 401) {
+                showSnackbar("Unauthorized to perform action", 'error');
+                setAvailableBanks([]);
+            } else {
+                showSnackbar("Error fetching available banks", 'error');
+                setAvailableBanks([]);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showSnackbar('Error fetching available banks', 'error');
+            setAvailableBanks([]);
+        } finally {
+            setLoadingBanks(false);
+        }
     };
 
     const handleCashOut = async (values, { resetForm }) => {
@@ -156,6 +226,7 @@ const CashOut = () => {
 
     useEffect(() => {
         fetchBankID();
+        fetchAvailableBanks();
     }, [])
 
     const fetchBankID = async () => {
@@ -233,23 +304,17 @@ const CashOut = () => {
                                     type="text"
                                     label="MSISDN"
                                     onBlur={handleBlur}
-                                    onChange={handleChange}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        if (e.target.value.length >= 9) {
+                                            fetchAvailableBanks(e.target.value);
+                                        }
+                                    }}
                                     value={values.msisdn}
                                     name="msisdn"
                                     error={!!touched.msisdn && !!errors.msisdn}
                                     helperText={touched.msisdn && errors.msisdn}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
                                 />
 
                                 <TextField
@@ -263,52 +328,33 @@ const CashOut = () => {
                                     name="amount"
                                     error={!!touched.amount && !!errors.amount}
                                     helperText={touched.amount && errors.amount}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 2")}
                                 />
 
 
-                                <FormControl fullWidth variant="filled" sx={{
-                                    gridColumn: "span 4",
-                                    '& .MuiInputLabel-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                    },
-                                    '& .MuiFilledInput-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                    },
-                                }}>
-                                    <InputLabel>Bank</InputLabel>
+                                <FormControl
+                                    fullWidth
+                                    variant="filled"
+                                    sx={formFieldStyles("span 4")}
+                                    disabled={loadingBanks || availableBanks.length === 0}
+                                >
+                                    <InputLabel>Select Bank</InputLabel>
                                     <Select
-                                        label="Bank"
+                                        label="Select Bank"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
                                         value={values.clientBankCode}
                                         name="clientBankCode"
                                         error={!!touched.clientBankCode && !!errors.clientBankCode}
                                     >
-                                        <MenuItem value="">Select Bank</MenuItem>
-                                        {Array.isArray(bankCode) && bankCode.length > 0 ? (
-                                            bankCode.map(option => (
-                                                <MenuItem key={option.bankCode} value={option.bankCode}>
-                                                    {option.bankName}
-                                                </MenuItem>
-                                            ))
-                                        ) : (
-                                            <MenuItem value="">No Banks available</MenuItem>
-                                        )}
+                                        <MenuItem value="">
+                                            {loadingBanks ? 'Loading banks...' : 'Select a bank'}
+                                        </MenuItem>
+                                        {availableBanks.map((bank) => (
+                                            <MenuItem key={bank.bankCode} value={bank.bankCode}>
+                                                {bank.bankCode}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                     {touched.clientBankCode && errors.clientBankCode && (
                                         <Alert severity="error">{errors.clientBankCode}</Alert>
@@ -326,18 +372,7 @@ const CashOut = () => {
                                         />
                                     }
                                     label="Withdraw with CNI"
-                                    sx={{
-                                        gridColumn: "span 4",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={formFieldStyles("span 4")}
                                 />
 
                                 {withdrawWithCni && (
@@ -352,18 +387,7 @@ const CashOut = () => {
                                         name="cniNumber"
                                         error={!!touched.cniNumber && !!errors.cniNumber}
                                         helperText={touched.cniNumber && errors.cniNumber}
-                                        sx={{
-                                            gridColumn: "span 4",
-                                            '& .MuiInputLabel-root': {
-                                                color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                            },
-                                            '& .MuiFilledInput-root': {
-                                                color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                            },
-                                            '& .MuiInputLabel-root.Mui-focused': {
-                                                color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                            },
-                                        }}
+                                        sx={formFieldStyles("span 4")}
                                     />
                                 )}
                             </Box>
