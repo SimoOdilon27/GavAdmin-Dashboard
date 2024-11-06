@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography, useTheme, Switch, Grid, Paper, Divider, Alert, Tooltip, Snackbar, CircularProgress, MenuItem, Menu, IconButton, Chip } from "@mui/material";
+import { Box, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography, useTheme, Switch, Grid, Paper, Divider, Alert, Tooltip, Snackbar, CircularProgress, MenuItem, Menu, IconButton, Chip, Tab, Tabs } from "@mui/material";
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Add, Delete, EditOutlined, Money, MoneyOff, NotInterested, RemoveRedEyeSharp, Save, TrendingUp, Verified, VerifiedOutlined, Visibility } from '@mui/icons-material';
 import { tokens } from '../../../theme';
@@ -9,6 +9,7 @@ import Header from '../../../components/Header';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@mui/lab';
+import { formatValue } from '../../../tools/formatValue';
 
 
 
@@ -22,8 +23,7 @@ const BankAccount = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
     const open = Boolean(anchorEl);
-
-
+    const [selectedTab, setSelectedTab] = useState(0);
 
     const [bankAccountData, setBankAccountData] = useState([]);
     const [formData, setFormData] = useState({
@@ -42,20 +42,6 @@ const BankAccount = () => {
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
     const [action, setAction] = useState('activate');
     const [showStatusModal, setShowStatusModal] = useState(false);
-
-
-
-    const handleToggleInvestmentModal = (accountId) => {
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            accountId: accountId,
-        }));
-        setShowModal(!showModal);
-    };
-
-
-
-
 
 
     const fetchBankAccountData = async () => {
@@ -179,29 +165,18 @@ const BankAccount = () => {
     };
 
 
-
-
     const handleViewAccount = (row) => {
         // Pass the entire row data to the edit page
         navigate(`/bankaccount/view/${row.accountId}`, { state: { accountData: row } });
     };
 
-    const toSentenceCase = (text) => {
-        if (!text) return '';
-        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    };
 
     const columns = [
         { field: "name", headerName: "Account Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        // { field: "externalCorpOrBankOrBranchName", headerName: "External Acc Name", flex: 1,  headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "type", headerName: "Account Type", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "totalCapitalInvested", headerName: "Total Capital Invested", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
-        // { field: "totalDebitBalance", headerName: "Total Debit Balance", flex: 1,  headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
         { field: "totalCreditBalance", headerName: "Total Credit Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
         { field: "balance", headerName: "Account Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
-        // { field: "dailyAccountThreshold", headerName: "Daily Account Threshold", flex: 1,  headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-
-
         {
             field: "active",
             headerName: "Status",
@@ -289,39 +264,22 @@ const BankAccount = () => {
 
     ];
 
-    const toPascalCase = (str) => {
-        return str
-            .split(' ') // Split string by spaces
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter and lowercase the rest
-            .join(' '); // Join back the words
+    const handleTabChange = (event, newValue) => {
+        setSelectedTab(newValue);
     };
 
-    const formatValue = (value) => {
-        if (typeof value === 'boolean') {
-            return value ? 'Yes' : 'No';
-        }
-        if (value === null || value === undefined) {
-            return 'N/A';
-        }
-        if (typeof value === 'number') {
-            return value.toLocaleString(); // Format numbers with commas
-        }
-        if (typeof value === 'string') {
-            return toPascalCase(value.replace(/_/g, ' ')); // Replace underscores with spaces and format in Pascal Case
-        }
+    const filterDataByType = (type) => {
+        const typeKeywords = {
+            OPERATION: ["operation"],
+            COMPENSATION: ["compensation"],
+            COMMISSION: ["commission"],
+            GIMAC: ["gimac"],
+            CLIENT: ["client"]
+        };
 
-        if (typeof value === 'date') {
-            return `${value.toLocaleDateString('en-GB', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-            })} ${value.toLocaleTimeString('en-GB', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-            })}`;
-        }
-        return value.toString();
+        return bankAccountData.filter(account =>
+            typeKeywords[type].some(keyword => account.type.toLowerCase().includes(keyword))
+        );
     };
 
 
@@ -332,8 +290,40 @@ const BankAccount = () => {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="ACCOUNTS" subtitle="Manage yourAccounts" />
+                <Header title="ACCOUNTS" subtitle="Manage GAV Accounts" />
             </Box>
+            <Box
+                m="10px 15px 15px 15px">
+                <Tabs
+                    value={selectedTab}
+                    onChange={handleTabChange}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    aria-label="account type tabs"
+                    sx={{
+                        borderBottom: 1,
+                        borderRadius: '8px 8px 0 0',
+                        backgroundColor: colors.primary[400],
+                        borderColor: 'divider',
+                        '& .MuiTab-root': {
+                            borderRadius: '8px 8px 0 0',
+                            margin: '0 5px',
+                            '&.Mui-selected': {
+                                color: theme.palette.mode === 'light' ? 'black' : `${colors.greenAccent[400]}`,
+                            },
+                        },
+                    }}
+                >
+                    <Tab label="Operation" />
+                    <Tab label="Compensation" />
+                    <Tab label="Commission" />
+                    <Tab label="GIMAC" />
+                    <Tab label="Client" />
+                </Tabs>
+            </Box>
+
 
             <Box
                 m="40px 15px 15px 15px"
@@ -369,13 +359,17 @@ const BankAccount = () => {
             >
 
                 <DataGrid
-                    rows={bankAccountData}
+                    rows={
+                        selectedTab === 0 ? filterDataByType("OPERATION") :
+                            selectedTab === 1 ? filterDataByType("COMPENSATION") :
+                                selectedTab === 2 ? filterDataByType("COMMISSION") :
+                                    selectedTab === 3 ? filterDataByType("GIMAC") :
+                                        filterDataByType("CLIENT")
+                    }
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    // checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
-
                 />
             </Box>
 
