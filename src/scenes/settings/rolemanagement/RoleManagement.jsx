@@ -2,7 +2,7 @@ import { Alert, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, Dia
 import React, { useEffect, useState } from 'react'
 import Header from '../../../components/Header'
 import { tokens } from '../../../theme';
-import { Add, Delete, EditOutlined, Save, Search, VerifiedUser } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, Save, Search, VerifiedUser, Widgets } from '@mui/icons-material';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
@@ -457,7 +457,7 @@ const RoleManagement = () => {
                             Edit
                         </MenuItem>
                         <MenuItem onClick={() => handleAssignMenu(currentRow)}>
-                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                            <Widgets fontSize="small" style={{ marginRight: "8px" }} />
                             Assign Menu
                         </MenuItem>
 

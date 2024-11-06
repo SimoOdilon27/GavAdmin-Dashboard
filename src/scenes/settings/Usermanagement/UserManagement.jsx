@@ -4,7 +4,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import React, { useEffect, useState } from 'react'
 import { tokens } from '../../../theme';
 import Header from '../../../components/Header';
-import { Add, Assignment, AssuredWorkload, BackupRounded, Delete, EditOutlined, LocalActivitySharp, MenuBook, Save, Search, VerifiedUser } from '@mui/icons-material';
+import { Add, Assignment, AssuredWorkload, BackupRounded, Delete, EditOutlined, LocalActivitySharp, MenuBook, Save, Search, SwitchAccessShortcut, SwitchAccount, VerifiedUser } from '@mui/icons-material';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -236,7 +236,7 @@ const UserManagement = () => {
 
         {
             field: "permissions",
-            headerName: "Permissions",
+            headerName: "Assign Bank Code",
             flex: 1,
             headerAlign: "center", align: "center",
             renderCell: (params) => {
@@ -300,8 +300,8 @@ const UserManagement = () => {
                         }}
                     >
                         <MenuItem onClick={() => handleEditUser(currentRow)}>
-                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
-                            Edit
+                            <SwitchAccount fontSize="small" style={{ marginRight: "8px" }} />
+                            Update Space
                         </MenuItem>
 
                         <MenuItem onClick={() => handleDelete(currentRow)}>

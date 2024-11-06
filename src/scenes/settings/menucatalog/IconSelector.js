@@ -20,11 +20,13 @@ import CollectionsIcon from "@mui/icons-material/Collections";
 import TagIcon from "@mui/icons-material/Tag";
 import {
     AccountCircle,
+    Extension,
     ManageAccounts,
     MapOutlined,
     Money,
     SettingsApplicationsOutlined,
-    SupervisedUserCircleOutlined
+    SupervisedUserCircleOutlined,
+    Widgets
 } from "@mui/icons-material";
 
 export const AVAILABLE_ICONS = {
@@ -51,7 +53,9 @@ export const AVAILABLE_ICONS = {
     MapOutlined: MapOutlined,
     Money: Money,
     SettingsApplicationsOutlined: SettingsApplicationsOutlined,
-    SupervisedUserCircleOutlined: SupervisedUserCircleOutlined
+    SupervisedUserCircleOutlined: SupervisedUserCircleOutlined,
+    Widgets: Widgets,
+    Extension: Extension,
 };
 
 const IconSelector = ({ value, onChange, error, helperText, label = "Select Icon" }) => {

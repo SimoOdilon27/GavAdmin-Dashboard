@@ -60,9 +60,6 @@ const CashOut = () => {
     });
     const [showModal, setShowModal] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
-
-
-
     const showSnackbar = (message, severity) => {
         setSnackbar({ open: true, message, severity });
     };

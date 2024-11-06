@@ -17,7 +17,7 @@ const FullscreenLoader = () => {
                 zIndex: 1300 // Ensures it overlays other content
             }}
         >
-            <CircularProgress color="inherit" size={150} />
+            <CircularProgress color="inherit" size={110} />
         </Box>
     );
 };
