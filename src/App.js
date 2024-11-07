@@ -59,6 +59,8 @@ import RoleForm from "./scenes/settings/rolemanagement/RoleForm";
 import AssignRoleMenu from "./scenes/settings/rolemanagement/AssignRoleMenu";
 import AssignUsertoSpace from "./scenes/settings/Usermanagement/AssignUsertoSpace";
 import ProtectedRoute from "./tools/ProtectedRouteComponent";
+import Menus from "./scenes/settings/menucatalog/menuItemManagement/Menus";
+import UserSubMenuForm from "./scenes/settings/menucatalog/menuItemManagement/UserSubMenuForm";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -139,6 +141,11 @@ function App() {
                 <Route path="/space-management/add" element={<ProtectedRoute><SpaceForm /></ProtectedRoute>} />
                 <Route path="/space-management/edit/:id" element={<ProtectedRoute><SpaceForm /></ProtectedRoute>} />
                 <Route path="/type-management" element={<ProtectedRoute><TypeManagement /></ProtectedRoute>} />
+                <Route path="/menus" element={<ProtectedRoute><Menus /></ProtectedRoute>} />
+                <Route path="/menus/createmenu" element={<ProtectedRoute><CreateMenuForm /></ProtectedRoute>} />
+                <Route path="/menus/submenuform" element={<ProtectedRoute><UserSubMenuForm /></ProtectedRoute>} />
+                <Route path="/menus/submenuform/:id" element={<ProtectedRoute><UserSubMenuForm /></ProtectedRoute>} />
+                <Route path="/menus/editmenu/:id" element={<ProtectedRoute><CreateMenuForm /></ProtectedRoute>} />
 
               </Routes>
 

@@ -21,7 +21,7 @@ export const MenuLinks = [
     { linkname: "Type Management", value: "/type-management" },
 
     { linkname: "* * * * * * * Authorization * * * * * * *", value: "" },
-    { linkname: "Menu Creation", value: "/menu-catalog" },
+    { linkname: "Menu Resources", value: "/menu-catalog" },
     { linkname: "Menu Management", value: "/menu-catalog" },
     { linkname: "Role Management", value: "/rolemanagement" },
     { linkname: "User Management", value: "/usermanagement" },

@@ -1,4 +1,4 @@
-import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, useTheme } from "@mui/material";
+import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, useTheme } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -10,6 +10,7 @@ import CBS_Services from "../../../services/api/GAV_Sercives";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
 import { tokens } from "../../../theme";
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 const RoleForm = () => {
     const theme = useTheme();
@@ -23,7 +24,7 @@ const RoleForm = () => {
     const [itemData, setItemData] = useState([]);
     const [subItemData, setSubItemData] = useState([]);
     const token = userData.token;
-    const spaceId = userData?.selectedSpace?.id
+    const [selectedSubItems, setSelectedSubItems] = useState([]);
     const [initialValues, setInitialValues] = useState({
         roleName: "",
         description: "",
@@ -34,27 +35,8 @@ const RoleForm = () => {
 
     const [pending, setPending] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
-    const [filteredItems, setFilteredItems] = useState([]);
-    const [filteredSubItems, setFilteredSubItems] = useState([]);
 
-    const formFieldStyles = (gridColumn = "span 2") => ({
-        gridColumn,
-        '& .MuiInputLabel-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiFilledInput-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[100],
-        },
-    });
+
 
     const showSnackbar = (message, severity) => {
         setSnackbar({ open: true, message, severity });
@@ -69,10 +51,14 @@ const RoleForm = () => {
 
     const handleFormSubmit = async (values) => {
         setPending(true);
-        console.log("values====", values);
 
+        const submitData = {
+            ...values,
+            itemId: []
+        }
+        console.log("submitData====", submitData);
         try {
-            const response = await CBS_Services('GATEWAY', 'clientGateWay/role/createRole', 'POST', values, token);
+            const response = await CBS_Services('GATEWAY', 'clientGateWay/role/createRole', 'POST', submitData, token);
             console.log("responseCreateRole", response);
             if (response && response.status === 200) {
                 showSnackbar('Role Created Successfully.', 'success');
@@ -128,10 +114,28 @@ const RoleForm = () => {
         setPending(false);
     };
 
-    const fetchSubItemData = async () => {
+    // const fetchSubItemData = async () => {
+    //     setPending(true);
+    //     try {
+    //         const response = await CBS_Services('GATEWAY', 'clientGateWay/subItem/getAllSubsItems', 'GET', null, token);
+    //         if (response && response.status === 200) {
+    //             setSubItemData(response.body.data || []);
+    //         } else {
+    //             setSubItemData([]);
+    //             showSnackbar('Error Finding SubItem Data.', 'error');
+    //         }
+    //     } catch (error) {
+    //         console.log('Error:', error);
+    //     }
+    //     setPending(false);
+    // };
+
+    const fetchSubItemDataById = async (itemId) => {
         setPending(true);
         try {
-            const response = await CBS_Services('GATEWAY', 'clientGateWay/subItem/getAllSubsItems', 'GET', null, token);
+            const response = await CBS_Services('GATEWAY', `clientGateWay/subItem/getAllSubItemByItemId/${itemId}`, 'GET', null, token);
+            console.log("respone=====", response);
+
             if (response && response.status === 200) {
                 setSubItemData(response.body.data || []);
             } else {
@@ -147,33 +151,34 @@ const RoleForm = () => {
     useEffect(() => {
         fetchTypeData();
         fetchItemData();
-        fetchSubItemData();
+        // fetchSubItemData();
     }, []);
 
-    const handleTypeChange = (formikProps, value) => {
-        // Update typeId in form
-        formikProps.setFieldValue('typeId', value);
-        // Reset itemId and subItemId as empty arrays
-        formikProps.setFieldValue('itemId', []);
-        formikProps.setFieldValue('subItemId', []);
+    const handleItemChange = (formikProps, itemId) => {
+        formikProps.setFieldValue("itemId", itemId);
+        formikProps.setFieldValue("subItemId", []);
+        setSelectedSubItems([]);
+        fetchSubItemDataById(itemId);
 
-        // Filter items based on selected type
-        const filtered = itemData.filter(item => item.typeId === value);
-        setFilteredItems(filtered);
-        setFilteredSubItems([]);
     };
 
-    const handleItemChange = (formikProps, selectedItems) => {
-        formikProps.setFieldValue('itemId', selectedItems);
-        formikProps.setFieldValue('subItemId', []); // Reset as empty array
+    const handleSelectAllSubItems = () => {
+        if (selectedSubItems.length === subItemData.length) {
+            setSelectedSubItems([]);
+        } else {
+            setSelectedSubItems(subItemData.map((item) => item.id));
+        }
+    };
 
-        const filteredSubs = subItemData.filter(subItem =>
-            selectedItems.some(selectedItemId => {
-                const selectedItemData = itemData.find(item => item.id === selectedItemId);
-                return selectedItemData && subItem.itemId === selectedItemData.title;
-            })
-        );
-        setFilteredSubItems(filteredSubs);
+    const handleSubItemSelect = (id) => {
+        if (selectedSubItems.includes(id)) {
+            setSelectedSubItems(selectedSubItems.filter((itemId) => itemId !== id));
+        } else {
+            setSelectedSubItems([...selectedSubItems, id]);
+        }
+    };
+    const getSelectedSubItemTitles = () => {
+        return subItemData.filter((item) => selectedSubItems.includes(item.id)).map((item) => item.title).join(", ");
     };
 
 
@@ -242,37 +247,17 @@ const RoleForm = () => {
                                     name="roleName"
                                     error={!!touched.roleName && !!errors.roleName}
                                     helperText={touched.roleName && errors.roleName}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
                                 />
 
-                                {/* <FormControl fullWidth variant="filled" sx={formFieldStyles("span 2")}>
+
+
+                                <FormControl fullWidth variant="filled" sx={FormFieldStyles("span 2")}>
                                     <InputLabel>Type</InputLabel>
                                     <Select
                                         label="Type"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        value={values.typeId}
-                                        name="typeId"
-                                        error={!!touched.typeId && !!errors.typeId}
-                                    >
-                                        <MenuItem value="">Select type</MenuItem>
-                                        {typeData.map((type) => (
-                                            <MenuItem key={type.intitule} value={type.intitule}>
-                                                {type.intitule}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {touched.typeId && errors.typeId && (
-                                        <Alert severity="error">{errors.typeId}</Alert>
-                                    )}
-                                </FormControl> */}
-
-                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 2")}>
-                                    <InputLabel>Type</InputLabel>
-                                    <Select
-                                        label="Type"
-                                        onBlur={handleBlur}
-                                        onChange={(e) => handleTypeChange({ setFieldValue }, e.target.value)}
                                         value={values.typeId}
                                         name="typeId"
                                         error={!!touched.typeId && !!errors.typeId}
@@ -300,27 +285,28 @@ const RoleForm = () => {
                                     name="description"
                                     error={!!touched.description && !!errors.description}
                                     helperText={touched.description && errors.description}
-                                    sx={formFieldStyles("span 4")}
+                                    sx={FormFieldStyles("span 4")}
                                 />
 
                                 <FormControl
                                     fullWidth
                                     variant="filled"
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
                                 // disabled={!values.typeId}
                                 >
                                     <InputLabel>Items</InputLabel>
                                     <Select
-                                        multiple // Add this
                                         label="Items"
                                         onBlur={handleBlur}
-                                        onChange={(e) => handleItemChange({ setFieldValue }, e.target.value)}
-                                        value={Array.isArray(values.itemId) ? values.itemId : []} // Ensure array
+                                        onChange={(e) => {
+                                            handleItemChange({ setFieldValue }, e.target.value);
+                                        }}
+                                        value={values.itemId}
                                         name="itemId"
                                         error={!!touched.itemId && !!errors.itemId}
                                     >
                                         {itemData.map((item) => (
-                                            <MenuItem key={item.id} value={item.id}>
+                                            <MenuItem key={item.title} value={item.title}>
                                                 {item.title}
                                             </MenuItem>
                                         ))}
@@ -334,22 +320,47 @@ const RoleForm = () => {
                                 <FormControl
                                     fullWidth
                                     variant="filled"
-                                    sx={formFieldStyles("span 2")}
-                                // disabled={!values.itemId?.length}
+                                    sx={FormFieldStyles("span 2")}
+                                    disabled={!values.itemId?.length}
                                 >
                                     <InputLabel>Sub Items</InputLabel>
                                     <Select
-                                        multiple // Add this
+                                        multiple
                                         label="Sub Items"
                                         onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={Array.isArray(values.subItemId) ? values.subItemId : []} // Ensure array
+                                        onChange={(e) => {
+                                            setFieldValue("subItemId", e.target.value);
+                                            setSelectedSubItems(e.target.value);
+                                        }}
+                                        value={selectedSubItems}
                                         name="subItemId"
                                         error={!!touched.subItemId && !!errors.subItemId}
+                                        renderValue={(selected) => getSelectedSubItemTitles()}
                                     >
+                                        <MenuItem value="selectAll">
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedSubItems.length === subItemData.length}
+                                                        onChange={handleSelectAllSubItems}
+                                                        color="secondary"
+                                                    />
+                                                }
+                                                label="Select All"
+                                            />
+                                        </MenuItem>
                                         {subItemData.map((subItem) => (
                                             <MenuItem key={subItem.id} value={subItem.id}>
-                                                {subItem.title}
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            checked={selectedSubItems.includes(subItem.id)}
+                                                            onChange={() => handleSubItemSelect(subItem.id)}
+                                                            color="secondary"
+                                                        />
+                                                    }
+                                                    label={subItem.title}
+                                                />
                                             </MenuItem>
                                         ))}
                                     </Select>
@@ -403,7 +414,7 @@ const checkoutSchema = yup.object().shape({
     roleName: yup.string().required("required"),
     description: yup.string().required("required"),
     typeId: yup.string(),
-    itemId: yup.array().of(yup.string()).required("required"),
+    itemId: yup.string().required("required"),
     subItemId: yup.array().of(yup.string()).required("required")
 });
 

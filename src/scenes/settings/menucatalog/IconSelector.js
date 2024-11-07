@@ -20,12 +20,15 @@ import CollectionsIcon from "@mui/icons-material/Collections";
 import TagIcon from "@mui/icons-material/Tag";
 import {
     AccountCircle,
+    AdminPanelSettings,
     Extension,
     ManageAccounts,
     MapOutlined,
     Money,
     SettingsApplicationsOutlined,
     SupervisedUserCircleOutlined,
+    SupervisorAccountRounded,
+    TypeSpecimen,
     Widgets
 } from "@mui/icons-material";
 
@@ -56,6 +59,9 @@ export const AVAILABLE_ICONS = {
     SupervisedUserCircleOutlined: SupervisedUserCircleOutlined,
     Widgets: Widgets,
     Extension: Extension,
+    TypeSpecimen: TypeSpecimen,
+    AdminPanelSettings: AdminPanelSettings,
+    SupervisorAccountRounded: SupervisorAccountRounded,
 };
 
 const IconSelector = ({ value, onChange, error, helperText, label = "Select Icon" }) => {

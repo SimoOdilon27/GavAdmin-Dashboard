@@ -28,7 +28,7 @@ import { FieldArray, Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../../../components/Header";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
@@ -54,6 +54,8 @@ const CreateMenuForm = () => {
     const [activeSubItemIndex, setActiveSubItemIndex] = useState(null);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const location = useLocation();
+
 
     const [initialValues, setInitialValues] = useState({
         hasSubMenu: true,
@@ -103,6 +105,7 @@ const CreateMenuForm = () => {
 
             if (response.status === 200) {
                 showSnackbar("Item created successfully", "success");
+                navigate(-1)
             } else {
                 showSnackbar("Failed to create item", "error");
 
@@ -258,7 +261,7 @@ const CreateMenuForm = () => {
         setSelectAll(newSelectAll);
 
         if (newSelectAll) {
-            const allTags = availableTags.map(tag => tag.id);
+            const allTags = availableTags?.map(tag => tag.id);
             setFieldValue(`subItems.${activeSubItemIndex}.tagId`, allTags);
         } else {
             setFieldValue(`subItems.${activeSubItemIndex}.tagId`, []);
@@ -292,6 +295,13 @@ const CreateMenuForm = () => {
         setFieldValue(`subItems.${activeSubItemIndex}.tagId`, newTags);
     };
 
+    useEffect(() => {
+        if (id && location.state && location.state.menuData) {
+            setInitialValues(location.state.menuData);
+        }
+    }, [id, location.state]);
+
+    console.log("initialValues", initialValues);
 
     return (
         <Box m="20px">
@@ -323,42 +333,45 @@ const CreateMenuForm = () => {
                     >
                         <form onSubmit={handleSubmit}>
                             {/* Menu Type Selection */}
-                            <Box
-                                display="grid"
-                                gap="30px"
-                                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                                sx={{
-                                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
-                                    borderRadius: "10px",
-                                    padding: "40px",
-                                    marginBottom: "20px",
-                                    "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                                }}
-                            >
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={values.hasSubMenu}
-                                            onChange={(e) => {
-                                                const isChecked = e.target.checked;
-                                                setFieldValue("hasSubMenu", isChecked);
-                                                if (isChecked && (!values.subItems || values.subItems.length === 0)) {
-                                                    // Initialize subItems with one empty item when checkbox is checked
-                                                    setFieldValue("subItems", [{
-                                                        title: "",
-                                                        route: "",
-                                                        icon: ""
-                                                    }]);
-                                                }
-                                            }}
-                                            name="hasSubMenu"
-                                            color="secondary"
-                                        />
-                                    }
-                                    label="This item has subitems"
-                                    sx={{ gridColumn: "span 4" }}
-                                />
-                            </Box>
+                            {!id &&
+                                <Box
+                                    display="grid"
+                                    gap="30px"
+                                    gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                                    sx={{
+                                        boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
+                                        borderRadius: "10px",
+                                        padding: "40px",
+                                        marginBottom: "20px",
+                                        "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                                    }}
+                                >
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={values.hasSubMenu}
+                                                onChange={(e) => {
+                                                    const isChecked = e.target.checked;
+                                                    setFieldValue("hasSubMenu", isChecked);
+                                                    if (isChecked && (!values.subItems || values.subItems.length === 0)) {
+                                                        // Initialize subItems with one empty item when checkbox is checked
+                                                        setFieldValue("subItems", [{
+                                                            title: "",
+                                                            route: "",
+                                                            icon: ""
+                                                        }]);
+                                                    }
+                                                }}
+                                                name="hasSubMenu"
+                                                color="secondary"
+                                            />
+                                        }
+                                        label="This item has subitems"
+                                        sx={{ gridColumn: "span 4" }}
+                                    />
+                                </Box>
+                            }
+
 
                             {/* Main Item Form */}
                             <Box
@@ -480,7 +493,7 @@ const CreateMenuForm = () => {
                                                     Subitem Details
                                                 </Typography>
 
-                                                {values.subItems.map((subItem, index) => (
+                                                {values?.subItems?.map((subItem, index) => (
                                                     <Box key={index} sx={{
                                                         display: 'grid',
                                                         gridTemplateColumns: "2fr 2fr 2fr 1fr auto",
@@ -547,7 +560,7 @@ const CreateMenuForm = () => {
                                                             variant="outlined"
                                                             startIcon={<Label />}
                                                             onClick={() => handleOpenTagModal(index)}
-                                                            sx={{ mt: 0 }}
+                                                            sx={{ mt: 0, padding: 2 }}
                                                         >
                                                             Select Tags ({(subItem.tagId || []).length})
                                                         </Button>
@@ -652,30 +665,36 @@ const CreateMenuForm = () => {
                                             </ListItemIcon>
                                             <ListItemText primary="Select All" />
                                         </ListItem>
-                                        {availableTags
-                                            .filter(tag => tag.id.toLowerCase().includes(searchTerm.toLowerCase()))
-                                            .map((tag) => {
-                                                const isSelected = values.subItems[activeSubItemIndex]?.tagId?.includes(tag.id);
-                                                return (
-                                                    <ListItem
-                                                        key={tag.id}
-                                                        dense
-                                                        button
-                                                        onClick={() => handleToggleTag(tag.id, values, setFieldValue)}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <Checkbox
-                                                                edge="start"
-                                                                checked={isSelected}
-                                                                tabIndex={-1}
-                                                                disableRipple
-                                                                color='secondary'
-                                                            />
-                                                        </ListItemIcon>
-                                                        <ListItemText primary={tag.id} />
-                                                    </ListItem>
-                                                );
-                                            })}
+                                        {Array.isArray(availableTags) && availableTags > 0 ?
+
+                                            availableTags
+                                                .filter(tag => tag.id.toLowerCase().includes(searchTerm.toLowerCase()))
+                                                .map((tag) => {
+                                                    const isSelected = values?.subItems[activeSubItemIndex]?.tagId?.includes(tag.id);
+                                                    return (
+                                                        <ListItem
+                                                            key={tag.id}
+                                                            dense
+                                                            button
+                                                            onClick={() => handleToggleTag(tag.id, values, setFieldValue)}
+                                                        >
+                                                            <ListItemIcon>
+                                                                <Checkbox
+                                                                    edge="start"
+                                                                    checked={isSelected}
+                                                                    tabIndex={-1}
+                                                                    disableRipple
+                                                                    color='secondary'
+                                                                />
+                                                            </ListItemIcon>
+                                                            <ListItemText primary={tag.id} />
+                                                        </ListItem>
+                                                    );
+                                                })
+
+
+                                            : "No tags"}
+
                                     </List>
                                 </Box>
                             </DialogContent>

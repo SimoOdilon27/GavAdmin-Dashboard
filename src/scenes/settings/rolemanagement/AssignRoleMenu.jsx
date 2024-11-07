@@ -1,4 +1,4 @@
-import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, useTheme } from "@mui/material";
+import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, useTheme } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -10,6 +10,7 @@ import CBS_Services from "../../../services/api/GAV_Sercives";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
 import { tokens } from "../../../theme";
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 
 const AssignRoleMenu = () => {
@@ -20,11 +21,9 @@ const AssignRoleMenu = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const userData = useSelector((state) => state.users);
-    const [typeData, setTypeData] = useState([]);
     const [itemData, setItemData] = useState([]);
     const [subItemData, setSubItemData] = useState([]);
     const token = userData.token;
-    const spaceId = userData?.selectedSpace?.id
 
     const [initialValues, setInitialValues] = useState({
         roleName: roleName,
@@ -32,30 +31,11 @@ const AssignRoleMenu = () => {
         subsItemId: []
     });
 
-    const [filteredItems, setFilteredItems] = useState([]);
-    const [filteredSubItems, setFilteredSubItems] = useState([]);
 
     const [pending, setPending] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+    const [selectedSubItems, setSelectedSubItems] = useState([]);
 
-    const formFieldStyles = (gridColumn = "span 2") => ({
-        gridColumn,
-        '& .MuiInputLabel-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiFilledInput-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[100],
-        },
-    });
 
     const showSnackbar = (message, severity) => {
         setSnackbar({ open: true, message, severity });
@@ -74,6 +54,7 @@ const AssignRoleMenu = () => {
         const submitData = {
             ...values,
             roleName: roleName,
+            itemId: []
         };
         console.log("values====", submitData);
         try {
@@ -110,10 +91,14 @@ const AssignRoleMenu = () => {
         setPending(false);
     };
 
-    const fetchSubItemData = async () => {
+
+
+    const fetchSubItemDataById = async (itemId) => {
         setPending(true);
         try {
-            const response = await CBS_Services('GATEWAY', 'clientGateWay/subItem/getAllSubsItems', 'GET', null, token);
+            const response = await CBS_Services('GATEWAY', `clientGateWay/subItem/getAllSubItemByItemId/${itemId}`, 'GET', null, token);
+            console.log("respone=====", response);
+
             if (response && response.status === 200) {
                 setSubItemData(response.body.data || []);
             } else {
@@ -126,26 +111,40 @@ const AssignRoleMenu = () => {
         setPending(false);
     };
 
+    const handleItemChange = (formikProps, itemId) => {
+        formikProps.setFieldValue("itemId", itemId);
+        formikProps.setFieldValue("subsItemId", []);
+        setSelectedSubItems([]);
+        fetchSubItemDataById(itemId);
+
+    };
+
+    const handleSelectAllSubItems = () => {
+        if (selectedSubItems.length === subItemData.length) {
+            setSelectedSubItems([]);
+        } else {
+            setSelectedSubItems(subItemData.map((item) => item.id));
+        }
+    };
+
+    const handleSubItemSelect = (id) => {
+        if (selectedSubItems.includes(id)) {
+            setSelectedSubItems(selectedSubItems.filter((itemId) => itemId !== id));
+        } else {
+            setSelectedSubItems([...selectedSubItems, id]);
+        }
+    };
+    const getSelectedSubItemTitles = () => {
+        return subItemData.filter((item) => selectedSubItems.includes(item.id)).map((item) => item.title).join(", ");
+    };
+
+
     useEffect(() => {
         fetchItemData();
-        fetchSubItemData();
+        fetchItemData();
     }, []);
 
-    const handleItemChange = (formikProps, selectedItems) => {
-        // selectedItems will already be an array because of multiple prop
-        formikProps.setFieldValue('itemId', selectedItems);
-        // Reset subItemId as empty array
-        // formikProps.setFieldValue('subItemId', []);
 
-        // Filter subitems based on selected items
-        const filteredSubs = subItemData.filter(subItem =>
-            selectedItems.some(selectedItemId => {
-                const selectedItemData = itemData.find(item => item.id === selectedItemId);
-                return selectedItemData && subItem.itemId === selectedItemData.title;
-            })
-        );
-        setFilteredSubItems(filteredSubs);
-    };
     return (
         <Box m="20px">
             <Header
@@ -190,12 +189,12 @@ const AssignRoleMenu = () => {
                                 <FormControl
                                     fullWidth
                                     variant="filled"
-                                    sx={formFieldStyles("span 4")}
+                                    sx={FormFieldStyles("span 4")}
 
                                 >
                                     <InputLabel>Items</InputLabel>
                                     <Select
-                                        multiple // Add this
+
                                         label="Items"
                                         onBlur={handleBlur}
                                         onChange={(e) => handleItemChange({ setFieldValue }, e.target.value)}
@@ -204,7 +203,7 @@ const AssignRoleMenu = () => {
                                         error={!!touched.itemId && !!errors.itemId}
                                     >
                                         {itemData.map((item) => (
-                                            <MenuItem key={item.id} value={item.id}>
+                                            <MenuItem key={item.title} value={item.title}>
                                                 {item.title}
                                             </MenuItem>
                                         ))}
@@ -214,11 +213,11 @@ const AssignRoleMenu = () => {
                                     )}
                                 </FormControl>
 
-                                <FormControl
+                                {/* <FormControl
                                     fullWidth
                                     variant="filled"
-                                    sx={formFieldStyles("span 4")}
-                                // disabled={!values.itemId?.length}
+                                    sx={FormFieldStyles("span 4")}
+                                    disabled={!values.itemId?.length}
                                 >
                                     <InputLabel>Sub Items</InputLabel>
                                     <Select
@@ -226,7 +225,7 @@ const AssignRoleMenu = () => {
                                         label="Sub Items"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        value={values.subsItemId}
+                                        value={Array.isArray(values.subsItemId) ? values.subsItemId : []} // Ensure array
                                         name="subsItemId"
                                         error={!!touched.subsItemId && !!errors.subsItemId}
                                     >
@@ -239,8 +238,59 @@ const AssignRoleMenu = () => {
                                     {touched.subsItemId && errors.subsItemId && (
                                         <Alert severity="error">{errors.subsItemId}</Alert>
                                     )}
-                                </FormControl>
+                                </FormControl> */}
 
+                                <FormControl
+                                    fullWidth
+                                    variant="filled"
+                                    sx={FormFieldStyles("span 4")}
+                                    disabled={!values.itemId?.length}
+                                >
+                                    <InputLabel>Sub Items</InputLabel>
+                                    <Select
+                                        multiple
+                                        label="Sub Items"
+                                        onBlur={handleBlur}
+                                        onChange={(e) => {
+                                            setFieldValue("subsItemId", e.target.value);
+                                            setSelectedSubItems(e.target.value);
+                                        }}
+                                        value={selectedSubItems}
+                                        name="subsItemId"
+                                        error={!!touched.subsItemId && !!errors.subsItemId}
+                                        renderValue={(selected) => getSelectedSubItemTitles()}
+                                    >
+                                        <MenuItem value="selectAll">
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedSubItems.length === subItemData.length}
+                                                        onChange={handleSelectAllSubItems}
+                                                        color="secondary"
+                                                    />
+                                                }
+                                                label="Select All"
+                                            />
+                                        </MenuItem>
+                                        {subItemData.map((subItem) => (
+                                            <MenuItem key={subItem.id} value={subItem.id}>
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            checked={selectedSubItems.includes(subItem.id)}
+                                                            onChange={() => handleSubItemSelect(subItem.id)}
+                                                            color="secondary"
+                                                        />
+                                                    }
+                                                    label={subItem.title}
+                                                />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                    {touched.subsItemId && errors.subsItemId && (
+                                        <Alert severity="error">{errors.subsItemId}</Alert>
+                                    )}
+                                </FormControl>
 
 
 
