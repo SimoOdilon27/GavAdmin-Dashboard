@@ -86,7 +86,7 @@ const Menus = () => {
         fetchSubMenuData();
     }, []);
 
-    const handleDeleteMenuConfirm = async (row) => {
+    const handleDeleteMenuConfirm = async () => {
         setDeleteMenuDialogOpen(false);
         try {
             const response = await CBS_Services('GATEWAY', `clientGateWay/items/deleteItem/${currentRow.id}`, 'DELETE', null, token);
@@ -107,7 +107,7 @@ const Menus = () => {
         }
     };
 
-    const handleDeleteSubMenuConfirm = async (row) => {
+    const handleDeleteSubMenuConfirm = async () => {
         setDeleteSubMenuDialogOpen(false);
         try {
             const response = await CBS_Services('GATEWAY', `clientGateWay/subItem/deleteSubItem/${currentRow.id}`, 'DELETE', null, token);
@@ -135,8 +135,7 @@ const Menus = () => {
     };
 
     const handleDeleteSubMenu = (row) => {
-        console.log("Delete clicked", row);
-        setCurrentRow(row);
+        console.log("Delete clicked", currentRow);
         setDeleteSubMenuDialogOpen(!deleteSubMenuDialogOpen);
 
     };
@@ -164,7 +163,7 @@ const Menus = () => {
         { field: "title", headerName: "Menu Title", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "typeId", headerName: "Type", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "icon", headerName: "Icon", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "category", headerName: "Category", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "menuOrder", headerName: "Menu Order", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {
             field: "actions",
             headerName: "Actions",
@@ -384,7 +383,7 @@ const Menus = () => {
                     Are you sure you want to delete this sub-menu?
                 </DialogContent>
                 <DialogActions>
-                    <Button variant='outlined' color={colors.grey[500]} onClick={handleDeleteSubMenu}>Cancel</Button>
+                    <Button variant='outlined' onClick={handleDeleteSubMenu}>Cancel</Button>
                     <Button variant='outlined' color="error" onClick={handleDeleteSubMenuConfirm}>
                         Delete
                     </Button>

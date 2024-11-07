@@ -1,29 +1,4 @@
-import {
-    Alert,
-    Box,
-    Button,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
-    Snackbar,
-    Stack,
-    TextField,
-    Checkbox,
-    FormControlLabel,
-    Typography,
-    IconButton,
-    Divider,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    InputAdornment,
-} from "@mui/material";
+import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, Checkbox, FormControlLabel, Typography, IconButton, Divider, Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemIcon, ListItemText, InputAdornment, } from "@mui/material";
 import { FieldArray, Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -137,61 +112,81 @@ const CreateMenuForm = () => {
     const handleFormSubmit = async (values, { resetForm }) => {
         setPending(true);
         try {
-            // Prepare the item data
-            const itemData = {
-                title: values.title,
-                typeId: values.typeId,
-                icon: values.icon,
-                category: values.category,
-                menuOrder: parseInt(values.menuOrder),
-            };
 
-            if (!values.hasSubMenu) {
-                // If no subitems, just create the item
-                const itemResponse = await createItem(itemData);
-                showSnackbar("Item created successfully", "success");
-                // setTimeout(() => navigate(-1), 2000);
-            } else {
-                // If has subitems, create item first then create subitems
-                const itemResponse = await createItem(itemData);
-                console.log("itemResponse", itemResponse);
-
-                const itemId = itemResponse.body.data.title; // Adjust based on your API response structure
+            if (id) {
+                // Update existing catalog item
+                const response = await CBS_Services('GATEWAY', 'clientGateWay/items/updateItem', 'PUT', values, token);
+                console.log("editresponse", response);
 
 
-                // Create all subitems sequentially
-                for (const subItem of values.subItems) {
-                    await createSubItem({
-                        itemId: itemId,
-                        title: subItem.title,
-                        route: subItem.route,
-                        icon: subItem.icon,
-                        tagId: subItem.tagId || [],
-                    });
+                if (response && response.status === 200) {
+                    showSnackbar('Menu Edited Successfully.', 'success');
+                    setTimeout(() => {
+                        navigate(-1);
+                    }, 2000);
+                } else {
+                    // toast.error(response.body.errors || "Error Editing Catalog");
+                    showSnackbar(response.body.errors || 'Error Editing Menu', 'error');
+
                 }
+            } else {
+                // Prepare the item data
+                const itemData = {
+                    title: values.title,
+                    typeId: values.typeId,
+                    icon: values.icon,
+                    category: values.category,
+                    menuOrder: parseInt(values.menuOrder),
+                };
 
-                showSnackbar("Item and subitems created successfully", "success");
-                // setTimeout(() => navigate("/items-management"), 2000);
-                resetForm({
-                    values: {
-                        hasSubMenu: true,
-                        title: "",
-                        icon: "",
-                        typeId: "",
-                        category: "",
-                        menuOrder: "",
-                        subItems: [{
-                            title: "",
-                            route: "",
-                            icon: "",
-                            tagId: []
-                        }],
+                if (!values.hasSubMenu) {
+                    // If no subitems, just create the item
+                    const itemResponse = await createItem(itemData);
+                    showSnackbar("Item created successfully", "success");
+                    // setTimeout(() => navigate(-1), 2000);
+                } else {
+                    // If has subitems, create item first then create subitems
+                    const itemResponse = await createItem(itemData);
+                    console.log("itemResponse", itemResponse);
+
+                    const itemId = itemResponse.body.data.title; // Adjust based on your API response structure
+
+
+                    // Create all subitems sequentially
+                    for (const subItem of values.subItems) {
+                        await createSubItem({
+                            itemId: itemId,
+                            title: subItem.title,
+                            route: subItem.route,
+                            icon: subItem.icon,
+                            tagId: subItem.tagId || [],
+                        });
                     }
-                });
-                setActiveSubItemIndex(null);
-                setSelectAll(false);
-                setSearchTerm("");
+
+                    showSnackbar("Item and subitems created successfully", "success");
+                    // setTimeout(() => navigate("/items-management"), 2000);
+                    resetForm({
+                        values: {
+                            hasSubMenu: true,
+                            title: "",
+                            icon: "",
+                            typeId: "",
+                            category: "",
+                            menuOrder: "",
+                            subItems: [{
+                                title: "",
+                                route: "",
+                                icon: "",
+                                tagId: []
+                            }],
+                        }
+                    });
+                    setActiveSubItemIndex(null);
+                    setSelectAll(false);
+                    setSearchTerm("");
+                }
             }
+
         } catch (error) {
             console.error("Error:", error);
             showSnackbar(error.message || "Error creating items", "error");

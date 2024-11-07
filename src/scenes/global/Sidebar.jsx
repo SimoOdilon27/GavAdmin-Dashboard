@@ -456,7 +456,7 @@ const Sidebar = () => {
   const [selected, setSelected] = useState("Dashboard");
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const userData = useSelector((state) => state.users);
-  const role = userData.userName;
+  const role = userData?.selectedSpace?.role;
   const userName = userData.userName;
   const UserSpace = userData?.selectedSpace?.id;
   const UserId = userData.userId;
