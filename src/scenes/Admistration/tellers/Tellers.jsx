@@ -19,6 +19,7 @@ const Tellers = () => {
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const spaceId = userData?.selectedSpace?.id
+    const usertype = userData.selectedSpace.role
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
@@ -28,10 +29,19 @@ const Tellers = () => {
         setLoading(true);
         try {
 
-            const payload = {
-                serviceReference: 'GET_ALL_TELLERS',
-                requestBody: JSON.stringify({ internalId: "Back-Office" }),
-                spaceId: spaceId,
+            let payload = {}
+            if (usertype === "CREDIX_ADMIN") {
+                payload = {
+                    serviceReference: 'GET_ALL_TELLERS',
+                    requestBody: JSON.stringify({ internalId: "Back-Office" }),
+                    spaceId: spaceId,
+                }
+            } else {
+                payload = {
+                    serviceReference: 'GET_ALL_TELLERS',
+                    requestBody: JSON.stringify({ internalId: "Back-Office" }),
+                    spaceId: spaceId,
+                }
             }
 
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);

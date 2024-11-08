@@ -1,50 +1,23 @@
 import { Add, Delete, EditOutlined, RemoveRedEyeSharp } from '@mui/icons-material';
-import { Box, Button, Checkbox, Chip, FormControl, FormControlLabel, IconButton, InputLabel, Menu, Snackbar, Typography, useTheme } from "@mui/material";
+import { Box, Button, Chip, IconButton, Menu, Snackbar, useTheme } from "@mui/material";
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { tokens } from '../../../theme';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../../components/Header';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, CircularProgress, Alert } from '@mui/material';
+import { MenuItem, Alert } from '@mui/material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useNavigate } from 'react-router-dom';
 
 const Bank = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-
-    const [formData, setFormData] = useState({
-        id: "",
-        address: "",
-        contact: "",
-        categoryId: "",
-        bankEmail: "",
-        email: "",
-        bankName: "",
-        cbsBankId: "",
-        bankCode: "",
-        bankSignature: "",
-        bankSite: "",
-        corporationId: "",
-        accountType: "",
-        dailyLimit: 0,
-        country: "",
-        bankManager: "",
-        region: '',
-        bankId: '',
-        active: false
-    });
-
-    const [showModal, setShowModal] = useState(false);
     const [bankData, setBankData] = useState([]);
-    const [corpID, setCorpID] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedBank, setSelectedBank] = useState(null);
     const userData = useSelector((state) => state.users)
+    const usertype = userData.selectedSpace.role
     const navigate = useNavigate();
-
     const token = userData.token
     const spaceId = userData?.selectedSpace?.id
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
@@ -58,31 +31,6 @@ const Bank = () => {
             return;
         }
         setSnackbar({ ...snackbar, open: false });
-    };
-
-    const handleToggleBankModal = () => {
-        setShowModal(!showModal);
-        setFormData({
-            id: "",
-            address: "",
-            contact: "",
-            categoryId: "",
-            bankEmail: "",
-            email: "",
-            bankName: "",
-            cbsBankId: "",
-            bankCode: "",
-            bankSignature: "",
-            bankSite: "",
-            corporationId: "",
-            accountType: "",
-            dailyLimit: 0,
-            country: "",
-            bankManager: "",
-            region: '',
-            bankId: '',
-            active: false
-        })
     };
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -107,111 +55,26 @@ const Bank = () => {
         setCurrentRow(null);
     };
 
-
-    const hideAddBank = () => {
-        setShowModal(false);
-
-    };
-
-
-    const handleToggleEditBankModal = () => {
-        setShowEditModal(!showEditModal);
-    };
-    const hideEditBank = () => {
-        setShowEditModal(false);
-
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
-
-
-    const handleConfirmAdd = async () => {
-
-        setLoading(true);
-        try {
-
-            const payload = {
-                serviceReference: 'ADD_BANK',
-                requestBody: JSON.stringify(formData),
-                spaceId: spaceId,
-            }
-
-            console.log("formData", formData);
-
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            console.log("addresponse", response);
-
-            if (response && response.body.meta.statusCode === 200) {
-                hideAddBank();
-                await fetchBankData();
-                showSnackbar('Bank created successfully.', 'success');
-            } else if (response && response.body.meta.statusCode === 401) {
-                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
-            }
-
-            else {
-                showSnackbar(response.body.errors || 'Failed to create bank', 'error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showSnackbar('Network Error!!! try again later', 'error');
-
-        }
-        setLoading(false);
-    };
-
-
-    const handleConfirmEdit = async () => {
-        setLoading(true);
-        try {
-
-            const payload = {
-                serviceReference: 'UPDATE_BANK',
-                requestBody: JSON.stringify(formData),
-                spaceId: spaceId,
-
-            }
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            console.log("editresp", response);
-            console.log("editformresp", formData);
-
-
-            if (response && response.body.meta.statusCode === 200) {
-                hideEditBank();
-                await fetchBankData();
-                showSnackbar('Bank updated successfully.', 'success');
-
-            } else if (response && response.body.meta.statusCode === 401) {
-                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
-            }
-
-            else {
-                showSnackbar(response.body.errors || 'Failed to update bank', 'error');
-
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showSnackbar('Network Error!!! try again later', 'error');
-
-        }
-        setLoading(false);
-    };
-
     const fetchBankData = async () => {
         setLoading(true);
         try {
+            let payload = {}
 
-            const payload = {
-                serviceReference: 'GET_ALL_BANKS',
-                requestBody: '',
-                spaceId: spaceId,
+            if (usertype === "CREDIX_ADMIN") {
+                payload = {
+                    serviceReference: 'GET_ALL_BANKS',
+                    requestBody: '',
+                    spaceId: spaceId,
+                }
+            } else {
+                payload = {
+                    serviceReference: 'GET_ALL_BANKS_BY_CORPORATION_ID',
+                    requestBody: spaceId,
+                    spaceId: spaceId,
+                }
             }
+
+
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             // const response = await CBS_Services('AP', 'api/gav/bank/getAll', 'GET', null);
             console.log("fetchresponse", response);
@@ -230,35 +93,11 @@ const Bank = () => {
         setLoading(false);
     };
 
-    const fetchCorpID = async () => {
-        try {
-
-            const payload = {
-                serviceReference: 'GET_ALL_CORPORATIONS',
-                requestBody: '',
-                spaceId: spaceId,
-            }
-            // const response = await CBS_Services('AP', 'api/gav/corporation/management/getAll', 'GET', null);
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-
-            if (response && response.body.meta.statusCode === 200) {
-                setCorpID(response.body.data);
-
-            } else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
-
-
 
     useEffect(() => {
         // Fetch Bank data when the component mounts
         fetchBankData();
-        fetchCorpID();
+
 
     }, []);
 
@@ -417,336 +256,7 @@ const Bank = () => {
             </Box>
 
 
-            <>
-                <Dialog open={showModal} onClose={handleToggleBankModal} fullWidth maxWidth="lg">
-                    <DialogTitle>Add Bank</DialogTitle>
-                    <DialogContent>
 
-                        <form noValidate autoComplete="off">
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Corporation"
-                                select
-                                value={formData.corporationId}
-                                onChange={handleChange}
-                                name="corporationId"
-                                required
-                            >
-                                <MenuItem value="">Select Corporation</MenuItem>
-                                {Array.isArray(corpID) && corpID.length > 0 ? (
-                                    corpID.map(option => (
-                                        <MenuItem key={option.corporationId} value={option.corporationId}>
-                                            {option.corporationName}
-                                        </MenuItem>
-                                    ))
-                                ) : (
-                                    <MenuItem value="">No Corporations available</MenuItem>
-                                )}
-                            </TextField>
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Bank Name"
-                                value={formData.bankName}
-                                onChange={handleChange}
-                                name="bankName"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="CBS Bank Id"
-                                value={formData.cbsBankId}
-                                onChange={handleChange}
-                                name="cbsBankId"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Bank Manager"
-                                value={formData.bankManager}
-                                onChange={handleChange}
-                                name="bankManager"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Daily Limit"
-                                value={formData.dailyLimit}
-                                onChange={handleChange}
-                                name="dailyLimit"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Email"
-                                value={formData.bankEmail}
-                                onChange={handleChange}
-                                name="bankEmail"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Phone Number"
-                                value={formData.contact}
-                                onChange={handleChange}
-                                name="contact"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Address"
-                                value={formData.address}
-                                onChange={handleChange}
-                                name="address"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Region"
-                                select
-                                value={formData.region}
-                                onChange={handleChange}
-                                name="region"
-                            >
-                                <MenuItem value="" disabled>Select Region</MenuItem>
-                                <MenuItem value="ADAMAOUA">ADAMAOUA</MenuItem>
-                                <MenuItem value="CENTRE">CENTRE</MenuItem>
-                                <MenuItem value="ESTE">ESTE</MenuItem>
-                                <MenuItem value="EXTREME-NORD">EXTREME-NORD</MenuItem>
-                                <MenuItem value="LITTORAL">LITTORAL</MenuItem>
-                                <MenuItem value="NORD">NORD</MenuItem>
-                                <MenuItem value="NORD-OUEST">NORD-OUEST</MenuItem>
-                                <MenuItem value="OUEST">OUEST</MenuItem>
-                                <MenuItem value="SUD">SUD</MenuItem>
-                                <MenuItem value="SUD-OUEST">SUD-OUEST</MenuItem>
-                            </TextField>
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Country"
-                                value={formData.country}
-                                onChange={handleChange}
-                                name="country"
-                                required
-                            />
-
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={formData.hasCbsAccount}
-                                        onChange={(e) => setFormData({ ...formData, hasCbsAccount: e.target.checked })}
-                                        name="hasCbsAccount" />
-                                }
-                                label="Has CBS Account"
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={formData.otherCbs}
-                                        onChange={(e) => setFormData({ ...formData, otherCbs: e.target.checked })}
-                                        name="otherCbs" />
-                                }
-                                label="Other CBS Account"
-                            />
-
-                        </form>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleConfirmAdd} variant="contained" color="primary">
-                            {loading ? <CircularProgress size={24} /> : 'Add'}
-                        </Button>
-                        <Button onClick={hideAddBank} color="secondary">
-                            Cancel
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-
-                <Dialog open={showEditModal} onClose={handleToggleEditBankModal} fullWidth maxWidth="lg">
-                    <DialogTitle>Edit Bank</DialogTitle>
-                    <DialogContent>
-
-
-                        <form noValidate autoComplete="off">
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Corporation"
-                                select
-                                value={formData.corporationId}
-                                onChange={handleChange}
-                                name="corporationId"
-                            >
-                                <MenuItem value="">Select Corporation</MenuItem>
-                                {Array.isArray(corpID) && corpID.length > 0 ? (
-                                    corpID.map(option => (
-                                        <MenuItem key={option.corporationId} value={option.corporationId}>
-                                            {option.corporationName}
-                                        </MenuItem>
-                                    ))
-                                ) : (
-                                    <MenuItem value="">No Corporations available</MenuItem>
-                                )}
-                            </TextField>
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Bank Name"
-                                value={formData.bankName}
-                                onChange={handleChange}
-                                name="bankName"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Bank Id"
-                                value={formData.cbsBankId}
-                                onChange={handleChange}
-                                name="cbsBankId"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Bank Manager"
-                                value={formData.bankManager}
-                                onChange={handleChange}
-                                name="bankManager"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Daily Limit"
-                                value={formData.dailyLimit}
-                                onChange={handleChange}
-                                name="dailyLimit"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Email"
-                                value={formData.bankEmail}
-                                onChange={handleChange}
-                                name="bankEmail"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Phone Number"
-                                value={formData.contact}
-                                onChange={handleChange}
-                                name="contact"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Address"
-                                value={formData.address}
-                                onChange={handleChange}
-                                name="address"
-                                required
-                            />
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Region"
-                                select
-                                value={formData.region}
-                                onChange={handleChange}
-                                name="region"
-                            >
-                                <MenuItem value="" disabled>Select Region</MenuItem>
-                                <MenuItem value="ADAMAOUA">ADAMAOUA</MenuItem>
-                                <MenuItem value="CENTRE">CENTRE</MenuItem>
-                                <MenuItem value="ESTE">ESTE</MenuItem>
-                                <MenuItem value="EXTREME-NORD">EXTREME-NORD</MenuItem>
-                                <MenuItem value="LITTORAL">LITTORAL</MenuItem>
-                                <MenuItem value="NORD">NORD</MenuItem>
-                                <MenuItem value="NORD-OUEST">NORD-OUEST</MenuItem>
-                                <MenuItem value="OUEST">OUEST</MenuItem>
-                                <MenuItem value="SUD">SUD</MenuItem>
-                                <MenuItem value="SUD-OUEST">SUD-OUEST</MenuItem>
-                            </TextField>
-
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Country"
-                                value={formData.country}
-                                onChange={handleChange}
-                                name="country"
-                                required
-                            />
-                            <TextField
-                                fullWidth
-                                margin="normal"
-                                label="Account Number"
-                                value={formData.accountNumber}
-                                onChange={handleChange}
-                                name="accountNumber"
-                                required
-                            />
-
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={formData.hasCbsAccount}
-                                        onChange={(e) => setFormData({ ...formData, hasCbsAccount: e.target.checked })}
-                                        name="hasCbsAccount" />
-                                }
-                                label="Has CBS Account"
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={formData.otherCbs}
-                                        onChange={(e) => setFormData({ ...formData, otherCbs: e.target.checked })}
-                                        name="otherCbs" />
-                                }
-                                label="Other CBS Account"
-                            />
-
-                        </form>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleConfirmEdit} variant="contained" color="primary">
-                            {loading ? <CircularProgress size={24} /> : 'Update'}
-                        </Button>
-                        <Button onClick={hideEditBank} color="secondary">
-                            Cancel
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </>
 
             <Snackbar
                 open={snackbar.open}

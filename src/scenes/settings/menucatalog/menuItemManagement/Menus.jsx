@@ -2,13 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import CBS_Services from '../../../../services/api/GAV_Sercives';
-import { Box, Button, IconButton, Menu, MenuItem, Tab, Tabs, useTheme, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
+import { Box, Button, IconButton, Menu, MenuItem, Tab, Tabs, useTheme, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, InputAdornment, ListItemText, ListItemIcon, Checkbox, Stack, ListItem, List, TextField, Tooltip } from '@mui/material';
 import { tokens } from '../../../../theme';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../../../components/Header';
-import { Add, Delete, EditOutlined } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, Search, VerifiedUser } from '@mui/icons-material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { formatValue } from '../../../../tools/formatValue';
+import { LoadingButton } from '@mui/lab';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 80;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
 
 const Menus = () => {
     const theme = useTheme();
@@ -21,12 +33,23 @@ const Menus = () => {
     const spaceId = userData?.selectedSpace?.id
     const navigate = useNavigate();
     const [selectedTab, setSelectedTab] = useState(0);
-
+    const [selectedRow, setSelectedRow] = useState(null);
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
     const open = Boolean(anchorEl);
     const [deleteMenuDialogOpen, setDeleteMenuDialogOpen] = useState(false);
     const [deleteSubMenuDialogOpen, setDeleteSubMenuDialogOpen] = useState(false);
+    const [CatalogData, setCatalogData] = useState([]);
+    const [assignedRoleData, setAssignedRoleData] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('')
+    const [showAssignMenuModal, setShowAssignMenuModal] = React.useState(false)
+    const [assignSubMenuData, setassignSubMenuData] = React.useState(
+        {
+            subItemId: '',
+            ressourceId: [],
+        }
+    )
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "" });
 
     const showSnackbar = (message, severity) => {
@@ -84,6 +107,7 @@ const Menus = () => {
     useEffect(() => {
         fetchMenuData();
         fetchSubMenuData();
+        fetchCatalogData();
     }, []);
 
     const handleDeleteMenuConfirm = async () => {
@@ -127,6 +151,72 @@ const Menus = () => {
         }
     };
 
+    const handleConfirmAssignRole = async () => {
+        setLoading(true);
+        const results = [];
+        let hasError = false;
+
+        try {
+            const tagsToAssign = assignSubMenuData.ressourceId
+
+            for (const tagName of tagsToAssign) {
+                const payload = {
+                    ressourceId: tagName,
+                    subItemId: selectedRow,
+                };
+                console.log("payload====", payload);
+
+
+                const response = await CBS_Services('GATEWAY', `clientGateWay/subItem/addResourceToSubItem`, 'POST', payload, token);
+
+                if (response && response.status === 200) {
+                    results.push(`Success: ${tagName}`);
+                } else {
+                    results.push(`Failed: ${tagName} - ${response.body.errors || 'Unknown error'}`);
+                    hasError = true;
+                }
+            }
+
+            if (hasError) {
+                showSnackbar(`Some Menu assignments failed. ${results.join(', ')}`, 'warning');
+            } else {
+                showSnackbar('All Menus assigned successfully.', 'success');
+            }
+
+            handleToggleAssignRoleModal();
+            await fetchSubMenuData();
+
+        } catch (error) {
+            console.error('Error:', error);
+            showSnackbar('Network Error! Try again later.', 'error');
+        }
+
+        setLoading(false);
+    };
+
+    const fetchCatalogData = async () => {
+        try {
+
+            const payload = {
+                serviceReference: 'GET_ALL_CATALOG',
+                requestBody: '',
+                spaceId: spaceId,
+            }
+            // const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            const response = await CBS_Services('APE', 'catalog/get/all', 'GET');
+
+            console.log("response", response);
+
+            if (response && response.status === 200) {
+                setCatalogData(response.body.data);
+            } else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     const handleDeleteMenu = (row) => {
         console.log("Delete clicked", row);
         setCurrentRow(row);
@@ -157,6 +247,64 @@ const Menus = () => {
 
     const handleEditSubMenu = (row) => {
         navigate(`/menus/submenuform/${row.id}`, { state: { submenuData: row } });
+    };
+
+    const handleToggleAssignRoleModal = (assignsubmenu) => {
+        setSelectedRow(assignsubmenu);
+        setassignSubMenuData({
+            subItemId: '',
+            ressourceId: [],
+        });
+
+        setShowAssignMenuModal(!showAssignMenuModal);
+    };
+
+    const handleAssignUserRole = (assignsubmenu) => {
+        setSelectedRow(assignsubmenu);
+        setassignSubMenuData({
+            ...assignSubMenuData,
+            subItemId: assignsubmenu,
+            ressourceId: [],  // Reset ressourceId when opening the modal
+        });
+        setSelectAll(false);  // Reset selectAll state
+        setShowAssignMenuModal(!showAssignMenuModal);
+    };
+    const handleSelectAll = () => {
+        setSelectAll(!selectAll);
+        if (!selectAll) {
+            // Select all unassigned tags
+            const allMenuIds = CatalogData.map(option => option.id);
+            setassignSubMenuData({
+                ...assignSubMenuData,
+                ressourceId: allMenuIds
+            });
+        } else {
+            // Deselect all
+            setassignSubMenuData({
+                ...assignSubMenuData,
+                ressourceId: []
+            });
+        }
+    };
+
+    const handleToggle = (value) => () => {
+        const currentIndex = assignSubMenuData?.ressourceId?.indexOf(value);
+        const newChecked = [...assignSubMenuData.ressourceId];
+
+        if (currentIndex === -1) {
+            newChecked.push(value);
+        } else {
+            newChecked.splice(currentIndex, 1);
+        }
+
+        setassignSubMenuData({
+            ...assignSubMenuData,
+            ressourceId: newChecked
+        });
+
+        // Update selectAll state
+        const allMenuIds = CatalogData.map(option => option.id);
+        setSelectAll(newChecked.length === allMenuIds.length);
     };
 
     const columns = [
@@ -210,6 +358,33 @@ const Menus = () => {
         { field: "icon", headerName: "Icon", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "route", headerName: "Route", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {
+            field: "permissions",
+            headerName: "Permissions",
+            flex: 1,
+            headerAlign: "center", // Center the header
+            align: "center", // Center the content
+            renderCell: (params) => {
+                const row = params.row;
+                return (
+                    <Tooltip title="Assign User Role">
+                        <Box
+                            width="30%"
+                            m="0 auto"
+                            p="5px"
+                            display="flex"
+                            justifyContent="center"
+                            backgroundColor={colors.greenAccent[600]}
+                            borderRadius="4px"
+                            onClick={() => handleAssignUserRole(row.id)}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <VerifiedUser />
+                        </Box>
+                    </Tooltip>
+                );
+            },
+        },
+        {
             field: "actions",
             headerName: "Actions",
             flex: 1, headerAlign: "center", align: "center",
@@ -239,6 +414,10 @@ const Menus = () => {
                             <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
                             Edit
                         </MenuItem>
+                        <MenuItem onClick={() => handleEditSubMenu(currentRow)}>
+                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                            Assign Resource
+                        </MenuItem>
 
                         <MenuItem onClick={() => handleDeleteSubMenu(currentRow)}>
                             <Delete fontSize="small" style={{ marginRight: "8px" }} />
@@ -252,7 +431,7 @@ const Menus = () => {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="User Menus Management" subtitle="Manage your menus" />
+                <Header title="User Menus Management" subtitle="Manage your Menus and Submenus" />
                 <Box>
                     <Button
                         sx={{
@@ -387,6 +566,147 @@ const Menus = () => {
                     <Button variant='outlined' color="error" onClick={handleDeleteSubMenuConfirm}>
                         Delete
                     </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={showAssignMenuModal} onClose={handleToggleAssignRoleModal} fullWidth >
+                <DialogTitle>Assign Role</DialogTitle>
+
+
+                <Dialog
+                    open={showAssignMenuModal}
+                    onClose={handleToggleAssignRoleModal}
+                    fullWidth
+                    maxWidth="md" // Increased width for better visibility
+                >
+                    <DialogTitle>Assign Role to Multiple Menus</DialogTitle>
+                    <DialogContent>
+                        <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                            <TextField
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                placeholder="Search menus..."
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Search />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            <List sx={{
+                                width: '100%',
+                                bgcolor: 'background.paper',
+                                maxHeight: 300,
+                                overflow: 'auto'
+                            }}>
+                                <ListItem dense>
+                                    <ListItemIcon>
+                                        <Checkbox
+                                            edge="start"
+                                            checked={selectAll}
+                                            tabIndex={-1}
+                                            disableRipple
+                                            onChange={handleSelectAll}
+                                            color='secondary'
+                                        />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Select All" />
+                                </ListItem>
+                                {Array.isArray(CatalogData) && CatalogData?.length > 0 ? (
+                                    CatalogData
+                                        .filter(option =>
+                                            option.id.toLowerCase().includes(searchTerm.toLowerCase())
+                                        )
+                                        .map((option) => {
+                                            const labelId = `checkbox-list-label-${option.id}`;
+                                            // const isAssigned = assignedRoleData[selectedRow]?.includes(option.id);
+                                            const isChecked = assignSubMenuData.ressourceId.indexOf(option.id) !== -1;
+
+                                            return (
+                                                <ListItem
+                                                    key={option.id}
+                                                    dense
+                                                    button
+                                                    onClick={handleToggle(option.id)}
+
+                                                >
+                                                    <ListItemIcon>
+                                                        <Checkbox
+                                                            edge="start"
+                                                            checked={isChecked}
+                                                            tabIndex={-1}
+                                                            disableRipple
+                                                            inputProps={{ 'aria-labelledby': labelId }}
+                                                            color='secondary'
+
+                                                        />
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        id={labelId}
+                                                        primary={option.id}
+
+                                                    />
+                                                </ListItem>
+                                            );
+                                        })
+                                ) : (
+                                    <ListItem>
+                                        <ListItemText primary="No menus available" />
+                                    </ListItem>
+                                )}
+                            </List>
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Box display="flex" justifyContent="space-between" width="100%" px={2}>
+                            <Box>
+                                {assignSubMenuData?.ressourceId?.length > 0 ? (
+                                    <Alert severity="info" sx={{ mr: 2 }}>
+                                        {assignSubMenuData?.ressourceId?.length} menu(s) selected
+                                    </Alert>
+                                ) : ("")}
+                            </Box>
+                            <Stack direction="row" spacing={2}>
+                                <LoadingButton
+                                    type="submit"
+                                    color="secondary"
+                                    variant="contained"
+                                    loading={loading}
+                                    loadingPosition="start"
+                                    startIcon={<VerifiedUser />}
+                                    onClick={handleConfirmAssignRole}
+                                    disabled={assignSubMenuData?.ressourceId?.length === 0}
+                                >
+                                    Assign
+                                </LoadingButton>
+                                <Button
+                                    color="primary"
+                                    variant="contained"
+                                    disabled={loading}
+                                    onClick={handleToggleAssignRoleModal}
+                                >
+                                    Cancel
+                                </Button>
+                            </Stack>
+                        </Box>
+                    </DialogActions>
+                </Dialog>
+                <DialogActions>
+                    <Box display="flex" justifyContent="end" mt="20px">
+                        <Stack direction="row" spacing={2}>
+
+                            <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
+                                startIcon={<VerifiedUser />} onClick={handleConfirmAssignRole}>
+                                Assign
+                            </LoadingButton>
+
+                            <Button color="primary" variant="contained" disabled={loading} onClick={handleToggleAssignRoleModal}>
+                                Cancel
+                            </Button>
+                        </Stack>
+                    </Box>
                 </DialogActions>
             </Dialog>
 
