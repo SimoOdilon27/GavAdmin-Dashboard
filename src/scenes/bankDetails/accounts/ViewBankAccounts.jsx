@@ -19,6 +19,7 @@ const BankAccount = () => {
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const spaceId = userData?.selectedSpace?.id
+    const usertype = userData.selectedSpace.role
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
@@ -47,11 +48,21 @@ const BankAccount = () => {
     const fetchBankAccountData = async () => {
         setLoading(true);
         try {
-            const payload = {
-                serviceReference: 'GET_ALL_BANK_ACCOUNT',
-                requestBody: '',
-                spaceId: spaceId,
-            };
+            let payload = {}
+
+            if (usertype === "CREDIX_ADMIN") {
+                payload = {
+                    serviceReference: 'GET_ALL_BANK_ACCOUNT',
+                    requestBody: '',
+                    spaceId: spaceId,
+                }
+            } else {
+                payload = {
+                    serviceReference: 'GET_ACCOUNTS_BY_CORPID_BANKID_BRANCHID',
+                    requestBody: spaceId,
+                    spaceId: spaceId,
+                }
+            }
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             console.log("response", response);
 
