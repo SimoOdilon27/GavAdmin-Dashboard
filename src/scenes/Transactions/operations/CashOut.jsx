@@ -349,7 +349,7 @@ const CashOut = () => {
                                         </MenuItem>
                                         {availableBanks.map((bank) => (
                                             <MenuItem key={bank.bankCode} value={bank.bankCode}>
-                                                {bank.bankCode}
+                                                {bank.bankName}
                                             </MenuItem>
                                         ))}
                                     </Select>
