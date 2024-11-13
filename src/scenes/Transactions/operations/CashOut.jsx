@@ -408,7 +408,7 @@ const CashOut = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleConfirmCashOut} variant="contained" color="primary">
-                        {pending ? <CircularProgress size={24} /> : <Save />} Confirm Cash Out
+                        {pending ? <CircularProgress size={24} /> : <MoneyOff />} Confirm Cash Out
                     </Button>
                     <Button onClick={handleToggleModal} variant="outlined" color="secondary">
                         Cancel
