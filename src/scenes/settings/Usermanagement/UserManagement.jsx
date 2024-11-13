@@ -173,9 +173,9 @@ const UserManagement = () => {
                 requestBody: '',
                 spaceId: spaceId,
             }
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            // const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
-            // const response = await CBS_Services('AP', `api/gav/bank/getAll`, 'GET', null);
+            const response = await CBS_Services('AP', `api/gav/bank/getAll`, 'GET', null);
             console.log("fetchbankid", response);
 
             if (response && response.status === 200) {

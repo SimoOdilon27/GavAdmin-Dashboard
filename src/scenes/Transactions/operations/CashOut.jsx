@@ -43,7 +43,7 @@ const CashOut = () => {
     const [transactionDetails, setTransactionDetails] = useState({
         amount: 0
     });
-    const [initialValues] = ({
+    const [initialValues, setInitialValues] = useState({
         amount: 0,
         msisdn: "",
         teller: userData?.refId,
