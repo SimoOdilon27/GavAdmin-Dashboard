@@ -1,43 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { AttachMoney, CheckCircleOutline } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
     Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText,
-    DialogTitle, FormControl, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, Typography, useMediaQuery, useTheme
+    DialogTitle, FormControl, InputLabel, MenuItem, Select, Snackbar, TextField, Typography, useMediaQuery, useTheme
 } from '@mui/material';
 import { Formik } from 'formik';
 import { useSelector } from 'react-redux';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { tokens } from '../../../theme';
+import { FormFieldStyles } from '../../../tools/fieldValuestyle';
 
 const CashIn = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const isNonMobile = useMediaQuery("(min-width:600px)");
-    const formFieldStyles = (gridColumn = "span 2") => ({
-        gridColumn,
-        '& .MuiInputLabel-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiFilledInput-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[100],
-        },
-    });
-
     const [pending, setPending] = useState(false);
     const userData = useSelector((state) => state.users);
     const usertoken = userData.token;
     const spaceId = userData?.selectedSpace?.id;
-
     const [successDialog, setSuccessDialog] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState(false);
     const [formValues, setFormValues] = useState(null);
@@ -48,7 +29,7 @@ const CashIn = () => {
     });
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
     const formikRef = useRef();
-    const [initialValues, setInitialValues] = useState({
+    const [initialValues] = useState({
         amount: 0,
         msisdn: "",
         fee: 0,
@@ -221,7 +202,7 @@ const CashIn = () => {
                                     name="msisdn"
                                     error={!!touched.msisdn && !!errors.msisdn}
                                     helperText={touched.msisdn && errors.msisdn}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
                                 />
                                 <TextField
                                     fullWidth
@@ -234,13 +215,13 @@ const CashIn = () => {
                                     name="amount"
                                     error={!!touched.amount && !!errors.amount}
                                     helperText={touched.amount && errors.amount}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
                                 />
 
                                 <FormControl
                                     fullWidth
                                     variant="filled"
-                                    sx={formFieldStyles("span 4")}
+                                    sx={FormFieldStyles("span 4")}
                                     disabled={loadingBanks || availableBanks.length === 0}
                                 >
                                     <InputLabel>Select Bank</InputLabel>

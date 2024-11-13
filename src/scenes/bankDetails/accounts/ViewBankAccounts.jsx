@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography, useTheme, Switch, Grid, Paper, Divider, Alert, Tooltip, Snackbar, CircularProgress, MenuItem, Menu, IconButton, Chip, Tab, Tabs } from "@mui/material";
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, useTheme, Alert, Snackbar, MenuItem, Menu, IconButton, Chip, Tab, Tabs } from "@mui/material";
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Add, Delete, EditOutlined, Money, MoneyOff, NotInterested, RemoveRedEyeSharp, Save, TrendingUp, Verified, VerifiedOutlined, Visibility } from '@mui/icons-material';
+import { Delete, NotInterested, RemoveRedEyeSharp, VerifiedOutlined } from '@mui/icons-material';
 import { tokens } from '../../../theme';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import Header from '../../../components/Header';
@@ -23,23 +23,10 @@ const BankAccount = () => {
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
-    const open = Boolean(anchorEl);
     const [selectedTab, setSelectedTab] = useState(0);
-
     const [bankAccountData, setBankAccountData] = useState([]);
-    const [formData, setFormData] = useState({
-        accountId: '',
-        amount: 0,
-        investorName: userData?.userName,
-    });
-    const [showModal, setShowModal] = useState(false);
-    const [showViewModal, setShowViewModal] = useState(false);
     const [selectedAccount, setSelectedAccount] = useState(null);
-    const [successMessage, setSuccessMessage] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
-
-    const [globalMessage, setGlobalMessage] = useState({ type: '', content: '' });
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
     const [action, setAction] = useState('activate');
     const [showStatusModal, setShowStatusModal] = useState(false);
@@ -69,11 +56,12 @@ const BankAccount = () => {
             if (response && response.body.meta.statusCode === 200) {
                 setBankAccountData(response.body.data || []);
             } else {
-                setGlobalMessage({ type: 'error', content: 'Error fetching data' });
+                showSnackbar(response.body.errors || `Error fetching data`, 'error');
+
             }
         } catch (error) {
             console.error('Error:', error);
-            setGlobalMessage({ type: 'error', content: 'Error fetching bank account data' });
+            showSnackbar(`Error fetching data`, 'error');
         } finally {
             setLoading(false);
         }
@@ -126,28 +114,23 @@ const BankAccount = () => {
 
             if (response && response.body.meta.statusCode === 200) {
 
-                setGlobalMessage({ type: 'success', content: `Account ${action}d successfully.` });
                 showSnackbar(`Account ${action}d successfully.`, 'success');
                 setShowStatusModal(false)
 
             } else {
                 showSnackbar(response.body.errors || `Error ${action}ing account`, 'error');
 
-                setGlobalMessage({ type: 'error', content: `Error ${action}ing account` });
 
             }
         } catch (error) {
             console.error('Error:', error);
             setLoading(false);
-            setSuccessMessage('');
-            setErrorMessage(`Error ${action}ing account`);
+            showSnackbar(`Error ${action}ing account`, 'error');
+
         }
     };
 
-    const handleView = (account) => {
-        setSelectedAccount(account);
-        setShowViewModal(true);
-    };
+
 
     const showSnackbar = (message, severity) => {
         setSnackbar({ open: true, message, severity });

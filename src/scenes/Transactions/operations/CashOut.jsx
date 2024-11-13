@@ -3,7 +3,6 @@ import { LoadingButton } from '@mui/lab';
 import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Checkbox, Snackbar, Stack, TextField, Typography, useMediaQuery, useTheme, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Formik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
 import { tokens } from '../../../theme';
@@ -36,7 +35,6 @@ const CashOut = () => {
                 : colors.black[100],
         },
     });
-    const [bankCode, setBankCode] = useState('');
     const [successDialog, setSuccessDialog] = useState(false);
     const [availableBanks, setAvailableBanks] = useState([]);
     const [loadingBanks, setLoadingBanks] = useState(false);
@@ -45,7 +43,7 @@ const CashOut = () => {
     const [transactionDetails, setTransactionDetails] = useState({
         amount: 0
     });
-    const [initialValues, setInitialValues] = useState({
+    const [initialValues] = ({
         amount: 0,
         msisdn: "",
         teller: userData?.refId,
@@ -222,36 +220,10 @@ const CashOut = () => {
     };
 
     useEffect(() => {
-        fetchBankID();
         fetchAvailableBanks();
     }, [])
 
-    const fetchBankID = async () => {
-        try {
-            const payload = {
-                serviceReference: 'GET_ALL_BANKS',
-                requestBody: '',
-                spaceId: spaceId,
-            }
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
 
-            // const response = await CBS_Services('AP', `api/gav/bank/getAll`, 'GET', null);
-            console.log("fetchbankid", response);
-
-            if (response && response.status === 200) {
-                setBankCode(response.body.data);
-
-            } else if (response && response.body.status === 401) {
-                showSnackbar("Unauthorized to perform action", 'success');
-
-            }
-            else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
 
     return (
         <Box>

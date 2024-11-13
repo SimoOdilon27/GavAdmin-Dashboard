@@ -11,16 +11,6 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { formatValue } from '../../../../tools/formatValue';
 import { LoadingButton } from '@mui/lab';
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 80;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
 
 const Menus = () => {
     const theme = useTheme();
@@ -30,7 +20,7 @@ const Menus = () => {
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
-    const spaceId = userData?.selectedSpace?.id
+    // const spaceId = userData?.selectedSpace?.id
     const navigate = useNavigate();
     const [selectedTab, setSelectedTab] = useState(0);
     const [selectedRow, setSelectedRow] = useState(null);
@@ -40,7 +30,6 @@ const Menus = () => {
     const [deleteMenuDialogOpen, setDeleteMenuDialogOpen] = useState(false);
     const [deleteSubMenuDialogOpen, setDeleteSubMenuDialogOpen] = useState(false);
     const [CatalogData, setCatalogData] = useState([]);
-    const [assignedRoleData, setAssignedRoleData] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [searchTerm, setSearchTerm] = useState('')
     const [showAssignMenuModal, setShowAssignMenuModal] = React.useState(false)
@@ -70,6 +59,7 @@ const Menus = () => {
         setAnchorEl(null);
         setCurrentRow(null);
     };
+
 
     const fetchMenuData = async () => {
         setLoading(true);
@@ -197,11 +187,11 @@ const Menus = () => {
     const fetchCatalogData = async () => {
         try {
 
-            const payload = {
-                serviceReference: 'GET_ALL_CATALOG',
-                requestBody: '',
-                spaceId: spaceId,
-            }
+            // const payload = {
+            //     serviceReference: 'GET_ALL_CATALOG',
+            //     requestBody: '',
+            //     spaceId: spaceId,
+            // }
             // const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             const response = await CBS_Services('APE', 'catalog/get/all', 'GET');
 
