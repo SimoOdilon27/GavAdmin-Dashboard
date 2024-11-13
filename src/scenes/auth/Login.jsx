@@ -166,8 +166,15 @@ export default function Login() {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
+                        // boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.5)",
+                        // borderRadius: "10px",
+                        // padding: "40px",
+                        // width: "100%"
                     }}
                 >
+                    <Typography component="h1" variant="h4">
+                        GAV ADMIN
+                    </Typography>
                     <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                         <LockOutlinedIcon />
                     </Avatar>

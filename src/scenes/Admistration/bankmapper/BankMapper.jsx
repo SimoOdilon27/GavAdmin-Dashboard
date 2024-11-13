@@ -161,15 +161,15 @@ const BankMapper = () => {
             const selectedBank = bankID.find(bank => bank.bankId === value);
             setFormData({
                 ...formData,
-                // bankIdGav: value,
-                // bankNameGav: selectedBank ? selectedBank.bankName : ''
+                bankIdGav: value,
+                bankNameGav: selectedBank ? selectedBank.bankName : ''
             });
         } else if (name === 'branchIdGav') {
             const selectedBranch = branchID.find(branch => branch.id === value);
             setFormData({
                 ...formData,
-                // branchIdGav: value,
-                // branchNameGav: selectedBranch ? selectedBranch.branchName : ''
+                branchIdGav: value,
+                branchNameGav: selectedBranch ? selectedBranch.branchName : ''
             });
         } else {
             setFormData({
@@ -296,7 +296,7 @@ const BankMapper = () => {
                                 <MenuItem value="">No Banks available</MenuItem>
                             )}
                         </TextField>
-                        <TextField
+                        {/* <TextField
                             fullWidth
                             margin="normal"
                             label="GAV Bank Name"
@@ -306,7 +306,7 @@ const BankMapper = () => {
                         // InputProps={{
                         //     readOnly: true,
                         // }}
-                        />
+                        /> */}
                         <TextField
                             fullWidth
                             margin="normal"
@@ -336,7 +336,7 @@ const BankMapper = () => {
                                 <MenuItem value="">No Branch available</MenuItem>
                             )}
                         </TextField>
-                        <TextField
+                        {/* <TextField
                             fullWidth
                             margin="normal"
                             label="GAV Branch Name"
@@ -346,7 +346,7 @@ const BankMapper = () => {
                         // InputProps={{
                         //     readOnly: true,
                         // }}
-                        />
+                        /> */}
 
                     </form>
                 </DialogContent>
