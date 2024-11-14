@@ -1,25 +1,21 @@
-import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, useTheme } from "@mui/material";
+import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Snackbar, Stack } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../../components/Header";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
-import { tokens } from "../../../theme";
 import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 
 const AssignRoleMenu = () => {
-    const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const { roleName } = useParams();
     const navigate = useNavigate();
-    const location = useLocation();
     const userData = useSelector((state) => state.users);
     const [itemData, setItemData] = useState([]);
     const [subItemData, setSubItemData] = useState([]);
@@ -56,7 +52,7 @@ const AssignRoleMenu = () => {
             roleName: roleName,
             itemId: []
         };
-        console.log("values====", submitData);
+        console.log("submitData====", submitData);
         try {
             const response = await CBS_Services('GATEWAY', 'clientGateWay/role/addItemAndSubsItemToRole', 'POST', submitData, token);
             console.log("responseCreateRole", response);
@@ -119,13 +115,20 @@ const AssignRoleMenu = () => {
 
     };
 
-    const handleSelectAllSubItems = () => {
+    const handleSelectAllSubItems = (formikProps) => {
         if (selectedSubItems.length === subItemData.length) {
             setSelectedSubItems([]);
+            formikProps.setFieldValue("subsItemId", []);
         } else {
-            setSelectedSubItems(subItemData.map((item) => item.id));
+            const allSubItemIds = subItemData.map((item) => item.id);
+            setSelectedSubItems(allSubItemIds);
+            formikProps.setFieldValue("subsItemId", allSubItemIds);
         }
     };
+
+
+    console.log("selectedSubItems=====", selectedSubItems);
+
 
     const handleSubItemSelect = (id) => {
         if (selectedSubItems.includes(id)) {
@@ -213,32 +216,6 @@ const AssignRoleMenu = () => {
                                     )}
                                 </FormControl>
 
-                                {/* <FormControl
-                                    fullWidth
-                                    variant="filled"
-                                    sx={FormFieldStyles("span 4")}
-                                    disabled={!values.itemId?.length}
-                                >
-                                    <InputLabel>Sub Items</InputLabel>
-                                    <Select
-                                        multiple // Add this
-                                        label="Sub Items"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={Array.isArray(values.subsItemId) ? values.subsItemId : []} // Ensure array
-                                        name="subsItemId"
-                                        error={!!touched.subsItemId && !!errors.subsItemId}
-                                    >
-                                        {subItemData.map((subItem) => (
-                                            <MenuItem key={subItem.id} value={subItem.id}>
-                                                {subItem.title}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {touched.subsItemId && errors.subsItemId && (
-                                        <Alert severity="error">{errors.subsItemId}</Alert>
-                                    )}
-                                </FormControl> */}
 
                                 <FormControl
                                     fullWidth
@@ -265,7 +242,7 @@ const AssignRoleMenu = () => {
                                                 control={
                                                     <Checkbox
                                                         checked={selectedSubItems.length === subItemData.length}
-                                                        onChange={handleSelectAllSubItems}
+                                                        onChange={() => handleSelectAllSubItems({ setFieldValue })}
                                                         color="secondary"
                                                     />
                                                 }
@@ -336,9 +313,6 @@ const AssignRoleMenu = () => {
     )
 }
 
-const checkoutSchema = yup.object().shape({
-    itemId: yup.array().of(yup.string()).required("required"),
-    subsItemId: yup.array()
-});
+
 
 export default AssignRoleMenu

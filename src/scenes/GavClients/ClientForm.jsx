@@ -10,6 +10,7 @@ import { Save } from "@mui/icons-material";
 import CBS_Services from "../../services/api/GAV_Sercives";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
+import regionsInCameroon from "../../components/CmrRegions";
 
 const ClientForm = () => {
     const theme = useTheme();
@@ -260,7 +261,7 @@ const ClientForm = () => {
                         display="grid"
                         sx={{
                             px: 2, // Optional: horizontal padding for the outer container
-                            padding: "10px 200px 20px 200px"
+                            padding: "10px 100px 20px 100px",
 
                         }}
                     >
@@ -282,9 +283,8 @@ const ClientForm = () => {
                                         <Grid item xs={12}>
                                             <Typography variant="h4">Personal Information</Typography>
                                         </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
+                                        <Grid item xs={6}>
                                             <TextField
-
                                                 sx={formFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
@@ -294,11 +294,10 @@ const ClientForm = () => {
                                                 onChange={handleChange}
                                                 value={values.name}
                                                 name="name"
-                                            // error={!!touched.name && !!errors.name}
-                                            // helperText={touched.name && errors.name}
+
                                             />
                                         </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
+                                        <Grid item xs={6} >
                                             <TextField
                                                 sx={formFieldStyles("")}
                                                 fullWidth
@@ -309,11 +308,41 @@ const ClientForm = () => {
                                                 onChange={handleChange}
                                                 value={values.surname}
                                                 name="surname"
-                                            // error={!!touched.surname && !!errors.surname}
-                                            // helperText={touched.surname && errors.surname}
+
                                             />
                                         </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
+
+
+                                        <Grid item xs={6}>
+                                            <TextField
+                                                sx={formFieldStyles("")}
+                                                fullWidth
+                                                variant="filled"
+                                                type="text"
+                                                label="MSISDN"
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                                value={values.msisdn}
+                                                name="msisdn"
+                                                inputProps={{ readOnly: true }}
+
+
+                                            />
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <TextField
+                                                sx={formFieldStyles("")}
+                                                fullWidth
+                                                variant="filled"
+                                                type="email"
+                                                label="Email"
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                                value={values.email}
+                                                name="email"
+                                            />
+                                        </Grid>
+                                        <Grid item xs={4}>
                                             <TextField
                                                 sx={formFieldStyles("")}
                                                 fullWidth
@@ -324,11 +353,11 @@ const ClientForm = () => {
                                                 onChange={handleChange}
                                                 value={values.dateOfBirth}
                                                 name="dateOfBirth"
-                                            // error={!!touched.dateOfBirth && !!errors.dateOfBirth}
-                                            // helperText={touched.dateOfBirth && errors.dateOfBirth}
+
                                             />
                                         </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
+
+                                        <Grid item xs={8}>
                                             <TextField
                                                 sx={formFieldStyles("")}
                                                 fullWidth
@@ -339,13 +368,62 @@ const ClientForm = () => {
                                                 onChange={handleChange}
                                                 value={values.placeOfBirth}
                                                 name="placeOfBirth"
-                                            // error={!!touched.placeOfBirth && !!errors.placeOfBirth}
-                                            // helperText={touched.placeOfBirth && errors.placeOfBirth}
+
                                             />
                                         </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
 
-                                            <FormControl fullWidth variant="filled">
+                                        <Grid item xs={6} >
+                                            <TextField
+                                                sx={formFieldStyles("")}
+                                                fullWidth
+                                                variant="filled"
+                                                type="text"
+                                                label="Address"
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                                value={values.address}
+                                                name="address"
+
+                                            />
+                                        </Grid>
+                                        <Grid item xs={6}>
+
+                                            <FormControl fullWidth variant="filled" sx={formFieldStyles("")}>
+                                                <InputLabel>Region</InputLabel>
+                                                <Select
+                                                    name="region"
+                                                    value={values.region}
+                                                    onChange={handleChange}
+                                                    label="Region"
+                                                >
+                                                    {regionsInCameroon.map((region) => (
+                                                        <MenuItem key={region} value={region}>
+                                                            {region}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+
+                                            </FormControl>
+                                        </Grid>
+
+                                        <Grid item xs={8}>
+                                            <TextField
+                                                sx={formFieldStyles("")}
+                                                fullWidth
+                                                variant="filled"
+                                                type="text"
+                                                label="Occupation"
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                                value={values.occupation}
+                                                name="occupation"
+
+                                            />
+                                        </Grid>
+
+                                        <Grid item xs={4}>
+
+                                            <FormControl fullWidth variant="filled" sx={formFieldStyles("")}>
                                                 <InputLabel>Gender</InputLabel>
                                                 <Select
                                                     label="Request Type"
@@ -359,66 +437,6 @@ const ClientForm = () => {
 
                                                 </Select>
                                             </FormControl>
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
-                                            <TextField
-                                                sx={formFieldStyles("")}
-                                                fullWidth
-                                                variant="filled"
-                                                type="text"
-                                                label="Address"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.address}
-                                                name="address"
-                                            // error={!!touched.address && !!errors.address}
-                                            // helperText={touched.address && errors.address}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
-                                            <TextField
-                                                sx={formFieldStyles("")}
-                                                fullWidth
-                                                variant="filled"
-                                                type="text"
-                                                label="Region"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.region}
-                                                name="region"
-                                            // error={!!touched.region && !!errors.region}
-                                            // helperText={touched.region && errors.region}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
-                                            <TextField
-                                                sx={formFieldStyles("")}
-                                                fullWidth
-                                                variant="filled"
-                                                type="email"
-                                                label="Email"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.email}
-                                                name="email"
-                                            // error={!!touched.email && !!errors.email}
-                                            // helperText={touched.email && errors.email}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
-                                            <TextField
-                                                sx={formFieldStyles("")}
-                                                fullWidth
-                                                variant="filled"
-                                                type="text"
-                                                label="Occupation"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.occupation}
-                                                name="occupation"
-                                            // error={!!touched.occupation && !!errors.occupation}
-                                            // helperText={touched.occupation && errors.occupation}
-                                            />
                                         </Grid>
 
                                         {/* Family Information */}
@@ -436,8 +454,7 @@ const ClientForm = () => {
                                                 onChange={handleChange}
                                                 value={values.fatherName}
                                                 name="fatherName"
-                                            // error={!!touched.fatherName && !!errors.fatherName}
-                                            // helperText={touched.fatherName && errors.fatherName}
+
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={6}>
@@ -451,8 +468,7 @@ const ClientForm = () => {
                                                 onChange={handleChange}
                                                 value={values.motherName}
                                                 name="motherName"
-                                            // error={!!touched.motherName && !!errors.motherName}
-                                            // helperText={touched.motherName && errors.motherName}
+
                                             />
                                         </Grid>
 
@@ -471,8 +487,7 @@ const ClientForm = () => {
                                                 onChange={handleChange}
                                                 value={values.cniNumber}
                                                 name="cniNumber"
-                                            // error={!!touched.cniNumber && !!errors.cniNumber}
-                                            // helperText={touched.cniNumber && errors.cniNumber}
+
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={6}>
@@ -486,109 +501,18 @@ const ClientForm = () => {
                                                 onChange={handleChange}
                                                 value={values.cniCreationDate}
                                                 name="cniCreationDate"
-                                            // error={!!touched.cniCreationDate && !!errors.cniCreationDate}
-                                            // helperText={touched.cniCreationDate && errors.cniCreationDate}
+
                                             />
                                         </Grid>
 
-                                        {/* Account Details */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="h4">Account Details</Typography>
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
-                                            <TextField
-                                                sx={formFieldStyles("")}
-                                                fullWidth
-                                                variant="filled"
-                                                type="text"
-                                                label="MSISDN"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.msisdn}
-                                                name="msisdn"
-                                            // error={!!touched.msisdn && !!errors.msisdn}
-                                            // helperText={touched.msisdn && errors.msisdn}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
-                                            <TextField
-                                                sx={formFieldStyles("")}
-                                                fullWidth
-                                                variant="filled"
-                                                type="text"
-                                                label="Account Id"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.accountId}
-                                                name="accountId"
-                                                inputProps={{ readOnly: true }}
-                                            // error={!!touched.accountId && !!errors.accountId}
-                                            // helperText={touched.accountId && errors.accountId}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
-                                            <TextField
-                                                sx={formFieldStyles("")}
-                                                fullWidth
-                                                variant="filled"
-                                                type="number"
-                                                label="Initial Balance"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.initialBalance}
-                                                name="initialBalance"
-                                                inputProps={{ readOnly: true }}
 
-                                            // error={!!touched.initialBalance && !!errors.initialBalance}
-                                            // helperText={touched.initialBalance && errors.initialBalance}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
-                                            <FormControlLabel
-                                                control={
-                                                    <Checkbox
-                                                        checked={values.active}
-                                                        onChange={handleChange}
-                                                        name="active"
-                                                        color="secondary"
-                                                        disabled={true}
-                                                    />
-                                                }
-                                                label="Active"
-                                            />
-
-
-                                        </Grid>
 
                                         {/* Other Information */}
                                         <Grid item xs={12}>
                                             <Typography variant="h4">Other Information</Typography>
                                         </Grid>
-                                        <Grid item xs={12} sm={6} md={6}>
-                                            {/* <TextField
-                                            sx={{
-                                    
-                                    '& .MuiInputLabel-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                    },
-                                    '& .MuiFilledInput-root': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                    },
-                                }}
-                                            fullWidth
-                                            variant="filled"
-                                            type="text"
-                                            label="Language"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.language}
-                                            name="language"
-                                            error={!!touched.language && !!errors.language}
-                                            helperText={touched.language && errors.language}
-                                        /> */}
+                                        <Grid item xs={12}>
+
 
                                             <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
                                                 <InputLabel>Language</InputLabel>
@@ -608,7 +532,7 @@ const ClientForm = () => {
                                                 )}
                                             </FormControl>
                                         </Grid>
-                                        <Grid item xs={12} sm={6} md={6}>
+                                        {/* <Grid item xs={12} sm={6} md={6}>
                                             <TextField
                                                 sx={formFieldStyles("")}
                                                 fullWidth
@@ -622,7 +546,7 @@ const ClientForm = () => {
                                                 error={!!touched.moralPerson && !!errors.moralPerson}
                                                 helperText={touched.moralPerson && errors.moralPerson}
                                             />
-                                        </Grid>
+                                        </Grid> */}
                                     </Grid>
 
 

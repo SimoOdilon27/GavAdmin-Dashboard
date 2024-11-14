@@ -35,7 +35,7 @@ const ViewTransactions = () => {
     const [loading, setLoading] = useState(false);
 
 
-    const [telletAccountID, setTellerAccountID] = useState('')
+    const [tellerAccountID, setTellerAccountID] = useState('')
 
 
     const GetTellerAccountID = async () => {
@@ -66,10 +66,10 @@ const ViewTransactions = () => {
         try {
             let payload = {}
 
-            if (userData.roles === 'TELLER') {
+            if (userData.selectedSpace?.role === 'BRANCH_TELLER') {
                 payload = {
                     serviceReference: 'GET_TRANSACTION_BY_ACCOUNT_NUMBER',
-                    requestBody: telletAccountID,
+                    requestBody: tellerAccountID,
                     spaceId: spaceId,
                 }
             }
@@ -94,10 +94,7 @@ const ViewTransactions = () => {
 
             if (response && response.status === 200) {
 
-                if (userData.roles === 'ADMIN') {
-                    setTransactionData(response.body.data || '');
-                }
-                else if (userData.roles === 'TELLER') {
+                if (userData.selectedSpace?.role === 'BRANCH_TELLER') {
                     const data = response.body.data.map((item, index) => ({
                         id: index + 1, // Assign a unique id to each row
                         service: item.service,
@@ -107,6 +104,8 @@ const ViewTransactions = () => {
                         amount: item.amount,
                     }));
                     setTransactionData(data || [])
+                } else {
+                    setTransactionData(response.body.data || '');
                 }
 
 
@@ -129,7 +128,7 @@ const ViewTransactions = () => {
 
     useEffect(() => {
         FetchTransaction(currentPage, pageSize);
-    }, [telletAccountID]);
+    }, [tellerAccountID]);
 
     const handleFetchData = () => {
         const newPage = parseInt(pageInput);
@@ -148,7 +147,7 @@ const ViewTransactions = () => {
         FetchTransaction(currentPage, pageSize);
     };
 
-    console.log("tellerid==", telletAccountID);
+    console.log("tellerid==", tellerAccountID);
 
 
     useEffect(() => {
@@ -236,6 +235,7 @@ const ViewTransactions = () => {
             headerName: 'Service',
             flex: 1,
             headerAlign: "center", align: "center",
+            valueGetter: (params) => formatValue(params.value),
 
         },
         {
@@ -243,6 +243,7 @@ const ViewTransactions = () => {
             headerName: 'Transaction Type',
             flex: 1,
             headerAlign: "center", align: "center",
+            valueGetter: (params) => formatValue(params.value),
 
         },
         {
@@ -250,6 +251,7 @@ const ViewTransactions = () => {
             headerName: 'From Account',
             flex: 1,
             headerAlign: "center", align: "center",
+            valueGetter: (params) => formatValue(params.value),
 
         },
         {
@@ -257,6 +259,7 @@ const ViewTransactions = () => {
             headerName: 'To Account',
             flex: 1,
             headerAlign: "center", align: "center",
+            valueGetter: (params) => formatValue(params.value),
 
         },
         {
@@ -264,6 +267,7 @@ const ViewTransactions = () => {
             headerName: 'Amount',
             flex: 1,
             headerAlign: "center", align: "center",
+            valueGetter: (params) => formatValue(params.value),
 
         },
     ]
@@ -388,7 +392,7 @@ const ViewTransactions = () => {
             >
                 <DataGrid
                     rows={transactionData}
-                    columns={(userData.roles === "ADMIN") ? columns : tellercolumns}
+                    columns={(userData.selectedSpace?.role === 'BRANCH_TELLER') ? tellercolumns : columns}
                     components={{ Toolbar: GridToolbar }}
                     // checkboxSelection
                     disableSelectionOnClick
