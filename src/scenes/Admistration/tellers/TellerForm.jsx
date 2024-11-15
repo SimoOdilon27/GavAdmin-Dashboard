@@ -314,7 +314,7 @@ const TellerForm = () => {
                                     name="tellerName"
                                     error={!!touched.tellerName && !!errors.tellerName}
                                     helperText={touched.tellerName && errors.tellerName}
-                                    sx={formFieldStyles("span 3")}
+                                    sx={formFieldStyles("span 2")}
                                 />
                                 <TextField
                                     fullWidth
@@ -327,7 +327,7 @@ const TellerForm = () => {
                                     name="msisdn"
                                     error={!!touched.msisdn && !!errors.msisdn}
                                     helperText={touched.msisdn && errors.msisdn}
-                                    sx={formFieldStyles("span 1")}
+                                    sx={formFieldStyles("span 2")}
                                 />
 
 

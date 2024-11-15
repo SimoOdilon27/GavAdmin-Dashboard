@@ -11,29 +11,12 @@ import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
 import { tokens } from "../../../theme";
 import { useTheme } from '@mui/material/styles';
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 const BranchesForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const theme = useTheme();
 
-    const formFieldStyles = (gridColumn = "span 2") => ({
-        gridColumn,
-        '& .MuiInputLabel-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100] // Light color for dark mode
-                : colors.black[700], // Dark color for light mode
-        },
-        '& .MuiFilledInput-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[100],
-        },
-    });
 
     const colors = tokens(theme.palette.mode);
     const { id } = useParams();
@@ -43,6 +26,8 @@ const BranchesForm = () => {
     const token = userData.token;
     const spaceId = userData?.selectedSpace?.id
     const [bankID, setBankID] = useState('');
+    const [CBSData, setCBSData] = useState([]);
+    const [countryData, setCountryData] = useState([]);
 
     const [initialValues, setInitialValues] = useState({
 
@@ -149,8 +134,49 @@ const BranchesForm = () => {
         }
     };
 
+    const fetchCBSdata = async () => {
+        try {
+
+            const payload = {
+                serviceReference: 'GET_AFFILIATED_CBS',
+                requestBody: '',
+                spaceId: spaceId,
+            }
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+
+            console.log("fetchresp111111", response);
+
+            if (response && response.body.meta.statusCode === 200) {
+                setCBSData(response.body.data);
+            } else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const fetchCountryDataWithDefaultId = async () => {
+        try {
+            const defaultInternalId = 'default'; // Set the default internalId here
+            const response = await CBS_Services('APE', 'wallet/mapper/gimacCountries/list/all', 'POST', { internalId: defaultInternalId });
+
+            console.log("fetchresp", response);
+
+            if (response && response.status === 200) {
+                setCountryData(response.body.data);
+            } else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     useEffect(() => {
         fetchBankID();
+        fetchCBSdata();
+        fetchCountryDataWithDefaultId();
     }, [])
 
     useEffect(() => {
@@ -212,34 +238,38 @@ const BranchesForm = () => {
                                     name="branchName"
                                     error={!!touched.branchName && !!errors.branchName}
                                     helperText={touched.branchName && errors.branchName}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
 
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
                                 />
 
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="CBS Branch ID"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.cbsBranchId}
-                                    name="cbsBranchId"
-                                    error={!!touched.cbsBranchId && !!errors.cbsBranchId}
-                                    helperText={touched.cbsBranchId && errors.cbsBranchId}
-                                    sx={formFieldStyles("span 2")}
 
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                />
+                                <FormControl fullWidth variant="filled"
+                                    sx={FormFieldStyles("span 2")}>
+                                    <InputLabel>CBS Branch ID</InputLabel>
+                                    <Select
+                                        label="CBS Branch ID"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.cbsBranchId}
+                                        name="cbsBranchId"
+                                        error={!!touched.cbsBranchId && !!errors.cbsBranchId}
+                                    >
+                                        <MenuItem value="" selected disabled>Select CBS Branch ID</MenuItem>
+                                        {Array.isArray(CBSData) && CBSData.length > 0 ? (
+                                            CBSData.map((option) => (
+                                                <MenuItem key={option.branchId} value={option.branchId}>
+                                                    {option.branchId}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <option value="">No CBS available</option>
+                                        )}
+                                    </Select>
+                                    {touched.cbsBranchId && errors.cbsBranchId && (
+                                        <Alert severity="error">{errors.cbsBranchId}</Alert>
+                                    )}
+
+                                </FormControl>
 
 
 
@@ -254,56 +284,49 @@ const BranchesForm = () => {
                                     name="email"
                                     error={!!touched.email && !!errors.email}
                                     helperText={touched.email && errors.email}
-                                    sx={formFieldStyles("span 2")}
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
+                                    sx={FormFieldStyles("span 2")}
                                 />
 
+                                <FormControl fullWidth variant="filled"
+                                    sx={FormFieldStyles("span 2")}>
+                                    <InputLabel>Country</InputLabel>
+                                    <Select
+                                        label="Country"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.country}
+                                        name="country"
+                                        error={!!touched.country && !!errors.country}
+                                    >
+                                        <MenuItem value="" selected disabled>Select Wallet Type</MenuItem>
+                                        {Array.isArray(countryData) && countryData.length > 0 ? (
+                                            countryData.map((option) => (
+                                                <MenuItem key={option.country} value={option.country}>
+                                                    {option.country}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <option value="">No Countries available</option>
+                                        )}
+                                    </Select>
+                                    {touched.country && errors.country && (
+                                        <Alert severity="error">{errors.country}</Alert>
+                                    )}
 
-
-
-
+                                </FormControl>
 
                                 <TextField
                                     fullWidth
                                     variant="filled"
                                     type="text"
-                                    label="Country"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.country}
-                                    name="country"
-                                    error={!!touched.country && !!errors.country}
-                                    helperText={touched.country && errors.country}
-                                    sx={formFieldStyles("span 1")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Address"
+                                    label="City"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values.address}
                                     name="address"
                                     error={!!touched.address && !!errors.address}
                                     helperText={touched.address && errors.address}
-                                    sx={formFieldStyles("span 1")}
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
+                                    sx={FormFieldStyles("span 4")}
                                 />
 
                             </Box>

@@ -11,37 +11,20 @@ import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
 import { tokens } from "../../../theme";
 import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 
 const CorporationForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const theme = useTheme();
-    const formFieldStyles = (gridColumn = "span 2") => ({
-        gridColumn,
-        '& .MuiInputLabel-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100] // Light color for dark mode
-                : colors.black[700], // Dark color for light mode
-        },
-        '& .MuiFilledInput-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[100],
-        },
-    });
-
-    const colors = tokens(theme.palette.mode);
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const spaceId = userData?.selectedSpace?.id
+    const [countryData, setCountryData] = useState([]);
+
 
     const [initialValues, setInitialValues] = useState({
 
@@ -123,11 +106,30 @@ const CorporationForm = () => {
         setPending(false);
     };
 
+    const fetchCountryDataWithDefaultId = async () => {
+        try {
+            const defaultInternalId = 'default'; // Set the default internalId here
+            const response = await CBS_Services('APE', 'wallet/mapper/gimacCountries/list/all', 'POST', { internalId: defaultInternalId });
+
+            console.log("fetchresp", response);
+
+            if (response && response.status === 200) {
+                setCountryData(response.body.data);
+            } else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+
     useEffect(() => {
         if (id && location.state && location.state.corporationData) {
             // Use the data passed from the corporationData component
             setInitialValues(location.state.corporationData);
         }
+        fetchCountryDataWithDefaultId();
     }, [id, location.state]);
 
 
@@ -175,8 +177,6 @@ const CorporationForm = () => {
                                 }}
                             >
 
-
-
                                 <TextField
                                     fullWidth
                                     variant="filled"
@@ -188,18 +188,8 @@ const CorporationForm = () => {
                                     name="name"
                                     error={!!touched.name && !!errors.name}
                                     helperText={touched.name && errors.name}
-                                    sx={formFieldStyles("span 4")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-
+                                    sx={FormFieldStyles("span 4")}
                                 />
-
-
-
 
                                 <TextField
                                     fullWidth
@@ -212,13 +202,9 @@ const CorporationForm = () => {
                                     name="email"
                                     error={!!touched.email && !!errors.email}
                                     helperText={touched.email && errors.email}
-                                    sx={formFieldStyles("span 3")}
+                                    sx={FormFieldStyles("span 2")}
 
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
+
                                 />
                                 <TextField
                                     fullWidth
@@ -231,59 +217,52 @@ const CorporationForm = () => {
                                     name="contact"
                                     error={!!touched.contact && !!errors.contact}
                                     helperText={touched.contact && errors.contact}
-                                    sx={formFieldStyles("span 1")}
+                                    sx={FormFieldStyles("span 2")}
 
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
+
                                 />
 
+                                <FormControl fullWidth variant="filled"
+                                    sx={FormFieldStyles("span 2")}>
+                                    <InputLabel>Country</InputLabel>
+                                    <Select
+                                        label="Country"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.country}
+                                        name="country"
+                                        error={!!touched.country && !!errors.country}
+                                    >
+                                        <MenuItem value="" selected disabled>Select Wallet Type</MenuItem>
+                                        {Array.isArray(countryData) && countryData.length > 0 ? (
+                                            countryData.map((option) => (
+                                                <MenuItem key={option.country} value={option.country}>
+                                                    {option.country}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <option value="">No Countries available</option>
+                                        )}
+                                    </Select>
+                                    {touched.country && errors.country && (
+                                        <Alert severity="error">{errors.country}</Alert>
+                                    )}
+
+                                </FormControl>
 
                                 <TextField
                                     fullWidth
                                     variant="filled"
                                     type="text"
-                                    label="Address"
+                                    label="City"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values.address}
                                     name="address"
                                     error={!!touched.address && !!errors.address}
                                     helperText={touched.address && errors.address}
-                                    sx={formFieldStyles("span 2")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-
+                                    sx={FormFieldStyles("span 2")}
                                 />
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Country"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.country}
-                                    name="country"
-                                    error={!!touched.country && !!errors.country}
-                                    helperText={touched.country && errors.country}
-                                    sx={formFieldStyles("span 2")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-
-                                />
-
-
-
 
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">

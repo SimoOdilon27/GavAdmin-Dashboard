@@ -174,7 +174,7 @@ export default function Login() {
                     }}
                 >
                     <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2, zIndex: 2 }}>
-                        <AdminPanelSettingsIcon sx={{ fontSize: 40 }} />
+                        <AdminPanelSettingsIcon sx={{ fontSize: 60 }} />
                         <Typography
                             component="h1"
                             variant="h3"

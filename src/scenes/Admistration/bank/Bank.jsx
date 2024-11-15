@@ -9,6 +9,7 @@ import Header from '../../../components/Header';
 import { MenuItem, Alert } from '@mui/material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useNavigate } from 'react-router-dom';
+import { formatValue } from '../../../tools/formatValue';
 
 const Bank = () => {
     const theme = useTheme();
@@ -120,14 +121,14 @@ const Bank = () => {
     };
 
     const columns = [
-        { field: "bankName", headerName: "Bank Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "bankCode", headerName: "Bank Code", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "cbsBankId", headerName: "CBS Bank ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "address", headerName: "Address", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "bankEmail", headerName: "Email", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "contact", headerName: "Phone Number", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "bankManger", headerName: "Bank Manager", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "country", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
+        { field: "bankName", headerName: "Bank Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        { field: "bankCode", headerName: "Bank Code", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        { field: "cbsBankId", headerName: "CBS Bank ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        { field: "address", headerName: "Address", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        { field: "bankEmail", headerName: "Email", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        { field: "contact", headerName: "Phone Number", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        { field: "bankManger", headerName: "Bank Manager", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
+        { field: "country", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
         {
             field: "status",
             headerName: "Status",

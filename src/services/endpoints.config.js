@@ -5,6 +5,7 @@ const API_ACCOUNT = "http://34.246.47.181:14012/"
 const API_CLIENT = "http://34.246.47.181:14013/"
 const API_TRANSACTION = "http://34.246.47.181:14002/"
 const API_GATEWAY = "http://34.246.47.181:14008/"
+const CBS = "http://34.246.47.181:14009/"
 
 export const BASE_URL = {
     'AP': API_SERVICE,
@@ -14,4 +15,5 @@ export const BASE_URL = {
     'TRANSACTION': API_TRANSACTION,
     'CLIENT': API_CLIENT,
     'GATEWAY': API_GATEWAY,
+    'CBS': CBS
 };

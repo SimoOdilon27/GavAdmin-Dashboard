@@ -47,11 +47,22 @@ const AssignRoleMenu = () => {
     const handleFormSubmit = async (values) => {
         setPending(true);
 
-        const submitData = {
-            ...values,
-            roleName: roleName,
-            itemId: []
-        };
+        let submitData = {}
+
+        if (values.subsItemId.length === 0) {
+            submitData = {
+                ...values,
+                roleName: roleName,
+            };
+        } else {
+            submitData = {
+                ...values,
+                roleName: roleName,
+                itemId: []
+            };
+        }
+
+
         console.log("submitData====", submitData);
         try {
             const response = await CBS_Services('GATEWAY', 'clientGateWay/role/addItemAndSubsItemToRole', 'POST', submitData, token);
@@ -75,6 +86,8 @@ const AssignRoleMenu = () => {
         setPending(true);
         try {
             const response = await CBS_Services('GATEWAY', 'clientGateWay/items/getAllItems', 'GET', null, token);
+            console.log("response", response);
+
             if (response && response.status === 200) {
                 setItemData(response.body.data || []);
             } else {
@@ -127,9 +140,6 @@ const AssignRoleMenu = () => {
     };
 
 
-    console.log("selectedSubItems=====", selectedSubItems);
-
-
     const handleSubItemSelect = (id) => {
         if (selectedSubItems.includes(id)) {
             setSelectedSubItems(selectedSubItems.filter((itemId) => itemId !== id));
@@ -137,13 +147,13 @@ const AssignRoleMenu = () => {
             setSelectedSubItems([...selectedSubItems, id]);
         }
     };
+
     const getSelectedSubItemTitles = () => {
         return subItemData.filter((item) => selectedSubItems.includes(item.id)).map((item) => item.title).join(", ");
     };
 
 
     useEffect(() => {
-        fetchItemData();
         fetchItemData();
     }, []);
 
@@ -159,7 +169,6 @@ const AssignRoleMenu = () => {
                 onSubmit={handleFormSubmit}
                 initialValues={initialValues}
                 enableReinitialize={true}
-            // validationSchema={checkoutSchema}
             >
                 {({
                     values,
@@ -195,13 +204,13 @@ const AssignRoleMenu = () => {
                                     sx={FormFieldStyles("span 4")}
 
                                 >
-                                    <InputLabel>Items</InputLabel>
+                                    <InputLabel>Menus</InputLabel>
                                     <Select
 
-                                        label="Items"
+                                        label="Menus"
                                         onBlur={handleBlur}
                                         onChange={(e) => handleItemChange({ setFieldValue }, e.target.value)}
-                                        value={values.itemId}
+                                        value={values.itemId || []}
                                         name="itemId"
                                         error={!!touched.itemId && !!errors.itemId}
                                     >
@@ -223,10 +232,10 @@ const AssignRoleMenu = () => {
                                     sx={FormFieldStyles("span 4")}
                                     disabled={!values.itemId?.length}
                                 >
-                                    <InputLabel>Sub Items</InputLabel>
+                                    <InputLabel>Sub Menus</InputLabel>
                                     <Select
                                         multiple
-                                        label="Sub Items"
+                                        label="Sub Menus"
                                         onBlur={handleBlur}
                                         onChange={(e) => {
                                             setFieldValue("subsItemId", e.target.value);

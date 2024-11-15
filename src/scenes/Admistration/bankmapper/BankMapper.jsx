@@ -9,6 +9,8 @@ import CBS_Services from '../../../services/api/GAV_Sercives';
 import { Add } from '@mui/icons-material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../../components/Header';
+import { FormFieldStyles } from '../../../tools/fieldValuestyle';
+import { formatValue } from '../../../tools/formatValue';
 
 const BankMapper = () => {
     const theme = useTheme();
@@ -33,6 +35,8 @@ const BankMapper = () => {
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const spaceId = userData?.selectedSpace?.id
+    const [CBSData, setCBSData] = useState([]);
+
 
     const filteredMapBanks = bankmapperData ? bankmapperData.filter((bank) =>
         Object.values(bank).some((field) =>
@@ -136,10 +140,33 @@ const BankMapper = () => {
         }
     };
 
+    const fetchCBSdata = async () => {
+        try {
+
+            const payload = {
+                serviceReference: 'GET_AFFILIATED_CBS',
+                requestBody: '',
+                spaceId: spaceId,
+            }
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+
+            console.log("fetchresp111111", response);
+
+            if (response && response.body.meta.statusCode === 200) {
+                setCBSData(response.body.data);
+            } else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     useEffect(() => {
         fetchBankMapperData();
         fetchBankID();
         fetchBranchID();
+        fetchCBSdata();
     }, []);
 
     const handleToggleBankMapperModal = () => {
@@ -181,18 +208,18 @@ const BankMapper = () => {
 
 
     const columns = [
-        { field: "bankNameGav", headerName: "GAV Bank Name", flex: 1 },
-        { field: "bankIdGav", headerName: "GAV BANK ID", flex: 1 },
-        { field: "branchNameGav", headerName: "GAV Branch Name", flex: 1 },
-        { field: "branchIdGav", headerName: "GAV BRANCH ID", flex: 1 },
-        { field: "bankIdCbs", headerName: "CBS BANK ID", flex: 1 },
-        { field: "branchIdCbs", headerName: "CBS BRANCH ID", flex: 1 },
+        { field: "bankNameGav", headerName: "GAV Bank Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "bankIdGav", headerName: "GAV Bank ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "branchNameGav", headerName: "GAV Branch Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "branchIdGav", headerName: "GAV Branch ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "bankIdCbs", headerName: "CBS Bank ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "branchIdCbs", headerName: "CBS Branch ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
     ];
 
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Bank Mapper" subtitle="Manage your Bank Mapping" />
+                <Header title="Bank Mapper" subtitle="Map Bank/Branch to CBS" />
 
                 <Box>
                     <Button
@@ -244,7 +271,6 @@ const BankMapper = () => {
                 }}
             >
                 <DataGrid
-                    checkboxSelection
                     rows={filteredMapBanks}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
@@ -254,7 +280,7 @@ const BankMapper = () => {
             </Box>
 
             <Dialog open={showModal} onClose={handleToggleBankMapperModal} fullWidth maxWidth="lg">
-                <DialogTitle>Create Mapper</DialogTitle>
+                <DialogTitle> Map Bank/Branch To CBS</DialogTitle>
                 <DialogContent>
                     {successMessage && (
                         <Alert severity="success" onClose={() => setSuccessMessage('')}>
@@ -271,11 +297,24 @@ const BankMapper = () => {
                             fullWidth
                             margin="normal"
                             label="CBS Bank ID"
+                            select
                             value={formData.bankIdCbs}
                             onChange={handleChange}
                             name="bankIdCbs"
-                            required
-                        />
+                            sx={FormFieldStyles("span 2")}
+
+                        >
+                            <MenuItem value="" disabled>Select CBS Bank</MenuItem>
+                            {Array.isArray(CBSData) && CBSData.length > 0 ? (
+                                CBSData.map((option) => (
+                                    <MenuItem key={option.bankId} value={option.bankId}>
+                                        {option.bankName}
+                                    </MenuItem>
+                                ))
+                            ) : (
+                                <option value="">No CBS available</option>
+                            )}
+                        </TextField>
                         <TextField
                             fullWidth
                             margin="normal"
@@ -284,8 +323,9 @@ const BankMapper = () => {
                             value={formData.bankIdGav}
                             onChange={handleChange}
                             name="bankIdGav"
+                            sx={FormFieldStyles("span 2")}
                         >
-                            <MenuItem value="">Select Bank</MenuItem>
+                            <MenuItem value="" disabled>Select Bank</MenuItem>
                             {Array.isArray(bankID) && bankID.length > 0 ? (
                                 bankID.map(option => (
                                     <MenuItem key={option.bankId} value={option.bankId}>
@@ -296,26 +336,29 @@ const BankMapper = () => {
                                 <MenuItem value="">No Banks available</MenuItem>
                             )}
                         </TextField>
-                        {/* <TextField
-                            fullWidth
-                            margin="normal"
-                            label="GAV Bank Name"
-                            value={formData.bankNameGav}
-                            name="bankNameGav"
-                        // onChange={handleChange}
-                        // InputProps={{
-                        //     readOnly: true,
-                        // }}
-                        /> */}
+
                         <TextField
                             fullWidth
                             margin="normal"
                             label="CBS Branch ID"
+                            select
                             value={formData.branchIdCbs}
                             onChange={handleChange}
                             name="branchIdCbs"
-                            required
-                        />
+                            sx={FormFieldStyles("")}
+                        >
+                            <MenuItem value="" disabled>Select Branch ID</MenuItem>
+
+                            {Array.isArray(CBSData) && CBSData.length > 0 ? (
+                                CBSData.map((option) => (
+                                    <MenuItem key={option.branchId} value={option.branchId}>
+                                        {option.branchId}
+                                    </MenuItem>
+                                ))
+                            ) : (
+                                <option value="">No CBS available</option>
+                            )}
+                        </TextField>
                         <TextField
                             fullWidth
                             margin="normal"
@@ -324,8 +367,10 @@ const BankMapper = () => {
                             value={formData.branchIdGav}
                             onChange={handleChange}
                             name="branchIdGav"
+                            sx={FormFieldStyles("span 2")}
+
                         >
-                            <MenuItem value="">Select Branch</MenuItem>
+                            <MenuItem value="" disabled>Select Branch</MenuItem>
                             {Array.isArray(branchID) && branchID.length > 0 ? (
                                 branchID.map(option => (
                                     <MenuItem key={option.id} value={option.id}>
@@ -336,26 +381,17 @@ const BankMapper = () => {
                                 <MenuItem value="">No Branch available</MenuItem>
                             )}
                         </TextField>
-                        {/* <TextField
-                            fullWidth
-                            margin="normal"
-                            label="GAV Branch Name"
-                            value={formData.branchNameGav}
-                            name="branchNameGav"
-                            onChange={handleChange}
-                        // InputProps={{
-                        //     readOnly: true,
-                        // }}
-                        /> */}
+
 
                     </form>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleConfirmAdd} variant="contained" color="primary">
-                        {pending ? <CircularProgress size={24} /> : 'Add'}
-                    </Button>
-                    <Button onClick={handleToggleBankMapperModal} color="secondary">
+
+                    <Button onClick={handleToggleBankMapperModal} color="primary" variant='contained'>
                         Cancel
+                    </Button>
+                    <Button onClick={handleConfirmAdd} variant="contained" color="secondary">
+                        {pending ? <CircularProgress size={24} /> : 'Map'}
                     </Button>
                 </DialogActions>
             </Dialog>

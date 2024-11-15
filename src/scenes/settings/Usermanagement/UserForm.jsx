@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
-import { Add, RemoveCircle, Save } from "@mui/icons-material";
+import { Add, RemoveCircle, RemoveRedEye, Save, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { tokens } from "../../../theme";
 
@@ -33,7 +33,7 @@ const UserForm = () => {
     const [tellerData, setTellerData] = useState([]);
     const [spaceData, setSpaceData] = React.useState([])
     const [roleData, setRoleData] = React.useState([])
-
+    const [showPassword, setShowPassword] = React.useState(false);
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
@@ -318,7 +318,7 @@ const UserForm = () => {
                                 <TextField
                                     fullWidth
                                     variant="filled"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     label="Password"
                                     onBlur={handleBlur}
                                     onChange={(e) => {
@@ -331,6 +331,17 @@ const UserForm = () => {
                                     error={!!touched.password && !!errors.password}
                                     helperText={touched.password && errors.password}
                                     sx={formFieldStyles("span 2")}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <RemoveRedEye /> : <VisibilityOff />}
+                                            </IconButton>
+                                        ),
+                                    }}
                                 />
 
                                 <TextField

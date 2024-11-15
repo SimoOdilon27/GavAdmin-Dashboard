@@ -11,6 +11,8 @@ import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
 import { tokens } from "../../../theme";
 import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
+import regionsInCameroon from "../../../components/CmrRegions";
 
 const BankForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -24,27 +26,8 @@ const BankForm = () => {
     const spaceId = userData?.selectedSpace?.id
     const [corpID, setCorpID] = useState('');
     const [countryData, setCountryData] = useState([]);
+    const [CBSData, setCBSData] = useState([]);
 
-    const regionsInCameroon = ["Adamaoua", "Centre", "Est", "Extrême-Nord", "Littoral", "Nord", "Nord-Ouest", "Ouest", "Sud", "Sud-Ouest"];
-
-    const formFieldStyles = (gridColumn = "span 2") => ({
-        gridColumn,
-        '& .MuiInputLabel-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100] // Light color for dark mode
-                : colors.black[700], // Dark color for light mode
-        },
-        '& .MuiFilledInput-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[100],
-        },
-    });
 
     const [formData, setFormData] = useState({
         address: "",
@@ -95,6 +78,7 @@ const BankForm = () => {
                 response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
                 console.log("responseadd", response);
+                console.log("submitData", submitData);
 
                 if (response && response.body.meta.statusCode === 200) {
                     showSnackbar('Bank Updated Successfully.', 'success');
@@ -176,6 +160,27 @@ const BankForm = () => {
             console.error('Error:', error);
         }
     };
+    const fetchCBSdata = async () => {
+        try {
+
+            const payload = {
+                serviceReference: 'GET_AFFILIATED_CBS',
+                requestBody: '',
+                spaceId: spaceId,
+            }
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+
+            console.log("fetchresp111111", response);
+
+            if (response && response.body.meta.statusCode === 200) {
+                setCBSData(response.body.data);
+            } else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
 
 
@@ -183,6 +188,7 @@ const BankForm = () => {
         // Fetch Bank data when the component mounts
         fetchCorpID();
         fetchCountryDataWithDefaultId();
+        fetchCBSdata();
 
     }, []);
 
@@ -191,6 +197,8 @@ const BankForm = () => {
             setFormData(location.state.bankData);
         }
     }, [id, location.state]);
+
+    console.log("formdata", formData);
 
     return (
         <Box m="20px">
@@ -234,43 +242,6 @@ const BankForm = () => {
                                 }}
                             >
 
-
-
-                                {/* <FormControl fullWidth variant="filled"
-                                    sx={formFieldStyles("span 2")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                >
-                                    <InputLabel>Corporation</InputLabel>
-                                    <Select
-                                        label="Corporation"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.corporationId}
-                                        name="corporationId"
-                                        error={!!touched.corporationId && !!errors.corporationId}
-
-                                    >
-                                        <MenuItem value="">Select Corporation</MenuItem>
-                                        {Array.isArray(corpID) && corpID.length > 0 ? (
-                                            corpID.map(option => (
-                                                <MenuItem key={option.corporationId} value={option.corporationId}>
-                                                    {option.corporationName}
-                                                </MenuItem>
-                                            ))
-                                        ) : (
-                                            <MenuItem value="">No Corporations available</MenuItem>
-                                        )}
-                                    </Select>
-                                    {touched.corporationId && errors.corporationId && (
-                                        <Alert severity="error">{errors.corporationId}</Alert>
-                                    )}
-                                </FormControl> */}
-
                                 <TextField
                                     fullWidth
                                     variant="filled"
@@ -282,56 +253,14 @@ const BankForm = () => {
                                     name="bankName"
                                     error={!!touched.bankName && !!errors.bankName}
                                     helperText={touched.bankName && errors.bankName}
-                                    sx={formFieldStyles("span 2")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                />
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Bank Email"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.bankEmail}
-                                    name="bankEmail"
-                                    error={!!touched.bankEmail && !!errors.bankEmail}
-                                    helperText={touched.bankEmail && errors.bankEmail}
-                                    sx={formFieldStyles("span 2")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                />
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Account Number"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.accountNumber}
-                                    name="accountNumber"
-                                    error={!!touched.accountNumber && !!errors.accountNumber}
-                                    helperText={touched.accountNumber && errors.accountNumber}
-                                    sx={formFieldStyles("span 2")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
+                                    sx={FormFieldStyles("span 2")}
                                 />
 
 
 
-                                {id &&
+
+
+                                {!id &&
                                     (<TextField
                                         fullWidth
                                         variant="filled"
@@ -343,36 +272,38 @@ const BankForm = () => {
                                         name="accountNumber"
                                         error={!!touched.accountNumber && !!errors.accountNumber}
                                         helperText={touched.accountNumber && errors.accountNumber}
-                                        sx={formFieldStyles("span 2")}
+                                        sx={FormFieldStyles("span 2")}
 
-                                        InputLabelProps={{
-                                            sx: {
-                                                color: 'white', // Default label color
-                                            }
-                                        }}
                                     />)}
 
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="CBS Bank ID"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.cbsBankId}
-                                    name="cbsBankId"
-                                    error={!!touched.cbsBankId && !!errors.cbsBankId}
-                                    helperText={touched.cbsBankId && errors.cbsBankId}
-                                    sx={formFieldStyles("span 2")}
 
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                />
+                                <FormControl fullWidth variant="filled"
+                                    sx={FormFieldStyles("span 2")}>
+                                    <InputLabel>CBS Bank ID</InputLabel>
+                                    <Select
+                                        label="CBS Bank ID"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.cbsBankId}
+                                        name="cbsBankId"
+                                        error={!!touched.cbsBankId && !!errors.cbsBankId}
+                                    >
+                                        <MenuItem value="" selected disabled>Select CBS Bank ID</MenuItem>
+                                        {Array.isArray(CBSData) && CBSData.length > 0 ? (
+                                            CBSData.map((option) => (
+                                                <MenuItem key={option.bankId} value={option.bankId}>
+                                                    {option.bankName}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <option value="">No CBS available</option>
+                                        )}
+                                    </Select>
+                                    {touched.cbsBankId && errors.cbsBankId && (
+                                        <Alert severity="error">{errors.cbsBankId}</Alert>
+                                    )}
 
-
+                                </FormControl>
 
                                 <TextField
                                     fullWidth
@@ -385,86 +316,42 @@ const BankForm = () => {
                                     name="bankManager"
                                     error={!!touched.bankManager && !!errors.bankManager}
                                     helperText={touched.bankManager && errors.bankManager}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
 
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
+
                                 />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Email"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.bankEmail}
+                                    name="bankEmail"
+                                    error={!!touched.bankEmail && !!errors.bankEmail}
+                                    helperText={touched.bankEmail && errors.bankEmail}
+                                    sx={FormFieldStyles("span 2")}
 
+                                />
 
                                 <TextField
                                     fullWidth
                                     variant="filled"
                                     type="text"
-                                    label="Contact"
+                                    label="Phone Number"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     value={values.contact}
                                     name="contact"
                                     error={!!touched.contact && !!errors.contact}
                                     helperText={touched.contact && errors.contact}
-                                    sx={formFieldStyles("span 1")}
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
+                                    sx={FormFieldStyles("span 2")}
+
                                 />
 
                                 <FormControl fullWidth variant="filled"
-                                    sx={formFieldStyles("span 1")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                    error={!!touched.region && !!errors.region}
-                                    helperText={touched.region && errors.region}
-                                >
-                                    <InputLabel>Region</InputLabel>
-                                    <Select
-                                        name="region"
-                                        value={values.region}
-                                        onChange={handleChange}
-                                        label="Region"
-                                    >
-                                        {regionsInCameroon.map((region) => (
-                                            <MenuItem key={region} value={region}>
-                                                {region}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-
-                                </FormControl>
-
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Address"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.address}
-                                    name="address"
-                                    error={!!touched.address && !!errors.address}
-                                    helperText={touched.address && errors.address}
-                                    sx={formFieldStyles("span 2")}
-
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
-                                />
-
-
-
-                                <FormControl fullWidth variant="filled"
-                                    sx={formFieldStyles("span 2")}>
+                                    sx={FormFieldStyles("span 2")}>
                                     <InputLabel>Country</InputLabel>
                                     <Select
                                         label="Country"
@@ -490,6 +377,47 @@ const BankForm = () => {
                                     )}
 
                                 </FormControl>
+
+                                <FormControl fullWidth variant="filled"
+                                    sx={FormFieldStyles("span 1")}
+                                    error={!!touched.region && !!errors.region}
+                                    helperText={touched.region && errors.region}
+                                >
+                                    <InputLabel>Region</InputLabel>
+                                    <Select
+                                        name="region"
+                                        value={values.region}
+                                        onChange={handleChange}
+                                        label="Region"
+                                    >
+                                        {regionsInCameroon.map((region) => (
+                                            <MenuItem key={region} value={region}>
+                                                {region}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+
+                                </FormControl>
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="City"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.address}
+                                    name="address"
+                                    error={!!touched.address && !!errors.address}
+                                    helperText={touched.address && errors.address}
+                                    sx={FormFieldStyles("span 1")}
+
+
+                                />
+
+
+
+
 
                             </Box>
 
@@ -541,7 +469,7 @@ const checkoutSchema = yup.object().shape({
     contact: yup.string().required("required"),
     region: yup.string(),
     address: yup.string().required("required"),
-    bankManager: yup.string().required("required"),
+    bankManager: yup.string(),
     // dailyLimit: yup.number().required("required"),
     contact: yup.string().required("required"),
     cbsBankId: yup.string().required("required"),
