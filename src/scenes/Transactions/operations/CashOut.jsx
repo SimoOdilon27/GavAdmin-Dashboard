@@ -231,7 +231,7 @@ const CashOut = () => {
             <Box sx={{ marginLeft: '100px', marginBottom: '10px' }}>
 
                 <Typography variant="h5" color={colors.greenAccent[400]} sx={{ m: "0 10px 15px 5px" }}>
-                    Cash Out Transaction (Teller Id: {userData?.refId})
+                    Cash Out Transaction
                 </Typography>
             </Box>
             <Formik
@@ -370,6 +370,8 @@ const CashOut = () => {
                                         loading={pending}
                                         loadingPosition="start"
                                         startIcon={<MoneyOff />}
+                                        disabled={(!values.clientBankCode || !values.teller) || loadingBanks}
+
                                     >
                                         Confirm
                                     </LoadingButton>

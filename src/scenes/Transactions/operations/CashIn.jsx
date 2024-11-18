@@ -146,7 +146,7 @@ const CashIn = () => {
         <Box>
             <Box sx={{ marginLeft: '100px', marginBottom: '10px' }}>
                 <Typography variant="h5" color={colors.greenAccent[400]}>
-                    Cash In Transaction (Teller Id: {userData?.refId})
+                    Cash In Transaction
                 </Typography>
             </Box>
 
@@ -255,7 +255,7 @@ const CashIn = () => {
                                     loading={pending}
                                     loadingPosition="start"
                                     startIcon={<AttachMoney />}
-                                    disabled={!values.clientBankCode || loadingBanks}
+                                    disabled={(!values.clientBankCode || !values.teller) || loadingBanks}
                                 >
                                     Proceed
                                 </LoadingButton>

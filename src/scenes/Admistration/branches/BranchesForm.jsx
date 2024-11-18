@@ -270,9 +270,6 @@ const BranchesForm = () => {
                                     )}
 
                                 </FormControl>
-
-
-
                                 <TextField
                                     fullWidth
                                     variant="filled"

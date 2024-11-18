@@ -25,6 +25,7 @@ const RoleForm = () => {
     const [subItemData, setSubItemData] = useState([]);
     const token = userData.token;
     const [selectedSubItems, setSelectedSubItems] = useState([]);
+    const [selectedType, setSelectedType] = useState("");
     const [initialValues, setInitialValues] = useState({
         roleName: "",
         description: "",
@@ -35,6 +36,7 @@ const RoleForm = () => {
 
     const [pending, setPending] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+    const [filteredItemData, setFilteredItemData] = useState([]);
 
 
 
@@ -85,6 +87,8 @@ const RoleForm = () => {
         setPending(true);
         try {
             const response = await CBS_Services('GATEWAY', 'clientGateWay/type/getAllType', 'GET', null, token);
+            console.log("responseTypeData", response);
+
             if (response && response.status === 200) {
                 setTypeData(response.body.data || []);
             } else {
@@ -102,6 +106,8 @@ const RoleForm = () => {
         setPending(true);
         try {
             const response = await CBS_Services('GATEWAY', 'clientGateWay/items/getAllItems', 'GET', null, token);
+            console.log("response", response);
+
             if (response && response.status === 200) {
                 setItemData(response.body.data || []);
             } else {
@@ -114,21 +120,6 @@ const RoleForm = () => {
         setPending(false);
     };
 
-    // const fetchSubItemData = async () => {
-    //     setPending(true);
-    //     try {
-    //         const response = await CBS_Services('GATEWAY', 'clientGateWay/subItem/getAllSubsItems', 'GET', null, token);
-    //         if (response && response.status === 200) {
-    //             setSubItemData(response.body.data || []);
-    //         } else {
-    //             setSubItemData([]);
-    //             showSnackbar('Error Finding SubItem Data.', 'error');
-    //         }
-    //     } catch (error) {
-    //         console.log('Error:', error);
-    //     }
-    //     setPending(false);
-    // };
 
     const fetchSubItemDataById = async (itemId) => {
         setPending(true);
@@ -160,6 +151,20 @@ const RoleForm = () => {
         setSelectedSubItems([]);
         fetchSubItemDataById(itemId);
 
+    };
+
+    const filterItemDataByType = (typeId) => {
+        const filtered = itemData.filter((item) => item.typeId === typeId);
+        setFilteredItemData(filtered);
+    };
+
+    const handleTypeChange = (formikProps, typeId) => {
+        formikProps.setFieldValue("typeId", typeId);
+        formikProps.setFieldValue("itemId", []); // Reset selected items
+        formikProps.setFieldValue("subItemId", []); // Reset selected sub-items
+        setSelectedSubItems([]); // Clear selected sub-items
+        filterItemDataByType(typeId);
+        setSelectedType(typeId);
     };
 
     const handleSelectAllSubItems = () => {
@@ -257,7 +262,7 @@ const RoleForm = () => {
                                     <Select
                                         label="Type"
                                         onBlur={handleBlur}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleTypeChange({ setFieldValue }, e.target.value)}
                                         value={values.typeId}
                                         name="typeId"
                                         error={!!touched.typeId && !!errors.typeId}
@@ -292,7 +297,7 @@ const RoleForm = () => {
                                     fullWidth
                                     variant="filled"
                                     sx={FormFieldStyles("span 2")}
-                                // disabled={!values.typeId}
+                                    disabled={!values.typeId}
                                 >
                                     <InputLabel>Items</InputLabel>
                                     <Select
@@ -305,11 +310,16 @@ const RoleForm = () => {
                                         name="itemId"
                                         error={!!touched.itemId && !!errors.itemId}
                                     >
-                                        {itemData.map((item) => (
-                                            <MenuItem key={item.title} value={item.title}>
-                                                {item.title}
-                                            </MenuItem>
-                                        ))}
+                                        <MenuItem value="" selected disabled>Select Menu</MenuItem>
+                                        {Array.isArray(filteredItemData) && filteredItemData.length > 0 ? (
+                                            filteredItemData.map((item) => (
+                                                <MenuItem key={item.title} value={item.title}>
+                                                    {item.title}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem value="">{selectedType} Menus are not available</MenuItem>
+                                        )}
                                     </Select>
                                     {touched.itemId && errors.itemId && (
                                         <Alert severity="error">{errors.itemId}</Alert>
@@ -414,8 +424,8 @@ const checkoutSchema = yup.object().shape({
     roleName: yup.string().required("required"),
     description: yup.string().required("required"),
     typeId: yup.string(),
-    itemId: yup.string().required("required"),
-    subItemId: yup.array().of(yup.string()).required("required")
+    // itemId: yup.string().required("required"),
+    // subItemId: yup.array().of(yup.string()).required("required")
 });
 
 export default RoleForm;

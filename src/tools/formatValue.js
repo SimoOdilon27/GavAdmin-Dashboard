@@ -18,7 +18,7 @@ export const formatValue = (value) => {
     if (typeof value === 'boolean') {
         return value ? 'Yes' : 'No';
     }
-    if (value === null || value === undefined) {
+    if (value === null || value === undefined || value === '') {
         return 'N/A';
     }
     if (typeof value === 'number') {

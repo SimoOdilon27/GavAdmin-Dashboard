@@ -120,7 +120,7 @@ const MenuCatalog = () => {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Menu Catalog" subtitle="Manage your menus" />
+                <Header title="API Resources" subtitle="Manage Resources" />
                 <Button
                     sx={{
                         backgroundColor: colors.blueAccent[700],
@@ -133,7 +133,7 @@ const MenuCatalog = () => {
                     onClick={handleAddCatalog}
                 >
                     <Add sx={{ mr: "10px" }} />
-                    Add Catalog
+                    Add API Resource
                 </Button>
             </Box>
             <Box

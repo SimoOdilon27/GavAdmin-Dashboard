@@ -11,6 +11,7 @@ const initialState = {
     refreshToken: '',
     isAuthenticated: false,
     refresh: 0,
+    selectedSpace: ''
 
 }
 

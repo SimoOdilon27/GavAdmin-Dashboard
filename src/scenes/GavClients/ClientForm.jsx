@@ -11,6 +11,7 @@ import CBS_Services from "../../services/api/GAV_Sercives";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
 import regionsInCameroon from "../../components/CmrRegions";
+import { FormFieldStyles } from "../../tools/fieldValuestyle";
 
 const ClientForm = () => {
     const theme = useTheme();
@@ -59,47 +60,11 @@ const ClientForm = () => {
         cbsAccountNumber: "",
         maximumAccountLimit: 0,
         minimumAccountLimit: 0,
-        internalId: "",
+        internalId: "back-office",
         otherCbs: true
     });
     const [pending, setPending] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
-    const [bankID, setBankID] = useState([]);
-    const [branchID, setBranchID] = useState([]);
-    const [banks, setBanks] = useState([]);
-    const [branches, setBranches] = useState([]);
-
-    const [filteredBranches, setFilteredBranches] = useState([]);
-
-    const formFieldStyles = (gridColumn = "span 2") => ({
-        gridColumn,
-        '& .MuiInputLabel-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100] // Light color for dark mode
-                : colors.black[700], // Dark color for light mode
-        },
-        '& .MuiFilledInput-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[100],
-        },
-    });
-
-    const handleBankChange = (event, setFieldValue) => {
-        const bankId = event.target.value;
-        setFieldValue('bankId', bankId);
-        setFieldValue('branchId', ''); // Reset branch selection
-
-        // Filter branches based on selected bank
-        const relatedBranches = branches.filter(branch => branch.bankId === bankId);
-        setFilteredBranches(relatedBranches);
-
-    };
 
     const showSnackbar = (message, severity) => {
         setSnackbar({ open: true, message, severity });
@@ -131,7 +96,7 @@ const ClientForm = () => {
                 }
                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
                 // response = await CBS_Services('CLIENT', 'client/addOrUpdate', 'POST', values);
-
+                console.log("editresp", response);
                 if (response && response.body.meta.statusCode === 200) {
                     showSnackbar('Client Account Edited Successfully.', 'success');
                     setTimeout(() => {
@@ -189,50 +154,6 @@ const ClientForm = () => {
         }
     }, [msisdn, token]);
 
-    const fetchBankID = async () => {
-        try {
-            const payload = {
-                serviceReference: 'GET_ALL_BANKS',
-                requestBody: '',
-                spaceId: spaceId,
-            };
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            console.log("fetchbankid", response);
-
-            if (response && response.body.meta.statusCode === 200) {
-                setBanks(response.body.data);
-            } else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
-    const fetchBranchID = async () => {
-        try {
-            const payload = {
-                serviceReference: 'GET_ALL_BRANCHES',
-                requestBody: '',
-                spaceId: spaceId,
-            };
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            console.log("fetchbranchid", response);
-
-            if (response && response.body.meta.statusCode === 200) {
-                setBranches(response.body.data);
-            } else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
-    useEffect(() => {
-        fetchBankID();
-        fetchBranchID();
-    }, []);
 
     return (
         <Box m="20px">
@@ -285,7 +206,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={6}>
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -299,7 +220,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={6} >
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -315,7 +236,7 @@ const ClientForm = () => {
 
                                         <Grid item xs={6}>
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -331,7 +252,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={6}>
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="email"
@@ -344,7 +265,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={4}>
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="date"
@@ -359,7 +280,7 @@ const ClientForm = () => {
 
                                         <Grid item xs={8}>
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -374,7 +295,7 @@ const ClientForm = () => {
 
                                         <Grid item xs={6} >
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -388,7 +309,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={6}>
 
-                                            <FormControl fullWidth variant="filled" sx={formFieldStyles("")}>
+                                            <FormControl fullWidth variant="filled" sx={FormFieldStyles("")}>
                                                 <InputLabel>Region</InputLabel>
                                                 <Select
                                                     name="region"
@@ -408,7 +329,7 @@ const ClientForm = () => {
 
                                         <Grid item xs={8}>
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -423,7 +344,7 @@ const ClientForm = () => {
 
                                         <Grid item xs={4}>
 
-                                            <FormControl fullWidth variant="filled" sx={formFieldStyles("")}>
+                                            <FormControl fullWidth variant="filled" sx={FormFieldStyles("")}>
                                                 <InputLabel>Gender</InputLabel>
                                                 <Select
                                                     label="Request Type"
@@ -445,7 +366,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={6}>
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -459,7 +380,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={6}>
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -478,7 +399,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={6}>
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -492,7 +413,7 @@ const ClientForm = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={6}>
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="date"
@@ -534,7 +455,7 @@ const ClientForm = () => {
                                         </Grid>
                                         {/* <Grid item xs={12} sm={6} md={6}>
                                             <TextField
-                                                sx={formFieldStyles("")}
+                                                sx={FormFieldStyles("")}
                                                 fullWidth
                                                 variant="filled"
                                                 type="text"
@@ -560,7 +481,7 @@ const ClientForm = () => {
                                         }}
                                     >
                                         <TextField
-                                            sx={formFieldStyles("span 4")}
+                                            sx={FormFieldStyles("span 4")}
                                             fullWidth
                                             variant="filled"
                                             type="text"
@@ -576,7 +497,7 @@ const ClientForm = () => {
 
 
                                         <TextField
-                                            sx={formFieldStyles("span 4")}
+                                            sx={FormFieldStyles("span 4")}
                                             fullWidth
                                             variant="filled"
                                             type="text"

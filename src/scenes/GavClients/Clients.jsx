@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import CBS_Services from '../../services/api/GAV_Sercives';
-import { Alert, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Menu, MenuItem, Snackbar, TextField, useTheme } from '@mui/material';
+import { Alert, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Menu, MenuItem, Snackbar, Stack, TextField, useTheme, useMediaQuery, FormControl, InputLabel, Select } from '@mui/material';
 import { tokens } from '../../theme';
 import { useSelector } from 'react-redux';
-import { Add, Delete, EditOutlined, NotificationsActiveRounded, RemoveRedEyeSharp, SupervisedUserCircle, Verified, VerifiedOutlined } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, Lock, NotificationsActiveRounded, RemoveRedEyeSharp, SupervisedUserCircle, Verified, VerifiedOutlined, VerifiedUser } from '@mui/icons-material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../components/Header';
 import { useNavigate } from 'react-router-dom';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { formatValue } from '../../tools/formatValue';
+import { LoadingButton } from '@mui/lab';
+import { Formik } from 'formik';
+import * as yup from "yup";
+import { FormFieldStyles } from '../../tools/fieldValuestyle';
 
 
 const Clients = () => {
@@ -21,26 +25,20 @@ const Clients = () => {
     const token = userData.token;
     const spaceId = userData?.selectedSpace?.id
     const [selectedMsisdn, setSelectedMsisdn] = useState('');
+    const isNonMobile = useMediaQuery("(min-width:600px)");
     const [showActivateClientModal, setShowActivateClientModal] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
-
+    const [showModal, setShowModal] = useState(false);
+    const [bankID, setBankID] = useState('');
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
     const open = Boolean(anchorEl);
 
-    // Define or import the handleEdit and handleDelete functions
-
-
-    const handleDelete = (row) => {
-        console.log("Delete clicked", row);
-        // Your delete logic here
-    };
     const handleClick = (event, row) => {
         event.stopPropagation();
         setAnchorEl(event.currentTarget);
         setCurrentRow(row);
     };
-
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -63,6 +61,17 @@ const Clients = () => {
         activationCode: '',
         internalId: 'backOffice',
     })
+    const [resetClientPinFormData, setresetClientPinFormData] = useState({
+        bankCode: "",
+        msisdn: "",
+        pin: "",
+        internalId: "back-office"
+
+    })
+
+    const handleToggleModal = () => {
+        setShowModal(!showModal);
+    }
 
     const fetchClientData = async () => {
         setLoading(true);
@@ -93,10 +102,64 @@ const Clients = () => {
         setLoading(false)
     };
 
+    const fetchBankID = async () => {
+        setLoading(true);
+        try {
+            const payload = {
+                serviceReference: 'GET_ALL_BANKS',
+                requestBody: '',
+                spaceId: spaceId,
+            }
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            if (response && response.status === 200) {
+                setBankID(response.body.data);
+
+            } else if (response && response.body.status === 401) {
+                // setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+            }
+            else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        setLoading(false)
+    };
+
     useEffect(() => {
         fetchClientData();
-
+        fetchBankID();
     }, []);
+
+    const handleResetClientPin = async (values) => {
+        setLoading(true);
+        try {
+            const payload = {
+                serviceReference: 'RESET_CLIENT_PIN',
+                requestBody: JSON.stringify(values),
+                spaceId: spaceId,
+
+            }
+            console.log("values", values);
+
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            console.log("response", response);
+
+            if (response && response.body.meta.statusCode === 200) {
+                handleToggleModal();
+                await fetchClientData();
+                showSnackbar('Client PIN reset successfully.', 'success');
+            } else if (response && response.body.meta.statusCode === 401) {
+                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
+            } else {
+                showSnackbar(response.body.errors || 'An error occurred while resetting client PIN', 'error');
+            }
+        } catch (error) {
+            showSnackbar('An error occurred while resetting client PIN', 'error');
+
+        }
+        setLoading(false);
+    }
 
     const handleToggleActivateClientModal = (selectedClient) => {
         setSelectedMsisdn(selectedClient);
@@ -171,8 +234,6 @@ const Clients = () => {
         // Pass the entire row data to the edit page
         navigate(`/client/view/${row.msisdn}`, { state: { clientData: row } });
     };
-
-
 
     console.log("current Row+++", currentRow);
 
@@ -261,25 +322,20 @@ const Clients = () => {
                                     color: currentRow?.active ? colors.greenAccent[500] : 'inherit',
                                 }}
                             >
-                                {currentRow?.active ? (
-                                    <>
-                                        <Verified style={{ marginRight: "8px", color: colors.greenAccent[500] }} />
-                                        Already Active
-                                    </>
+                                {currentRow?.active ? (""
+                                    // <>
+                                    //     <Verified style={{ marginRight: "8px", color: colors.greenAccent[500] }} />
+                                    //     Already Active
+                                    // </>
                                 ) : (
                                     <>
                                         <VerifiedOutlined style={{ marginRight: "8px" }} />
                                         Activate
                                     </>
                                 )}
+
                             </MenuItem>
-                            <MenuItem onClick={() => {
-                                handleDelete(currentRow);
-                                handleClose();
-                            }}>
-                                <Delete fontSize="small" style={{ marginRight: "8px" }} />
-                                Delete
-                            </MenuItem>
+
                         </Menu>
                     </>
                 );
@@ -292,20 +348,37 @@ const Clients = () => {
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Header title="GAV Clients" subtitle="Manage your clients" />
-                <Button
-                    sx={{
-                        backgroundColor: colors.blueAccent[700],
-                        color: colors.grey[100],
-                        fontSize: "14px",
-                        fontWeight: "bold",
-                        padding: "10px 20px",
-                        marginRight: "10px",
-                    }}
-                    onClick={handleAddClient}
-                >
-                    <Add sx={{ mr: "10px" }} />
-                    Onboard Client
-                </Button>
+                <Box>
+                    <Button
+                        sx={{
+                            backgroundColor: colors.blueAccent[700],
+                            color: colors.grey[100],
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                            padding: "10px 20px",
+                            marginRight: "10px",
+                        }}
+                        onClick={handleAddClient}
+                    >
+                        <Add sx={{ mr: "10px" }} />
+                        Onboard Client
+                    </Button>
+                    <Button
+                        sx={{
+                            backgroundColor: colors.blueAccent[700],
+                            color: colors.grey[100],
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                            padding: "10px 20px",
+                            marginRight: "10px",
+                        }}
+                        onClick={handleToggleModal}
+                    >
+                        <Lock sx={{ mr: "10px" }} />
+                        Reset Client Pin
+                    </Button>
+                </Box>
+
             </Box>
             <Box
                 m="40px 15px 15px 15px"
@@ -371,6 +444,7 @@ const Clients = () => {
 
                         />
                     </Box>
+
                 </DialogContent>
 
 
@@ -378,11 +452,120 @@ const Clients = () => {
                     <Button onClick={() => handleToggleActivateClientModal(false)} color="primary" variant='contained'>
                         Cancel
                     </Button>
-                    <Button onClick={handleConfirmActivate} color="secondary" variant='contained'>
-                        {loading ? <CircularProgress animation="border" size="sm" /> : "Activate"}
-                    </Button>
+                    <LoadingButton loading={loading} variant="contained" color="secondary" onClick={handleConfirmActivate} startIcon={<VerifiedUser />} >
+                        Activate
+                    </LoadingButton>
 
                 </DialogActions>
+            </Dialog>
+
+            <Dialog open={showModal} onClose={() => handleToggleModal(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>Reset Client PIN</DialogTitle>
+                <DialogContent>
+                    <Formik
+                        onSubmit={handleResetClientPin}
+                        initialValues={resetClientPinFormData}
+                        enableReinitialize={true}
+                        validationSchema={checkoutSchema}
+                    >
+                        {({
+                            values,
+                            errors,
+                            touched,
+                            handleBlur,
+                            handleChange,
+                            handleSubmit,
+
+                        }) => (
+                            <form onSubmit={handleSubmit}>
+                                <Box
+                                    display="grid"
+                                    gap="30px"
+                                    gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                                    sx={{
+                                        "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                                    }}
+                                >
+
+                                    <TextField
+                                        fullWidth
+                                        variant="filled"
+                                        type="text"
+                                        label="Msisdn (Begin with 237)"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.msisdn}
+                                        name="msisdn"
+                                        error={!!touched.msisdn && !!errors.msisdn}
+                                        helperText={touched.msisdn && errors.msisdn}
+                                        sx={FormFieldStyles("span 4")}
+                                        required
+                                    />
+
+                                    <FormControl fullWidth variant="filled"
+                                        sx={FormFieldStyles("span 4")} required>
+                                        <InputLabel>Bank</InputLabel>
+                                        <Select
+                                            label="Bank"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.bankCode}
+                                            name="bankCode"
+                                            error={!!touched.bankCode && !!errors.bankCode}
+                                        >
+                                            <MenuItem value="" selected disabled>Select Bank</MenuItem>
+                                            {Array.isArray(bankID) && bankID.length > 0 ? (
+                                                bankID.map((option) => (
+                                                    <MenuItem key={option.bankCode} value={option.bankCode}>
+                                                        {option.bankName}
+                                                    </MenuItem>
+                                                ))
+                                            ) : (
+                                                <option value="">No Bank available</option>
+                                            )}
+                                        </Select>
+                                        {touched.bankCode && errors.bankCode && (
+                                            <Alert severity="error">{errors.bankCode}</Alert>
+                                        )}
+
+                                    </FormControl>
+                                    <TextField
+                                        fullWidth
+                                        variant="filled"
+                                        type="number"
+                                        label="Pin (5 digits)"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.pin}
+                                        name="pin"
+                                        error={!!touched.pin && !!errors.pin}
+                                        helperText={touched.pin && errors.pin}
+                                        sx={FormFieldStyles("span 4")}
+                                        required
+
+                                    />
+
+                                </Box>
+                                <Box display="flex" justifyContent="end" mt="20px">
+                                    <Stack direction="row" spacing={2}>
+
+                                        <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
+                                            startIcon={<Lock />} >
+                                            Reset
+                                        </LoadingButton>
+
+                                        <Button color="primary" variant="contained" disabled={loading} onClick={handleToggleModal}>
+                                            Cancel
+                                        </Button>
+                                    </Stack>
+                                </Box>
+                            </form>
+
+                        )}
+
+                    </Formik>
+                </DialogContent>
+
             </Dialog>
 
             <Snackbar
@@ -400,5 +583,14 @@ const Clients = () => {
 
     )
 }
+
+const checkoutSchema = yup.object().shape({
+    msisdn: yup
+        .string()
+        .matches(/^\d{12}$/, "MSISDN must be exactly 12 digits")
+        .required("Required"),
+    bankCode: yup.string().required("Required"),
+    pin: yup.number().required("Required"),
+});
 
 export default Clients

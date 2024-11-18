@@ -185,7 +185,7 @@ const TypeManagement = () => {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Type Management" subtitle="Manage your Types" />
+                <Header title="Space Category" subtitle="Manage Space Categories" />
                 <Box>
                     <Button
                         sx={{

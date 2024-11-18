@@ -33,10 +33,12 @@ const Topbar = () => {
   const selectedSpace = useSelector(state => state.users?.selectedSpace);
   const Space = useSelector(state => state.users?.selectedSpace?.intitule);
   const UserId = userData.userId;
+  const [space, setSpace] = useState(selectedSpace);
 
   const handleRefresh = () => {
     window.location.reload();
   }
+
   const handleSpaceChange = async (event) => {
     const newSpace = event.target.value;
     // Update selected space in Redux
@@ -103,6 +105,7 @@ const Topbar = () => {
     if (selectedSpace && UserId) {
       handleGetUserMenus(UserId, selectedSpace.id);
     }
+    setSpace(selectedSpace);
   }, []);
 
   useEffect(() => {
@@ -122,21 +125,13 @@ const Topbar = () => {
     };
   }, [dispatch, navigate]);
 
-
+  const toCapitalizeCase = (str) => {
+    return str.toUpperCase();
+  };
 
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
-      {/* SEARCH BAR */}
-      {/* <Box
-        display="flex"
-        backgroundColor={colors.primary[400]}
-        borderRadius="3px"
-      >
-        <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
-        <IconButton type="button" sx={{ p: 1 }}>
-          <SearchIcon />
-        </IconButton>
-      </Box> */}
+
 
       {/* SPACE SWITCHER */}
       {loading ? <FullscreenLoader /> :
@@ -154,12 +149,12 @@ const Topbar = () => {
             </Typography>
             <FormControl fullWidth size="small">
               <Select
-                value={selectedSpace || ''}
+                value={selectedSpace}
                 onChange={handleSpaceChange}
                 sx={{
                   '& .MuiSelect-select': {
                     py: 1,
-                    color: theme.palette.mode === 'dark' ? colors.grey[100] : colors.grey[900],
+                    color: theme.palette.mode === 'dark' ? colors.grey[100] : colors.primary[100],
                   },
                   '& .MuiOutlinedInput-notchedOutline': {
                     border: 'none',
@@ -174,10 +169,10 @@ const Topbar = () => {
                 displayEmpty
               >
                 <MenuItem value="" disabled>Select Space</MenuItem>
-                {userSpaces.map((space) => (
+                {userSpaces.map(() => (
 
                   <MenuItem key={space?.id} value={space}>
-                    {space.intitule}
+                    {toCapitalizeCase(space.intitule)}
                   </MenuItem>
 
                 ))}
