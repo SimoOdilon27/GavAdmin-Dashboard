@@ -223,6 +223,9 @@ const CreateMenuForm = () => {
     const fetchTags = async () => {
         try {
             const response = await CBS_Services('APE', 'catalog/get/all', 'GET', null, token);
+
+            console.log("fetchresponse=====", response);
+
             if (response && response.status === 200) {
                 setAvailableTags(response.body.data || []);
             } else {
@@ -296,7 +299,6 @@ const CreateMenuForm = () => {
         }
     }, [id, location.state]);
 
-    console.log("initialValues", initialValues);
 
     return (
         <Box m="20px">
@@ -660,7 +662,7 @@ const CreateMenuForm = () => {
                                             </ListItemIcon>
                                             <ListItemText primary="Select All" />
                                         </ListItem>
-                                        {Array.isArray(availableTags) && availableTags > 0 ?
+                                        {Array.isArray(availableTags) && availableTags.length > 0 ?
 
                                             availableTags
                                                 .filter(tag => tag.id.toLowerCase().includes(searchTerm.toLowerCase()))

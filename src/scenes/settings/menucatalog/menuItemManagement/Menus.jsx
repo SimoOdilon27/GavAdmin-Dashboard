@@ -141,7 +141,7 @@ const Menus = () => {
         }
     };
 
-    const handleConfirmAssignRole = async () => {
+    const handleConfirmAssignTagtoSubMenu = async () => {
         setLoading(true);
         const results = [];
         let hasError = false;
@@ -158,6 +158,7 @@ const Menus = () => {
 
 
                 const response = await CBS_Services('GATEWAY', `clientGateWay/subItem/addResourceToSubItem`, 'POST', payload, token);
+                console.log("response====", response);
 
                 if (response && response.status === 200) {
                     results.push(`Success: ${tagName}`);
@@ -356,7 +357,7 @@ const Menus = () => {
             renderCell: (params) => {
                 const row = params.row;
                 return (
-                    <Tooltip title="Assign User Role">
+                    <Tooltip title="Assign Menu Resources">
                         <Box
                             width="30%"
                             m="0 auto"
@@ -666,7 +667,7 @@ const Menus = () => {
                                     loading={loading}
                                     loadingPosition="start"
                                     startIcon={<VerifiedUser />}
-                                    onClick={handleConfirmAssignRole}
+                                    onClick={handleConfirmAssignTagtoSubMenu}
                                     disabled={assignSubMenuData?.ressourceId?.length === 0}
                                 >
                                     Assign
@@ -688,7 +689,7 @@ const Menus = () => {
                         <Stack direction="row" spacing={2}>
 
                             <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
-                                startIcon={<VerifiedUser />} onClick={handleConfirmAssignRole}>
+                                startIcon={<VerifiedUser />} onClick={handleConfirmAssignTagtoSubMenu}>
                                 Assign
                             </LoadingButton>
 

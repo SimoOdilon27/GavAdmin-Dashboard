@@ -79,9 +79,11 @@ const Clients = () => {
 
             const payload = {
                 serviceReference: 'GET_ALLCLIENT_ACCOUNTS',
-                requestBody: '',
                 spaceId: spaceId,
             }
+
+            console.log("payload", payload);
+
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             // const response = await CBS_Services('AP', 'api/gav/client/getAllClients', 'POST', null);
 

@@ -11,6 +11,7 @@ import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
 import { tokens } from "../../../theme";
 import { useTheme } from "@emotion/react";
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 const CatalogForm = () => {
     const theme = useTheme();
@@ -31,24 +32,7 @@ const CatalogForm = () => {
     const [pending, setPending] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
-    const formFieldStyles = (gridColumn = "span 2") => ({
-        gridColumn,
-        '& .MuiInputLabel-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100] // Light color for dark mode
-                : colors.black[700], // Dark color for light mode
-        },
-        '& .MuiFilledInput-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[100],
-        },
-    });
+
     const showSnackbar = (message, severity) => {
         setSnackbar({ open: true, message, severity });
     };
@@ -176,7 +160,7 @@ const CatalogForm = () => {
                                     name="id"
                                     error={!!touched.id && !!errors.id}
                                     helperText={touched.id && errors.serviceProvider}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
                                 />
                                 <TextField
                                     fullWidth
@@ -189,7 +173,7 @@ const CatalogForm = () => {
                                     name="serviceProvider"
                                     error={!!touched.serviceProvider && !!errors.serviceProvider}
                                     helperText={touched.serviceProvider && errors.serviceProvider}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
                                 />
                                 <TextField
                                     fullWidth
@@ -202,7 +186,7 @@ const CatalogForm = () => {
                                     name="description"
                                     error={!!touched.description && !!errors.description}
                                     helperText={touched.description && errors.description}
-                                    sx={formFieldStyles("span 4")}
+                                    sx={FormFieldStyles("span 4")}
                                 />
                                 <TextField
                                     fullWidth
@@ -215,12 +199,12 @@ const CatalogForm = () => {
                                     name="endPoint"
                                     error={!!touched.endPoint && !!errors.endPoint}
                                     helperText={touched.endPoint && errors.endPoint}
-                                    sx={formFieldStyles("span 3")}
+                                    sx={FormFieldStyles("span 3")}
                                 />
 
 
                                 <FormControl fullWidth variant="filled"
-                                    sx={formFieldStyles("span 1")}>
+                                    sx={FormFieldStyles("span 1")}>
                                     <InputLabel>Request Type</InputLabel>
                                     <Select
                                         label="Request Type"

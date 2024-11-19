@@ -108,8 +108,14 @@ const menuData = [
                 icon: "SupervisedUserCircleOutlined"
             },
             {
-                title: "Menus",
+                title: "Resources",
                 to: "/menu-catalog",
+                icon: "CollectionsIcon",
+
+            },
+            {
+                title: "Menus",
+                to: "/menus",
                 icon: "CollectionsIcon",
 
             },
@@ -126,7 +132,7 @@ const menuData = [
 
             },
             {
-                title: "Type Management",
+                title: "Space Category",
                 to: "/type-management",
                 icon: "CollectionsIcon",
 

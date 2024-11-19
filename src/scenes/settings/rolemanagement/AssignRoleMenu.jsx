@@ -53,6 +53,8 @@ const AssignRoleMenu = () => {
             submitData = {
                 ...values,
                 roleName: roleName,
+                itemId: [values.itemId],
+
             };
         } else {
             submitData = {
@@ -215,7 +217,7 @@ const AssignRoleMenu = () => {
                                         error={!!touched.itemId && !!errors.itemId}
                                     >
                                         {itemData.map((item) => (
-                                            <MenuItem key={item.title} value={item.title}>
+                                            <MenuItem key={item.id} value={item.id}>
                                                 {item.title}
                                             </MenuItem>
                                         ))}

@@ -36,4 +36,7 @@ export const MenuLinks = [
     { linkname: "* * * * * * * Operations * * * * * * *", value: "" },
     { linkname: "Operations", value: "/cashtransactions" },
     { linkname: "Transactions", value: "/viewtransactions" },
+
+    { linkname: "* * * * * * * Bank Services * * * * * * *", value: "" },
+    { linkname: "Bank Services", value: "/bankservices" },
 ];
