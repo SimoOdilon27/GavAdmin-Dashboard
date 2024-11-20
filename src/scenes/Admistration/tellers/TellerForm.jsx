@@ -10,31 +10,12 @@ import CBS_Services from "../../../services/api/GAV_Sercives";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
 import { tokens } from "../../../theme";
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 const TellerForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const { id } = useParams();
     const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
-
-    const formFieldStyles = (gridColumn = "span 2") => ({
-        gridColumn,
-        '& .MuiInputLabel-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100] // Light color for dark mode
-                : colors.black[700], // Dark color for light mode
-        },
-        '& .MuiFilledInput-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[100],
-        },
-    });
     const navigate = useNavigate();
     const location = useLocation();
     const userData = useSelector((state) => state.users);
@@ -314,7 +295,7 @@ const TellerForm = () => {
                                     name="tellerName"
                                     error={!!touched.tellerName && !!errors.tellerName}
                                     helperText={touched.tellerName && errors.tellerName}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
                                 />
                                 <TextField
                                     fullWidth
@@ -327,11 +308,11 @@ const TellerForm = () => {
                                     name="msisdn"
                                     error={!!touched.msisdn && !!errors.msisdn}
                                     helperText={touched.msisdn && errors.msisdn}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
                                 />
 
 
-                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 1")}>
+                                <FormControl fullWidth variant="filled" sx={FormFieldStyles("span 1")}>
                                     <InputLabel>Language</InputLabel>
                                     <Select
                                         label="Language"
@@ -361,7 +342,7 @@ const TellerForm = () => {
                                     name="cbsAccountId"
                                     error={!!touched.cbsAccountId && !!errors.cbsAccountId}
                                     helperText={touched.cbsAccountId && errors.cbsAccountId}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
                                 />
                                 <TextField
                                     fullWidth
@@ -374,7 +355,7 @@ const TellerForm = () => {
                                     name="dailyLimit"
                                     error={!!touched.dailyLimit && !!errors.dailyLimit}
                                     helperText={touched.dailyLimit && errors.dailyLimit}
-                                    sx={formFieldStyles("span 1")}
+                                    sx={FormFieldStyles("span 1")}
                                 />
 
 

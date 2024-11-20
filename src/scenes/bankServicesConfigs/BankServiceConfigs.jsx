@@ -1,41 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import CBS_Services from '../../../services/api/GAV_Sercives';
-import { Box, Button, IconButton, Menu, MenuItem, useTheme } from '@mui/material';
+import { Box, Button, IconButton, Menu, MenuItem } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import Header from '../../../components/Header';
 import { Add, Delete, EditOutlined } from '@mui/icons-material';
-import { tokens } from '../../../theme';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { formatValue } from '../../../tools/formatValue';
+import { useTheme } from '@mui/material';
+import { tokens } from '../../theme';
+import { formatValue } from '../../tools/formatValue';
+import CBS_Services from '../../services/api/GAV_Sercives';
+import Header from '../../components/Header';
 
-
-const GimacCountries = () => {
+const BankServiceConfigs = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const [countriesData, setCountriesData] = useState([]);
+    const [configData, setConfigData] = useState([]);
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
-    const token = userData.token;
-    const spaceId = userData?.selectedSpace?.id
     const navigate = useNavigate();
-
+    const spaceId = userData?.selectedSpace?.id;
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
     const open = Boolean(anchorEl);
 
-    // Define or import the handleEdit and handleDelete functions
-
-
-    const handleDelete = (row) => {
-        console.log("Delete clicked", row);
-        // Your delete logic here
-    };
-
     const handleClick = (event, row) => {
         setAnchorEl(event.currentTarget);
-        setCurrentRow(row); // Store the current row to pass to actions
+        setCurrentRow(row);
     };
 
     const handleClose = () => {
@@ -43,66 +33,91 @@ const GimacCountries = () => {
         setCurrentRow(null);
     };
 
-    const fetchCountriesData = async () => {
+    const handleDelete = (row) => {
+        console.log("Delete clicked", row);
+        // Implement delete logic here
+    };
+
+    const fetchServiceConfigs = async () => {
         setLoading(true);
         try {
-            const payload = {
-                serviceReference: 'GIMAC_COUNTRIES',
-                requestBody: JSON.stringify({ internalId: "Back-Office" }),
-                spaceId: spaceId,
-            };
-
-
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            console.log("response", response);
-
-            if (response && response.body.meta.statusCode === 200) {
-                const data = response.body.data.map((item, index) => ({
-                    id: index + 1, // Assign a unique id to each row
-                    countryId: item.countryId,
-                    countryCode: item.countryCode,
-                    country: item.country,
-                    serviceProvider: item.serviceProvider,
-                    internationalDialingCode: item.internationalDialingCode,
+            const response = await CBS_Services(
+                'GAV',
+                'serviceConfiguration/getAllServicesConfiguration',
+                'GET'
+            );
+            if (response && response.status === 200) {
+                // Add unique id for DataGrid
+                const dataWithIds = (response.body.data || []).map((item, index) => ({
+                    ...item,
+                    id: index,
+                    serviceNameString: Array.isArray(item.serviceName)
+                        ? item.serviceName.join(', ')
+                        : item.serviceName
                 }));
-                setCountriesData(data);
+                setConfigData(dataWithIds);
             } else {
-                console.error('Error fetching data');
+                console.error('Error fetching service configurations');
             }
         } catch (error) {
             console.error('Error:', error);
-        } finally {
-            setLoading(false);
         }
+        setLoading(false);
     };
 
     useEffect(() => {
-        fetchCountriesData();
+        fetchServiceConfigs();
     }, []);
 
-    console.log("countriesData", countriesData);
-
-
-    const handleAddCountry = () => {
-        navigate('/gimac-countries/add');
+    const handleAddConfig = () => {
+        navigate('/bankserviceconfigs/add');
     };
 
     const handleEdit = (row) => {
-        // Pass the entire row data to the edit page
-        navigate(`/gimac-countries/edit/${row.id}`, { state: { countryData: row } });
+        navigate(`/bankserviceconfigs/edit/${row.bankOrCorporationId}`, {
+            state: { configData: row }
+        });
     };
 
-
-
     const columns = [
-        // { field: "countryId", headerName: "Country ID", flex: 1 },
-        { field: "country", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "serviceProvider", headerName: "Service Provider", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "internationalDialingCode", headerName: "Int Dialing Code", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        {
+            field: "bankOrCorporationId",
+            headerName: "Bank/Corporation ID",
+            flex: 1,
+            headerAlign: "center",
+            align: "center",
+            valueGetter: (params) => formatValue(params.value),
+        },
+        {
+            field: "level",
+            headerName: "Level",
+            flex: 1,
+            headerAlign: "center",
+            align: "center",
+            valueGetter: (params) => formatValue(params.value),
+        },
+        {
+            field: "serviceNameString",
+            headerName: "Services",
+            flex: 1.5,
+            headerAlign: "center",
+            align: "center",
+            valueGetter: (params) => formatValue(params.value),
+        },
+        {
+            field: "userId",
+            headerName: "User ID",
+            flex: 1,
+            headerAlign: "center",
+            align: "center",
+            valueGetter: (params) => formatValue(params.value),
+        },
         {
             field: "actions",
             headerName: "Actions",
-            flex: 1, headerAlign: "center", align: "center",
+            flex: 1,
+            headerAlign: "center",
+            align: "center",
             renderCell: (params) => (
                 <>
                     <IconButton
@@ -129,7 +144,6 @@ const GimacCountries = () => {
                             <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
                             Edit
                         </MenuItem>
-
                         <MenuItem onClick={() => handleDelete(currentRow)}>
                             <Delete fontSize="small" style={{ marginRight: "8px" }} />
                             Delete
@@ -143,7 +157,7 @@ const GimacCountries = () => {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="Gimac Countries" subtitle="Manage Gimac Countries" />
+                <Header title="Service Configurations" subtitle="Manage Bank Service Configurations" />
                 <Button
                     sx={{
                         backgroundColor: colors.blueAccent[700],
@@ -153,10 +167,10 @@ const GimacCountries = () => {
                         padding: "10px 20px",
                         marginRight: "10px",
                     }}
-                    onClick={handleAddCountry}
+                    onClick={handleAddConfig}
                 >
                     <Add sx={{ mr: "10px" }} />
-                    Add Country
+                    Add Configuration
                 </Button>
             </Box>
             <Box
@@ -192,16 +206,15 @@ const GimacCountries = () => {
                 }}
             >
                 <DataGrid
-                    rows={countriesData}
+                    rows={configData}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-                    // checkboxSelection
                     disableSelectionOnClick
                     loading={loading}
                 />
             </Box>
         </Box>
     );
-};
+}
 
-export default GimacCountries;
+export default BankServiceConfigs;

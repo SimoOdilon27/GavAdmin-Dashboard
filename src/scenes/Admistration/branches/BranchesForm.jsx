@@ -16,16 +16,12 @@ import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 const BranchesForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const theme = useTheme();
-
-
-    const colors = tokens(theme.palette.mode);
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const spaceId = userData?.selectedSpace?.id
-    const [bankID, setBankID] = useState('');
     const [CBSData, setCBSData] = useState([]);
     const [countryData, setCountryData] = useState([]);
 
@@ -108,31 +104,7 @@ const BranchesForm = () => {
         setPending(false);
     };
 
-    const fetchBankID = async () => {
-        try {
-            const payload = {
-                serviceReference: 'GET_ALL_BANKS',
-                requestBody: '',
-                spaceId: spaceId,
-            }
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
-            // const response = await CBS_Services('AP', `api/gav/bank/getAll`, 'GET', null);
-            console.log("fetchbankid", response);
-
-            if (response && response.status === 200) {
-                setBankID(response.body.data);
-
-            } else if (response && response.body.status === 401) {
-                // setErrorMessage(response.body.errors || 'Unauthorized to perform action');
-            }
-            else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
 
     const fetchCBSdata = async () => {
         try {
@@ -174,7 +146,7 @@ const BranchesForm = () => {
     };
 
     useEffect(() => {
-        fetchBankID();
+
         fetchCBSdata();
         fetchCountryDataWithDefaultId();
     }, [])

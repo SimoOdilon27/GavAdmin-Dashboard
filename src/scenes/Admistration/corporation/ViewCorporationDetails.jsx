@@ -153,10 +153,10 @@ const ViewCorporationDetails = () => {
 
     const columns = [
         { field: 'dateTime', headerName: 'Date & Time', flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
-
-        { field: 'fromAccount', headerName: 'From Account', flex: 1, headerAlign: "center", align: "center", renderHeader: () => <span style={{ fontWeight: 'bold' }}>From Account</span>, },
-        { field: 'toAccount', headerName: 'To Account', flex: 1, headerAlign: "center", align: "center", renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Account</span>, },
-        { field: 'direction', headerName: 'Direction', flex: 1, headerAlign: "center", align: "center", renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction Type</span>, valueGetter: (params) => formatValue(params.value), }, { field: 'amount', headerName: 'Amount', flex: 1, headerAlign: "center", align: "center", renderHeader: () => <span style={{ fontWeight: 'bold' }}>Amount</span>, valueGetter: (params) => formatValue(params.value), },
+        { field: 'fromAccount', headerName: 'From Account', flex: 1, headerAlign: "center", align: "center", renderHeader: () => <span style={{ fontWeight: 'bold' }}>From Account</span>, valueGetter: (params) => formatValue(params.value), },
+        { field: 'toAccount', headerName: 'To Account', flex: 1, headerAlign: "center", align: "center", renderHeader: () => <span style={{ fontWeight: 'bold' }}>To Account</span>, valueGetter: (params) => formatValue(params.value), },
+        { field: 'direction', headerName: 'Direction', flex: 1, headerAlign: "center", align: "center", renderHeader: () => <span style={{ fontWeight: 'bold' }}>Transaction Type</span>, valueGetter: (params) => formatValue(params.value), },
+        { field: 'amount', headerName: 'Amount', flex: 1, headerAlign: "center", align: "center", renderHeader: () => <span style={{ fontWeight: 'bold' }}>Amount</span>, valueGetter: (params) => formatValue(params.value), },
         { field: 'service', headerName: 'Service', flex: 1, headerAlign: "center", align: "center", renderHeader: () => <span style={{ fontWeight: 'bold' }}>Service</span>, valueGetter: (params) => formatValue(params.value), },
         {
             field: 'status', headerName: 'Status', flex: 1, headerAlign: "center", align: "center", renderHeader: () => <span style={{ fontWeight: 'bold' }}>Status</span>,
@@ -297,34 +297,6 @@ const ViewCorporationDetails = () => {
                                 />
                             </Box>
 
-                            {/* CBS Account Information */}
-                            {/* <Box mt={4}>
-                                <Typography variant="subtitle1" color={colors.grey[100]} mb={2}>
-                                    CBS Account Status
-                                </Typography>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={6}>
-                                        <Chip
-                                            label={initialValues.hasCbsAccount ? "Has CBS Account" : "No CBS Account"}
-                                            sx={{
-                                                backgroundColor: initialValues.hasCbsAccount ? colors.greenAccent[500] : colors.grey[500],
-                                                color: "white",
-                                                width: '100%'
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <Chip
-                                            label={initialValues.otherCbs ? "Has Other CBS" : "No Other CBS"}
-                                            sx={{
-                                                backgroundColor: initialValues.otherCbs ? colors.greenAccent[500] : colors.grey[500],
-                                                color: "white",
-                                                width: '100%'
-                                            }}
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </Box> */}
                         </CardContent>
                     </Card>
                 </Grid>

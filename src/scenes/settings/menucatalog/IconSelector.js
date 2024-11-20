@@ -25,6 +25,7 @@ import {
     ManageAccounts,
     MapOutlined,
     Money,
+    Settings,
     SettingsApplicationsOutlined,
     SupervisedUserCircleOutlined,
     SupervisorAccountRounded,
@@ -62,6 +63,7 @@ export const AVAILABLE_ICONS = {
     TypeSpecimen: TypeSpecimen,
     AdminPanelSettings: AdminPanelSettings,
     SupervisorAccountRounded: SupervisorAccountRounded,
+    Settings: Settings,
 };
 
 const IconSelector = ({ value, onChange, error, helperText, label = "Select Icon" }) => {

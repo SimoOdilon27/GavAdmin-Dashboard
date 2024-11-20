@@ -557,9 +557,9 @@ const CreateMenuForm = () => {
                                                             variant="outlined"
                                                             startIcon={<Label />}
                                                             onClick={() => handleOpenTagModal(index)}
-                                                            sx={{ mt: 0, padding: 2 }}
+                                                            sx={{ mt: 0, padding: "14px 5px 14px 5px" }}
                                                         >
-                                                            Select Tags ({(subItem.tagId || []).length})
+                                                            Resources ({(subItem.tagId || []).length})
                                                         </Button>
 
                                                         {/* Remove Button */}

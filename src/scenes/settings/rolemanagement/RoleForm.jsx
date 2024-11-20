@@ -313,7 +313,7 @@ const RoleForm = () => {
                                         <MenuItem value="" selected disabled>Select Menu</MenuItem>
                                         {Array.isArray(filteredItemData) && filteredItemData.length > 0 ? (
                                             filteredItemData.map((item) => (
-                                                <MenuItem key={item.title} value={item.title}>
+                                                <MenuItem key={item.id} value={item.id}>
                                                     {item.title}
                                                 </MenuItem>
                                             ))

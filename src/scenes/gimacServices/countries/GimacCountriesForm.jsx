@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 const GimacCountriesForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -92,31 +93,6 @@ const GimacCountriesForm = () => {
         setPending(false);
     };
 
-    // useEffect(() => {
-    //     if (id) {
-    //         // Fetch the existing country by ID to populate the form for editing
-    //         // const countryId = id;
-    //         const payload = {
-    //             serviceReference: 'GET_COUNTRY_BY_ID',
-    //             requestBody: id,
-    //         }
-    //         console.log("payload==", payload)
-
-    //         // CBS_Services("GIMAC", `wallet/mapper/getCountry/${id}`, "GET", null)
-    //         CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token)
-    //             .then((response) => {
-    //                 console.log("fetch", response);
-
-    //                 if (response && response.body.meta.statusCode === 200) {
-
-    //                     setInitialValues(response.body.data);
-    //                 }
-    //             })
-    //             .catch((error) => {
-    //                 console.error("Error fetching country:", error);
-    //             });
-    //     }
-    // }, [id]);
 
     useEffect(() => {
         if (id && location.state && location.state.countryData) {
@@ -178,18 +154,7 @@ const GimacCountriesForm = () => {
                                     name="countryCode"
                                     error={!!touched.countryCode && !!errors.countryCode}
                                     helperText={touched.countryCode && errors.countryCode}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={FormFieldStyles("span 2")}
                                 />
                                 <TextField
                                     fullWidth
@@ -202,18 +167,7 @@ const GimacCountriesForm = () => {
                                     name="country"
                                     error={!!touched.country && !!errors.country}
                                     helperText={touched.country && errors.country}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={FormFieldStyles("span 2")}
                                 />
                                 <TextField
                                     fullWidth
@@ -226,18 +180,7 @@ const GimacCountriesForm = () => {
                                     name="serviceProvider"
                                     error={!!touched.serviceProvider && !!errors.serviceProvider}
                                     helperText={touched.serviceProvider && errors.serviceProvider}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={FormFieldStyles("span 2")}
                                 />
                                 <TextField
                                     fullWidth
@@ -250,43 +193,9 @@ const GimacCountriesForm = () => {
                                     name="internationalDialingCode"
                                     error={!!touched.internationalDialingCode && !!errors.internationalDialingCode}
                                     helperText={touched.internationalDialingCode && errors.internationalDialingCode}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={FormFieldStyles("span 2")}
                                 />
-                                {/* <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Internal ID"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.internalId}
-                                    name="internalId"
-                                    error={!!touched.internalId && !!errors.internalId}
-                                    helperText={touched.internalId && errors.internalId}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
-                                /> */}
+
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>

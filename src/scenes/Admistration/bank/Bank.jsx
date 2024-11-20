@@ -115,10 +115,7 @@ const Bank = () => {
         navigate(`/bank/view/${row.accounts}`, { state: { bankData: row } });
     };
 
-    const toSentenceCase = (text) => {
-        if (!text) return '';
-        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    };
+
 
     const columns = [
         { field: "bankName", headerName: "Bank Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },

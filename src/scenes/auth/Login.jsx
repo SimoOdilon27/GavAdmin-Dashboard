@@ -29,7 +29,7 @@ function Copyright(props) {
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
             {'Copyright © '}
             <Link color="inherit" href="/">
-                Your Website
+                CredixCam
             </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
@@ -259,11 +259,11 @@ export default function Login() {
                                     ),
                                 }}
                             />
-                            <FormControlLabel
+                            {/* <FormControlLabel
                                 control={<Checkbox value="remember" color="primary" />}
                                 label="Remember me"
                                 sx={{ mt: 1 }}
-                            />
+                            /> */}
                             <Button
                                 type="submit"
                                 fullWidth
@@ -273,7 +273,7 @@ export default function Login() {
                             >
                                 {userCredential.isSubmit ? 'Signing in...' : 'Sign In'}
                             </Button>
-                            <Grid container spacing={2}>
+                            {/* <Grid container spacing={2}>
                                 <Grid item xs={12} sm={6}>
                                     <Link href="#" variant="body2">
                                         Forgot password?
@@ -284,7 +284,7 @@ export default function Login() {
                                         Contact Admin
                                     </Link>
                                 </Grid>
-                            </Grid>
+                            </Grid> */}
                             <Copyright sx={{ mt: 5 }} />
                         </Box>
                     </Box>

@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
 import { tokens } from '../../../theme';
+import { FormFieldStyles } from '../../../tools/fieldValuestyle';
 
 const CashOut = () => {
     const theme = useTheme();
@@ -17,24 +18,7 @@ const CashOut = () => {
     const usertoken = userData.token;
     const spaceId = userData?.selectedSpace?.id
 
-    const formFieldStyles = (gridColumn = "span 2") => ({
-        gridColumn,
-        '& .MuiInputLabel-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiFilledInput-root': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[700],
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-            color: theme.palette.mode === "dark"
-                ? colors.grey[100]
-                : colors.black[100],
-        },
-    });
+
     const [successDialog, setSuccessDialog] = useState(false);
     const [availableBanks, setAvailableBanks] = useState([]);
     const [loadingBanks, setLoadingBanks] = useState(false);
@@ -283,7 +267,7 @@ const CashOut = () => {
                                     name="msisdn"
                                     error={!!touched.msisdn && !!errors.msisdn}
                                     helperText={touched.msisdn && errors.msisdn}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
                                 />
 
                                 <TextField
@@ -297,14 +281,14 @@ const CashOut = () => {
                                     name="amount"
                                     error={!!touched.amount && !!errors.amount}
                                     helperText={touched.amount && errors.amount}
-                                    sx={formFieldStyles("span 2")}
+                                    sx={FormFieldStyles("span 2")}
                                 />
 
 
                                 <FormControl
                                     fullWidth
                                     variant="filled"
-                                    sx={formFieldStyles("span 4")}
+                                    sx={FormFieldStyles("span 4")}
                                     disabled={loadingBanks || availableBanks.length === 0}
                                 >
                                     <InputLabel>Select Bank</InputLabel>
@@ -341,7 +325,7 @@ const CashOut = () => {
                                         />
                                     }
                                     label="Withdraw with CNI"
-                                    sx={formFieldStyles("span 4")}
+                                    sx={FormFieldStyles("span 4")}
                                 />
 
                                 {withdrawWithCni && (
@@ -356,7 +340,7 @@ const CashOut = () => {
                                         name="cniNumber"
                                         error={!!touched.cniNumber && !!errors.cniNumber}
                                         helperText={touched.cniNumber && errors.cniNumber}
-                                        sx={formFieldStyles("span 4")}
+                                        sx={FormFieldStyles("span 4")}
                                     />
                                 )}
                             </Box>

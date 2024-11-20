@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 const GimacWalletForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -97,27 +98,7 @@ const GimacWalletForm = () => {
         setPending(false);
     };
 
-    // useEffect(() => {
-    //     if (id) {
-    //         // Fetch the existing wallet by ID to populate the form for editing
-    //         const payload = {
-    //             serviceReference: 'GET_WALLET_BY_ID',
-    //             requestBody: id,
-    //         }
-    //         console.log("payload==", payload)
 
-    //         // CBS_Services("GIMAC", `wallet/mapper/getCountry/${id}`, "GET", null)
-    //         CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token)
-    //             .then((response) => {
-    //                 if (response && response.body.meta.statusCode === 200) {
-    //                     setInitialValues(response.body.data);
-    //                 }
-    //             })
-    //             .catch((error) => {
-    //                 console.error("Error fetching wallet:", error);
-    //             });
-    //     }
-    // }, [id]);
 
 
     const fetchCountryDataWithDefaultId = async () => {
@@ -206,20 +187,7 @@ const GimacWalletForm = () => {
                                     error={!!touched.name && !!errors.name}
                                     helperText={touched.name && errors.name}
 
-                                    sx={{
-                                        gridColumn: "span 4",
-
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-
-                                    }}
+                                    sx={FormFieldStyles("span 4")}
                                 />
                                 <TextField
                                     fullWidth
@@ -233,38 +201,12 @@ const GimacWalletForm = () => {
                                     error={!!touched.gimacMemberCode && !!errors.gimacMemberCode}
                                     helperText={touched.gimacMemberCode && errors.gimacMemberCode}
 
-                                    sx={{
-                                        gridColumn: "span 1",
-
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-
-                                    }}
+                                    sx={FormFieldStyles("span 1")}
                                 />
 
 
                                 <FormControl fullWidth variant="filled"
-                                    sx={{
-                                        gridColumn: "span 1",
-
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-
-                                    }}>
+                                    sx={FormFieldStyles("span 1")}>
                                     <InputLabel>Wallet Type</InputLabel>
                                     <Select
                                         label="Wallet Type"
@@ -288,20 +230,7 @@ const GimacWalletForm = () => {
 
 
                                 <FormControl fullWidth variant="filled"
-                                    sx={{
-                                        gridColumn: "span 2",
-
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-
-                                    }}>
+                                    sx={FormFieldStyles("span 2")}>
                                     <InputLabel>Country</InputLabel>
                                     <Select
                                         label="Country"
@@ -340,20 +269,7 @@ const GimacWalletForm = () => {
                                     error={!!touched.serviceDescription && !!errors.serviceDescription}
                                     helperText={touched.serviceDescription && errors.serviceDescription}
 
-                                    sx={{
-                                        gridColumn: "span 4",
-
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-
-                                    }}
+                                    sx={FormFieldStyles("span 4")}
                                 />
                                 <TextField
                                     fullWidth
@@ -367,20 +283,7 @@ const GimacWalletForm = () => {
                                     error={!!touched.serviceRef && !!errors.serviceRef}
                                     helperText={touched.serviceRef && errors.serviceRef}
 
-                                    sx={{
-                                        gridColumn: "span 1",
-
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-
-                                    }}
+                                    sx={FormFieldStyles("span 1")}
                                 />
                                 <TextField
                                     fullWidth
@@ -394,20 +297,7 @@ const GimacWalletForm = () => {
                                     error={!!touched.queryRef && !!errors.queryRef}
                                     helperText={touched.queryRef && errors.queryRef}
 
-                                    sx={{
-                                        gridColumn: "span 1",
-
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-
-                                    }}
+                                    sx={FormFieldStyles("span 1")}
                                 />
                                 <TextField
                                     fullWidth
@@ -421,49 +311,10 @@ const GimacWalletForm = () => {
                                     error={!!touched.queryName && !!errors.queryName}
                                     helperText={touched.queryName && errors.queryName}
 
-                                    sx={{
-                                        gridColumn: "span 2",
-
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-
-                                    }}
+                                    sx={FormFieldStyles("span 2")}
                                 />
 
-                                {/* <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Internal ID"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.internalId}
-                                    name="internalId"
-                                    error={!!touched.internalId && !!errors.internalId}
-                                    helperText={touched.internalId && errors.internalId}
 
-                                    sx={{
-                                        gridColumn: "span 2",
-
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-
-                                    }}
-                                /> */}
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>

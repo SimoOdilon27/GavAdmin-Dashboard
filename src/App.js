@@ -61,8 +61,8 @@ import AssignUsertoSpace from "./scenes/settings/Usermanagement/AssignUsertoSpac
 import ProtectedRoute from "./tools/ProtectedRouteComponent";
 import Menus from "./scenes/settings/menucatalog/menuItemManagement/Menus";
 import UserSubMenuForm from "./scenes/settings/menucatalog/menuItemManagement/UserSubMenuForm";
-import BankServices from "./scenes/bankServices/BankServices";
-import BankServicesForm from "./scenes/bankServices/BankServicesForm";
+import BankServices from "./scenes/bankServiceTypes/BankServiceTypes";
+import BankServicesForm from "./scenes/bankServiceTypes/BankServicesTypesForm";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -150,7 +150,7 @@ function App() {
                 <Route path="/menus/editmenu/:id" element={<ProtectedRoute><CreateMenuForm /></ProtectedRoute>} />
                 <Route path="/bankservices" element={<ProtectedRoute><BankServices /></ProtectedRoute>} />
                 <Route path="/bankservices/add" element={<ProtectedRoute><BankServicesForm /></ProtectedRoute>} />
-                <Route path="/bankservices/edit/:id" element={<ProtectedRoute><BankServicesForm /></ProtectedRoute>} />
+                <Route path="/bankservices/edit/:serviceName" element={<ProtectedRoute><BankServicesForm /></ProtectedRoute>} />
 
               </Routes>
 

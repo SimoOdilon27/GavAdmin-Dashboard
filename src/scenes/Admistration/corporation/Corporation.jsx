@@ -6,40 +6,22 @@ import Header from "../../../components/Header";
 import { useEffect, useState } from "react";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { useSelector } from "react-redux";
-import { Dialog, DialogActions, DialogContent, TextField, Alert, CircularProgress } from '@mui/material';
+import { Alert } from '@mui/material';
 import { Add, Delete, EditOutlined, RemoveRedEyeSharp } from "@mui/icons-material";
 import { Menu, MenuItem, IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useNavigate } from "react-router-dom";
+import { formatValue } from "../../../tools/formatValue";
 
 
 const Corporation = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
-    const [formData, setFormData] = useState({
-        corporationId: '',
-        name: '',
-        email: '',
-        contact: '',
-        address: '',
-        cbsCorporationId: '',
-        country: '',
-        corporationAccountThreshold: 0,
-        corporationName: '',
 
-    });
-
-
-    const [showModal, setShowModal] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
     const [corporationData, setCorporationData] = useState([]);
-    const [successMessage, setSuccessMessage] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [selectedCorporation, setSelectedCorporation] = useState([]);
-    const [loading, setLoading] = useState(false)
+
     const [corpID, setCorpID] = useState([]);
-    const [branchID, setBranchID] = useState([]);
     const [pending, setPending] = useState(true);
     const userData = useSelector((state) => state.users)
     const navigate = useNavigate();
@@ -81,8 +63,6 @@ const Corporation = () => {
         setCurrentRow(null);
     };
 
-
-
     const fetchCorporationData = async () => {
         setPending(true)
         try {
@@ -97,7 +77,6 @@ const Corporation = () => {
 
             if (response && response.body.meta.statusCode === 200) {
                 setCorporationData(response.body.data || []);
-                setCorpID(response.body.data || []);
 
             } else if (response && response.body.status === 401) {
                 showSnackbar('Unauthorized', 'error');
@@ -115,167 +94,12 @@ const Corporation = () => {
         setPending(false)
     };
 
-    const fetchBranchID = async () => {
-        try {
 
-            const payload = {
-                serviceReference: 'GET_ALL_BRANCHES',
-                requestBody: '',
-                spaceId: spaceId,
-            }
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-
-            // const response = await CBS_Services('AP', `api/gav/bankBranch/getAll`, 'GET', null);
-
-            if (response && response.body.meta.statusCode === 200) {
-                setBranchID(response.body.data || []);
-
-            } else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
 
     useEffect(() => {
         fetchCorporationData();
-        fetchBranchID()
     }, [])
 
-
-
-    const handleConfirmEdit = async () => {
-        setLoading(true);
-
-        try {
-            const payload = {
-                serviceReference: 'UPDATE_CORPORATION',
-                requestBody: JSON.stringify(formData),
-                spaceId: spaceId,
-            }
-
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            console.log("editresp", response);
-            console.log("editformresp", formData);
-            if (response && response.body.meta.statusCode === 200) {
-                hideEditCorporation();
-                await fetchCorporationData();
-                showSnackbar('Corporation updated successfully.', 'success');
-                setFormData({
-                    corporationId: '',
-                    name: '',
-                    email: '',
-                    contact: '',
-                    address: '',
-                    cbsCorporationId: '',
-                    country: '',
-                    corporationAccountThreshold: 0,
-                    corporationName: '',
-                });
-            } else {
-                setSuccessMessage('');
-                setErrorMessage(response.body.errors);
-                showSnackbar(response.body.errors || 'Error Updating Data.', 'error');
-
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showSnackbar('Netowrk Error!!!! Try again Later', 'error');
-        }
-
-        setLoading(false);
-    };
-
-    const handleConfirmAdd = async () => {
-
-        setLoading(true)
-        try {
-
-            const payload = {
-                serviceReference: 'CREATE_CORPORATION',
-                requestBody: JSON.stringify(formData),
-                spaceId: spaceId,
-            }
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            console.log("addresponse", response);
-
-            if (response && response.body.meta.statusCode === 200) {
-                hideAddCorporation();
-                await fetchCorporationData();
-                showSnackbar('Corporation created successfully.', 'success');
-            } else {
-                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
-                // setErrorMessage(response.body.errors || 'Unauthorized to perform action');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showSnackbar('Netowrk Error!!!! Try again Later', 'error');
-
-        }
-        setLoading(false)
-    };
-
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
-
-
-
-    // const handleEdit = (corp) => {
-    //     setSelectedCorporation(corp);
-    //     setFormData({
-    //         corporationId: corp.corporationId,
-    //         name: corp.corporationName,
-    //         email: corp.email,
-    //         contact: corp.contact,
-    //         address: corp.address,
-    //         cbsCorporationId: corp.cbsCorporationId,
-    //         country: corp.country,
-    //         corporationAccountThreshold: corp.corporationAccountThreshold,
-    //         corporationName: corp.corporationName,
-
-    //     });
-    //     setShowEditModal(true);
-    // };
-
-    const handleToggleCorpModal = () => {
-        setShowModal(!showModal);
-    };
-
-    const hideAddCorporation = () => {
-        setShowModal(false);
-        setSuccessMessage('');
-        setErrorMessage('');
-    };
-
-    const handleToggleEditCorpModal = () => {
-        setShowEditModal(!showEditModal);
-        setFormData({
-            corporationId: '',
-            name: '',
-            email: '',
-            contact: '',
-            address: '',
-            cbsCorporationId: '',
-            country: '',
-            corporationAccountThreshold: 0,
-            corporationName: '',
-
-        });
-    }
-
-
-    const hideEditCorporation = () => {
-        setShowEditModal(false);
-        setSuccessMessage('');
-        setErrorMessage('');
-    }
 
     const handleAddCorp = () => {
         navigate('/corporation/add');
@@ -290,19 +114,14 @@ const Corporation = () => {
         navigate(`/corporation/view/${row.accounts}`, { state: { corporationData: row } });
     };
 
-    const toSentenceCase = (text) => {
-        if (!text) return '';
-        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    };
-
 
     const columns = [
         // { field: "corporationId", headerName: "Corporation ID", flex: 1 },
-        { field: "corporationName", headerName: "Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "contact", headerName: "Phone Number", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "email", headerName: "Email", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        { field: "address", headerName: "Address", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value), },
-        // { field: "country", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => toSentenceCase(params.value) },
+        { field: "corporationName", headerName: "Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "contact", headerName: "Phone Number", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "email", headerName: "Email", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "address", headerName: "Address", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        // { field: "country", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
 
         {
             field: "creationDateTime",
@@ -448,208 +267,19 @@ const Corporation = () => {
                 />
             </Box>
 
-            <>
-                {/* Add Corporation Modal */}
-                <Dialog open={showModal} onClose={handleToggleCorpModal} maxWidth="lg" fullWidth>
-                    <DialogTitle>Add Corporation</DialogTitle>
-                    <DialogContent>
-                        {successMessage && <Alert severity="success" onClose={() => { }}>{successMessage}</Alert>}
-                        {errorMessage && <Alert severity="error" onClose={() => { }}>{errorMessage}</Alert>}
-
-                        <Box component="form" sx={{ mt: 3 }} noValidate>
-                            <TextField
-                                fullWidth
-                                label="Corporation Name"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-                            <TextField
-                                fullWidth
-                                label="Corporation ID"
-                                name="cbsCorporationId"
-                                value={formData.cbsCorporationId}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-                            <TextField
-                                fullWidth
-                                label="Email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-                            <TextField
-                                fullWidth
-                                label="Phone Number"
-                                name="contact"
-                                value={formData.contact}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-                            <TextField
-                                fullWidth
-                                label="Address"
-                                name="address"
-                                value={formData.address}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-                            <TextField
-                                fullWidth
-                                label="Account Threshold"
-                                name="corporationAccountThreshold"
-                                value={formData.corporationAccountThreshold}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={formData.hasCbsAccount}
-                                        onChange={(e) => setFormData({ ...formData, hasCbsAccount: e.target.checked })}
-                                        name="hasCbsAccount" />
-                                }
-                                label="Has CBS Account"
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={formData.otherCbs}
-                                        onChange={(e) => setFormData({ ...formData, otherCbs: e.target.checked })}
-                                        name="otherCbs" />
-                                }
-                                label="Other CBS Account"
-                            />
-                        </Box>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleConfirmAdd} variant="contained" color="primary" disabled={loading}>
-                            {loading ? <CircularProgress size={24} /> : "Add"}
-                        </Button>
-                        <Button onClick={hideAddCorporation} variant="outlined" color="secondary">
-                            Cancel
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-
-                {/* Edit Corporation Modal */}
-                <Dialog open={showEditModal} onClose={handleToggleEditCorpModal} maxWidth="lg" fullWidth>
-                    <DialogTitle>Edit Corporation</DialogTitle>
-                    <DialogContent>
-                        {successMessage && <Alert severity="success" onClose={() => { }}>{successMessage}</Alert>}
-                        {errorMessage && <Alert severity="error" onClose={() => { }}>{errorMessage}</Alert>}
-
-                        <Box component="form" sx={{ mt: 3 }} noValidate>
-                            <TextField
-                                fullWidth
-                                label="Corporation Name"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-                            <TextField
-                                fullWidth
-                                label="Corporation ID"
-                                name="cbsCorporationId"
-                                value={formData.cbsCorporationId}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-                            <TextField
-                                fullWidth
-                                label="Email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-                            <TextField
-                                fullWidth
-                                label="Phone Number"
-                                name="contact"
-                                value={formData.contact}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-                            <TextField
-                                fullWidth
-                                label="Address"
-                                name="address"
-                                value={formData.address}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-                            <TextField
-                                fullWidth
-                                label="Country"
-                                name="country"
-                                value={formData.country}
-                                onChange={handleChange}
-                                required
-                                margin="normal"
-                            />
-
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={formData.hasCbsAccount}
-                                        onChange={(e) => setFormData({ ...formData, hasCbsAccount: e.target.checked })}
-                                        name="hasCbsAccount" />
-                                }
-                                label="Has CBS Account"
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={formData.otherCbs}
-                                        onChange={(e) => setFormData({ ...formData, otherCbs: e.target.checked })}
-                                        name="otherCbs" />
-                                }
-                                label="Other CBS Account"
-                            />
-                        </Box>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleConfirmEdit} variant="contained" color="primary" disabled={loading}>
-                            {loading ? <CircularProgress size={24} /> : "Update"}
-                        </Button>
-                        <Button onClick={hideEditCorporation} variant="outlined" color="secondary">
-                            Cancel
-                        </Button>
-                    </DialogActions>
-                </Dialog>
 
 
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
 
-                <Snackbar
-                    open={snackbar.open}
-                    autoHideDuration={6000}
-                    onClose={handleSnackbarClose}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                >
-                    <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
-                        {snackbar.message}
-                    </Alert>
-                </Snackbar>
-
-
-            </>
         </Box>
     );
 };

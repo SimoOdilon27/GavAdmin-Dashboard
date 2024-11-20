@@ -18,7 +18,7 @@ const BankServices = () => {
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
     const navigate = useNavigate();
-
+    const spaceId = userData?.selectedSpace?.id;
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
     const open = Boolean(anchorEl);
@@ -38,13 +38,17 @@ const BankServices = () => {
         // Implement delete logic here
     };
 
-    const handleEdit = (row) => {
-        navigate(`/bankservices/edit/${row.id}`);
-    };
+
 
     const fetchBankServices = async () => {
         setLoading(true);
         try {
+
+            const payload = {
+                serviceReference: 'GET_BANK_SERVICE_TYPES',
+                requestBody: "",
+                spaceId: spaceId,
+            }
             const response = await CBS_Services('APE', 'gavServiceType/getAll', 'GET');
             if (response && response.status === 200) {
                 setBankServicesData(response.body.data || []);
@@ -64,6 +68,11 @@ const BankServices = () => {
     const handleAddService = () => {
         navigate('/bankservices/add');
     };
+    const handleEdit = (row) => {
+        navigate(`/bankservices/edit/${row.serviceName}`, { state: { serviceData: row } });
+    };
+
+
 
     const columns = [
         {

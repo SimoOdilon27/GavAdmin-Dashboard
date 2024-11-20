@@ -38,8 +38,6 @@ const ViewClientDetails = () => {
 
     const [initialValues, setInitialValues] = useState({});
     const [transactionData, setTransactionData] = useState([]);
-    const [pageInput, setPageInput] = useState("1");
-    const [sizeInput, setSizeInput] = useState("10");
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [rowCount, setRowCount] = useState(0);
@@ -69,19 +67,7 @@ const ViewClientDetails = () => {
         }
     };
 
-    const handleFetchData = () => {
-        const newPage = parseInt(pageInput);
-        const newSize = parseInt(sizeInput);
-        if (!isNaN(newPage) && !isNaN(newSize) && newPage > 0 && newSize > 0) {
-            setCurrentPage(newPage);
-            setPageSize(newSize);
-            fetchTransactions(newPage, newSize);
-        }
-    };
 
-    const handleRefresh = () => {
-        fetchTransactions(currentPage, pageSize);
-    };
 
     useEffect(() => {
         fetchTransactions(currentPage, pageSize);

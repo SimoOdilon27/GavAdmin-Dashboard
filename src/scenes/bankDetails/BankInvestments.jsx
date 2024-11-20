@@ -24,9 +24,7 @@ import { formatValue } from '../../tools/formatValue';
 const BankInvestments = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-
     const [capitalInvestmentData, setCapitalInvestmentData] = useState([]);
-
     const [awaitingInvestmentApprovalData, setAwaitingInvestmentApprovalData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingRows, setLoadingRows] = useState([]);
