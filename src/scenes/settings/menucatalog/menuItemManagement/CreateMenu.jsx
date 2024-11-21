@@ -36,7 +36,7 @@ const CreateMenuForm = () => {
         hasSubMenu: true,
         title: "",
         icon: "",
-        typeId: "",
+        typeId: [],
         category: "",
         menuOrder: "",
         subItems: [{
@@ -76,18 +76,18 @@ const CreateMenuForm = () => {
             console.log("itemdata", itemData);
 
             const response = await CBS_Services('GATEWAY', 'clientGateWay/items/createItem', 'POST', itemData, token);
-            console.log("response", response);
+            console.log("itemdataresponse", response);
 
             if (response.status === 200) {
-                showSnackbar("Item created successfully", "success");
-                navigate(-1)
+                showSnackbar("Menu created successfully", "success");
+
             } else {
-                showSnackbar("Failed to create item", "error");
+                showSnackbar("Failed to create Menu", "error");
 
             }
             return response;
         } catch (error) {
-            throw new Error('Failed to create item');
+            throw new Error('Failed to create Menu');
         }
     };
 
@@ -99,13 +99,13 @@ const CreateMenuForm = () => {
             console.log("responsesubItemData", response);
 
             if (response.status === 200) {
-                showSnackbar("Sub Item created successfully", "success");
+                showSnackbar("Sub Menu created successfully", "success");
             }
             else {
-                showSnackbar("Failed to create sub item", "error");
+                showSnackbar("Failed to create Sub Menu", "error");
             }
         } catch (error) {
-            throw new Error('Failed to create subitem');
+            throw new Error('Failed to create Sub Menu');
         }
     };
 
@@ -149,7 +149,7 @@ const CreateMenuForm = () => {
                     const itemResponse = await createItem(itemData);
                     console.log("itemResponse", itemResponse);
 
-                    const itemId = itemResponse.body.data.title; // Adjust based on your API response structure
+                    const itemId = itemResponse.body.data.id; // Adjust based on your API response structure
 
 
                     // Create all subitems sequentially
@@ -164,13 +164,13 @@ const CreateMenuForm = () => {
                     }
 
                     showSnackbar("Item and subitems created successfully", "success");
-                    // setTimeout(() => navigate("/items-management"), 2000);
+                    setTimeout(() => navigate(-1), 2000);
                     resetForm({
                         values: {
                             hasSubMenu: true,
                             title: "",
                             icon: "",
-                            typeId: "",
+                            typeId: [],
                             category: "",
                             menuOrder: "",
                             subItems: [{
@@ -274,14 +274,7 @@ const CreateMenuForm = () => {
         setSelectAll(false);
     };
 
-    // const handleToggleTag = (tagId, values, setFieldValue) => {
-    //     const currentTags = values.subItems[activeSubItemIndex].tagId || [];
-    //     const newTags = currentTags.includes(tagId)
-    //         ? currentTags.filter(id => id !== tagId)
-    //         : [...currentTags, tagId];
 
-    //     setFieldValue(`subItems.${activeSubItemIndex}.tagId`, newTags);
-    // };
 
     const handleToggleTag = (tagId, values, setFieldValue) => {
         const currentTags = values.subItems[activeSubItemIndex].tagId || [];
@@ -299,12 +292,15 @@ const CreateMenuForm = () => {
         }
     }, [id, location.state]);
 
+    console.log("Initial Values:", initialValues); // Debug log
+
+
 
     return (
         <Box m="20px">
             <Header
-                title={id ? "EDIT MENU ITEM" : "ADD MENU ITEM"}
-                subtitle={id ? "Edit the item" : "Add a new item"}
+                title={id ? `EDIT MENU  ` : "ADD MENU ITEM"}
+                subtitle={id ? `Edit the Menu ${initialValues.title}` : "Add a new item"}
             />
             <Formik
                 onSubmit={handleFormSubmit}
@@ -384,26 +380,20 @@ const CreateMenuForm = () => {
                                 }}
                             >
                                 <Typography variant="h5" sx={{ gridColumn: "span 4" }}>
-                                    Item Details
+                                    Menu Details
                                 </Typography>
-
-
 
                                 <FormControl fullWidth variant="filled"
                                     sx={formFieldStyles("span 2")}
 
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: 'white', // Default label color
-                                        }
-                                    }}
                                 >
                                     <InputLabel>Type</InputLabel>
                                     <Select
+                                        multiple
                                         label="Type"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        value={values.typeId}
+                                        value={values.typeId || []}
                                         name="typeId"
                                         error={!!touched.typeId && !!errors.typeId}
 
@@ -464,18 +454,46 @@ const CreateMenuForm = () => {
                                     sx={formFieldStyles("span 2")}
                                 />
 
-                                {!values.hasSubMenu && (
-                                    <Box sx={formFieldStyles("span 4")}>
-                                        <IconSelector
-                                            value={values.icon}
-                                            onChange={(newValue) => setFieldValue('icon', newValue)}
-                                            error={!!touched.icon && !!errors.icon}
-                                            helperText={touched.icon && errors.icon}
-                                            label="Select Icon"
 
-                                        />
-                                    </Box>
-                                )}
+                                {(id) ?
+                                    <>
+
+                                        {(initialValues.icon !== "") ? <>
+                                            {(
+                                                <Box sx={formFieldStyles("span 4")}>
+                                                    <IconSelector
+                                                        value={values.icon}
+                                                        onChange={(newValue) => setFieldValue('icon', newValue)}
+                                                        error={!!touched.icon && !!errors.icon}
+                                                        helperText={touched.icon && errors.icon}
+                                                        label="Select Icon"
+
+                                                    />
+                                                </Box>
+                                            )}
+                                        </> :
+
+                                            <Typography variant="body1">This menu has no icon</Typography>
+                                        }
+
+                                    </>
+                                    : <>
+                                        {(!values.hasSubMenu) && (
+                                            <Box sx={formFieldStyles("span 4")}>
+                                                <IconSelector
+                                                    value={values.icon}
+                                                    onChange={(newValue) => setFieldValue('icon', newValue)}
+                                                    error={!!touched.icon && !!errors.icon}
+                                                    helperText={touched.icon && errors.icon}
+                                                    label="Select Icon"
+
+                                                />
+                                            </Box>
+                                        )}
+                                    </>
+                                }
+
+
 
                                 <Divider sx={{ gridColumn: "span 4", my: 2 }} />
 
@@ -662,35 +680,41 @@ const CreateMenuForm = () => {
                                             </ListItemIcon>
                                             <ListItemText primary="Select All" />
                                         </ListItem>
-                                        {Array.isArray(availableTags) && availableTags.length > 0 ?
 
-                                            availableTags
-                                                .filter(tag => tag.id.toLowerCase().includes(searchTerm.toLowerCase()))
-                                                .map((tag) => {
-                                                    const isSelected = values?.subItems[activeSubItemIndex]?.tagId?.includes(tag.id);
-                                                    return (
-                                                        <ListItem
-                                                            key={tag.id}
-                                                            dense
-                                                            button
-                                                            onClick={() => handleToggleTag(tag.id, values, setFieldValue)}
-                                                        >
-                                                            <ListItemIcon>
-                                                                <Checkbox
-                                                                    edge="start"
-                                                                    checked={isSelected}
-                                                                    tabIndex={-1}
-                                                                    disableRipple
-                                                                    color='secondary'
-                                                                />
-                                                            </ListItemIcon>
-                                                            <ListItemText primary={tag.id} />
-                                                        </ListItem>
-                                                    );
-                                                })
+                                        {id ? "" :
+                                            <>
+                                                {Array.isArray(availableTags) && availableTags.length > 0 ?
+
+                                                    availableTags
+                                                        .filter(tag => tag.id.toLowerCase().includes(searchTerm.toLowerCase()))
+                                                        .map((tag) => {
+                                                            const isSelected = values?.subItems[activeSubItemIndex]?.tagId?.includes(tag.id) ?? false;
+                                                            return (
+                                                                <ListItem
+                                                                    key={tag.id}
+                                                                    dense
+                                                                    button
+                                                                    onClick={() => handleToggleTag(tag.id, values, setFieldValue)}
+                                                                >
+                                                                    <ListItemIcon>
+                                                                        <Checkbox
+                                                                            edge="start"
+                                                                            checked={isSelected}
+                                                                            tabIndex={-1}
+                                                                            disableRipple
+                                                                            color='secondary'
+                                                                        />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText primary={tag.id} />
+                                                                </ListItem>
+                                                            );
+                                                        })
 
 
-                                            : "No tags"}
+                                                    : "No tags"}
+                                            </>}
+
+
 
                                     </List>
                                 </Box>

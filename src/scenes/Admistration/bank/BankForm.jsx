@@ -24,7 +24,6 @@ const BankForm = () => {
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const spaceId = userData?.selectedSpace?.id
-    const [corpID, setCorpID] = useState('');
     const [countryData, setCountryData] = useState([]);
     const [CBSData, setCBSData] = useState([]);
 
@@ -120,29 +119,7 @@ const BankForm = () => {
         setPending(false);
     };
 
-    const fetchCorpID = async () => {
-        try {
 
-            const payload = {
-                serviceReference: 'GET_ALL_CORPORATIONS',
-                requestBody: '',
-                spaceId: spaceId,
-            }
-
-            // const response = await CBS_Services('AP', 'api/gav/corporation/management/getAll', 'GET', null);
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            console.log("response", response);
-
-            if (response && response.body.meta.statusCode === 200) {
-                setCorpID(response.body.data);
-
-            } else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
 
     const fetchCountryDataWithDefaultId = async () => {
         try {
@@ -185,8 +162,6 @@ const BankForm = () => {
 
 
     useEffect(() => {
-        // Fetch Bank data when the component mounts
-        fetchCorpID();
         fetchCountryDataWithDefaultId();
         fetchCBSdata();
 

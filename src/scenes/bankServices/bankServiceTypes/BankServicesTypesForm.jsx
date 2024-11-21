@@ -2,16 +2,16 @@ import { Alert, Box, Button, TextField, Stack, Snackbar } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Header from "../../components/Header";
+import Header from "../../../components/Header";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import CBS_Services from "../../services/api/GAV_Sercives";
+import CBS_Services from "../../../services/api/GAV_Sercives";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
-import { tokens } from "../../theme";
+import { tokens } from "../../../theme";
 import { useTheme } from '@mui/material/styles';
-import { FormFieldStyles } from "../../tools/fieldValuestyle";
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 const BankServicesForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -53,8 +53,9 @@ const BankServicesForm = () => {
                 requestBody: JSON.stringify(values),
                 spaceId: spaceId,
             }
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
-            const response = await CBS_Services('APE', 'gavServiceType/add', 'POST', values, token);
+            // const response = await CBS_Services('APE', 'gavServiceType/add', 'POST', values, token);
 
             if (response && response.status === 200) {
                 showSnackbar('Bank Service Created Successfully.', 'success');

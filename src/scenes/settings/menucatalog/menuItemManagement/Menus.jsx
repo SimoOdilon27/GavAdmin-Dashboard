@@ -345,7 +345,7 @@ const Menus = () => {
     ];
     const sunmenucolumns = [
         { field: "title", headerName: "Sub-Menu Title", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "itemId", headerName: "Parent Menu", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        // { field: "itemId", headerName: "Parent Menu", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "icon", headerName: "Icon", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "route", headerName: "Route", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {

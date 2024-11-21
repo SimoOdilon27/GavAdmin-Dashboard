@@ -11,7 +11,8 @@ const initialState = {
     refreshToken: '',
     isAuthenticated: false,
     refresh: 0,
-    selectedSpace: ''
+    selectedSpace: '',
+    colorMode: 'dark'
 
 }
 
@@ -47,6 +48,12 @@ function redoxStorage(state = initialState, action) {
                 ...state,
                 menus: action.menus,
 
+            };
+
+        case 'SET_COLOR_MODE':
+            return {
+                ...state,
+                colorMode: action.colorMode
             };
 
         case 'LOGOUT':

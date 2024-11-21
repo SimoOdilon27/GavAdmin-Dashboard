@@ -54,9 +54,19 @@ const RoleForm = () => {
     const handleFormSubmit = async (values) => {
         setPending(true);
 
-        const submitData = {
-            ...values,
-            itemId: []
+        let submitData = {}
+
+        if (values.subsItemId.length === 0) {
+            submitData = {
+                ...values,
+                itemId: [values.itemId],
+
+            };
+        } else {
+            submitData = {
+                ...values,
+                itemId: []
+            };
         }
         console.log("submitData====", submitData);
         try {
@@ -154,9 +164,20 @@ const RoleForm = () => {
     };
 
     const filterItemDataByType = (typeId) => {
-        const filtered = itemData.filter((item) => item.typeId === typeId);
+        // Ensure typeId is an array
+        const typeArray = Array.isArray(typeId) ? typeId : [typeId];
+
+        const filtered = itemData.filter((item) =>
+            typeArray.some(type => item.typeId.includes(type))
+        );
+
         setFilteredItemData(filtered);
+        console.log("filtered", filtered);
+        console.log("typeId", typeId);
     };
+
+    console.log("itemdata", itemData);
+
 
     const handleTypeChange = (formikProps, typeId) => {
         formikProps.setFieldValue("typeId", typeId);
@@ -423,7 +444,7 @@ const RoleForm = () => {
 const checkoutSchema = yup.object().shape({
     roleName: yup.string().required("required"),
     description: yup.string().required("required"),
-    typeId: yup.string(),
+    // typeId: yup.string(),
     // itemId: yup.string().required("required"),
     // subItemId: yup.array().of(yup.string()).required("required")
 });

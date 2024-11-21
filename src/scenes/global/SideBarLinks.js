@@ -39,4 +39,5 @@ export const MenuLinks = [
 
     { linkname: "* * * * * * * Bank Services * * * * * * *", value: "" },
     { linkname: "Bank Services", value: "/bankservices" },
+    { linkname: "Services Configurations", value: "/bankservicesconfigs" },
 ];

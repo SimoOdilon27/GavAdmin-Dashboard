@@ -6,10 +6,10 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Add, Delete, EditOutlined } from '@mui/icons-material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useTheme } from '@mui/material';
-import { tokens } from '../../theme';
-import { formatValue } from '../../tools/formatValue';
-import CBS_Services from '../../services/api/GAV_Sercives';
-import Header from '../../components/Header';
+import { tokens } from '../../../theme';
+import { formatValue } from '../../../tools/formatValue';
+import CBS_Services from '../../../services/api/GAV_Sercives';
+import Header from '../../../components/Header';
 
 const BankServiceConfigs = () => {
     const theme = useTheme();
@@ -17,6 +17,7 @@ const BankServiceConfigs = () => {
     const [configData, setConfigData] = useState([]);
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.users);
+    const token = userData.token;
     const navigate = useNavigate();
     const spaceId = userData?.selectedSpace?.id;
     const [anchorEl, setAnchorEl] = useState(null);
@@ -41,11 +42,14 @@ const BankServiceConfigs = () => {
     const fetchServiceConfigs = async () => {
         setLoading(true);
         try {
-            const response = await CBS_Services(
-                'GAV',
-                'serviceConfiguration/getAllServicesConfiguration',
-                'GET'
-            );
+
+            const payload = {
+                serviceReference: 'GET_ALL_SERVICES_CONFIGS',
+                requestBody: '',
+                spaceId: spaceId,
+            };
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            // const response = await CBS_Services('GAV', 'serviceConfiguration/getAllServicesConfiguration', 'GET');
             if (response && response.status === 200) {
                 // Add unique id for DataGrid
                 const dataWithIds = (response.body.data || []).map((item, index) => ({

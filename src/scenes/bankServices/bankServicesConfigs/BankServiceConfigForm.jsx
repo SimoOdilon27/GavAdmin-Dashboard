@@ -2,15 +2,15 @@ import { Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, Snackbar
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Header from "../../components/Header";
+import Header from "../../../components/Header";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import CBS_Services from "../../services/api/GAV_Sercives";
+import CBS_Services from "../../../services/api/GAV_Sercives";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
 import { useTheme } from '@mui/material/styles';
-import { FormFieldStyles } from "../../tools/fieldValuestyle";
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 const BankServiceConfigForm = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -20,14 +20,13 @@ const BankServiceConfigForm = () => {
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const spaceId = userData?.selectedSpace?.id;
+    const type = userData?.selectedSpace?.type;
     const UserId = userData.userId;
-    const [banks, setBanks] = useState([]);
     const [services, setServices] = useState([]);
-    const [users, setUsers] = useState([]);
     const [pending, setPending] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
-    const levelOptions = ["CORPORATION", "BANK", "USER"];
+    const levelOptions = ["CORPORATION", "BANK"]; // For Credix
 
     const [formData, setFormData] = useState({
         bankOrCorporationId: spaceId,
@@ -45,30 +44,16 @@ const BankServiceConfigForm = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
-    const fetchBanks = async () => {
-        try {
-            const payload = {
-                serviceReference: 'GET_ALL_BANKS',
-                requestBody: '',
-                spaceId: spaceId,
-            };
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            if (response && response.body.meta.statusCode === 200) {
-                setBanks(response.body.data);
-            }
-        } catch (error) {
-            console.error('Error fetching banks:', error);
-        }
-    };
-
     const fetchServices = async () => {
         try {
             const payload = {
-                serviceReference: 'GET_ALL_SERVICES',
+                serviceReference: 'GET_ALL_SERVICES_TYPES',
                 requestBody: '',
                 spaceId: spaceId,
             };
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            // const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            const response = await CBS_Services('APE', 'gavServiceType/getAll', 'GET');
+
             if (response && response.body.meta.statusCode === 200) {
                 setServices(response.body.data);
             }
@@ -77,37 +62,30 @@ const BankServiceConfigForm = () => {
         }
     };
 
-    const fetchUsers = async () => {
-        try {
-            const payload = {
-                serviceReference: 'GET_ALL_USERS',
-                requestBody: '',
-                spaceId: spaceId,
-            };
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            if (response && response.body.meta.statusCode === 200) {
-                setUsers(response.body.data);
-            }
-        } catch (error) {
-            console.error('Error fetching users:', error);
-        }
-    };
+
 
     useEffect(() => {
-        fetchBanks();
         fetchServices();
-        fetchUsers();
     }, []);
 
     const handleFormSubmit = async (values) => {
         setPending(true);
         try {
+
             const submitData = {
                 ...values,
                 spaceId: spaceId,
+                level: type
             };
 
-            const response = await CBS_Services('GATEWAY', 'api/gav/serviceConfiguration/getAllServicesConfiguration/create', 'POST', submitData, token);
+            const payload = {
+                serviceReference: 'CREATE_SERVICE_CONFIGURATION',
+                requestBody: JSON.stringify(submitData),
+                spaceId: spaceId,
+            };
+
+            // const response = await CBS_Services('GATEWAY', 'api/gav/serviceConfiguration/getAllServicesConfiguration/create', 'POST', submitData, token);
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
             if (response && response.status === 200) {
 
@@ -129,7 +107,7 @@ const BankServiceConfigForm = () => {
         <Box m="20px">
             <Header
                 title="ADD SERVICE CONFIGURATION"
-                subtitle="Create a new service configuration"
+                subtitle="Create a new service configuration (This Configuration is meant for Corporations and Banks)"
             />
 
             <Formik
@@ -185,27 +163,30 @@ const BankServiceConfigForm = () => {
                                     )}
                                 </FormControl> */}
 
-                                <FormControl fullWidth variant="filled" sx={FormFieldStyles("span 2")}>
-                                    <InputLabel>Level</InputLabel>
-                                    <Select
-                                        value={values.level}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        name="level"
-                                        error={!!touched.level && !!errors.level}
-                                    >
-                                        {levelOptions.map((level) => (
-                                            <MenuItem key={level} value={level}>
-                                                {level}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {touched.level && errors.level && (
-                                        <Alert severity="error">{errors.level}</Alert>
-                                    )}
-                                </FormControl>
+                                {type === "CREDIX" &&
+                                    <FormControl fullWidth variant="filled" sx={FormFieldStyles("span 4")}>
+                                        <InputLabel>Level</InputLabel>
+                                        <Select
+                                            value={values.level}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            name="level"
+                                            error={!!touched.level && !!errors.level}
+                                        >
+                                            {levelOptions.map((level) => (
+                                                <MenuItem key={level} value={level}>
+                                                    {level}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                        {touched.level && errors.level && (
+                                            <Alert severity="error">{errors.level}</Alert>
+                                        )}
+                                    </FormControl>
+                                }
 
-                                <FormControl fullWidth variant="filled" sx={FormFieldStyles("span 2")}>
+
+                                <FormControl fullWidth variant="filled" sx={FormFieldStyles("span 4")}>
                                     <InputLabel>Services</InputLabel>
                                     <Select
                                         multiple
@@ -256,6 +237,7 @@ const BankServiceConfigForm = () => {
                                         loading={pending}
                                         loadingPosition="start"
                                         startIcon={<Save />}
+                                        disabled={type === "CREDIX"}
                                     >
                                         Create Configuration
                                     </LoadingButton>

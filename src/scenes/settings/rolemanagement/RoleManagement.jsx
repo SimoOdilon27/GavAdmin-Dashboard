@@ -398,33 +398,33 @@ const RoleManagement = () => {
                 </Typography>
             ),
         },
-        {
-            field: "permissions",
-            headerName: "Permissions",
-            flex: 1,
-            headerAlign: "center", // Center the header
-            align: "center", // Center the content
-            renderCell: (params) => {
-                const row = params.row;
-                return (
-                    <Tooltip title="Assign User Role">
-                        <Box
-                            width="30%"
-                            m="0 auto"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.greenAccent[600]}
-                            borderRadius="4px"
-                            onClick={() => handleAssignUserRole(row.roleName)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <VerifiedUser />
-                        </Box>
-                    </Tooltip>
-                );
-            },
-        },
+        // {
+        //     field: "permissions",
+        //     headerName: "Permissions",
+        //     flex: 1,
+        //     headerAlign: "center", // Center the header
+        //     align: "center", // Center the content
+        //     renderCell: (params) => {
+        //         const row = params.row;
+        //         return (
+        //             <Tooltip title="Assign User Role">
+        //                 <Box
+        //                     width="30%"
+        //                     m="0 auto"
+        //                     p="5px"
+        //                     display="flex"
+        //                     justifyContent="center"
+        //                     backgroundColor={colors.greenAccent[600]}
+        //                     borderRadius="4px"
+        //                     onClick={() => handleAssignUserRole(row.roleName)}
+        //                     style={{ cursor: 'pointer' }}
+        //                 >
+        //                     <VerifiedUser />
+        //                 </Box>
+        //             </Tooltip>
+        //         );
+        //     },
+        // },
 
         {
             field: "actions",

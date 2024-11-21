@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Topbar from "./scenes/global/Topbar";
 import Sidebar from "./scenes/global/Sidebar";
@@ -61,12 +61,25 @@ import AssignUsertoSpace from "./scenes/settings/Usermanagement/AssignUsertoSpac
 import ProtectedRoute from "./tools/ProtectedRouteComponent";
 import Menus from "./scenes/settings/menucatalog/menuItemManagement/Menus";
 import UserSubMenuForm from "./scenes/settings/menucatalog/menuItemManagement/UserSubMenuForm";
-import BankServices from "./scenes/bankServiceTypes/BankServiceTypes";
-import BankServicesForm from "./scenes/bankServiceTypes/BankServicesTypesForm";
+import BankServices from "./scenes/bankServices/bankServiceTypes/BankServiceTypes";
+import BankServicesForm from "./scenes/bankServices/bankServiceTypes/BankServicesTypesForm";
+import BankServiceConfigForm from "./scenes/bankServices/bankServicesConfigs/BankServiceConfigForm";
+import BankServiceConfigs from "./scenes/bankServices/bankServicesConfigs/BankServiceConfigs";
+import { useDispatch } from "react-redux";
 
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
+
+  const dispatch = useDispatch();
+
+  // Sync color mode with Redux store when it changes
+  useEffect(() => {
+    dispatch({
+      type: 'SET_COLOR_MODE',
+      colorMode: theme.palette.mode
+    });
+  }, [theme.palette.mode, dispatch]);
 
   return (
 
@@ -151,6 +164,9 @@ function App() {
                 <Route path="/bankservices" element={<ProtectedRoute><BankServices /></ProtectedRoute>} />
                 <Route path="/bankservices/add" element={<ProtectedRoute><BankServicesForm /></ProtectedRoute>} />
                 <Route path="/bankservices/edit/:serviceName" element={<ProtectedRoute><BankServicesForm /></ProtectedRoute>} />
+                <Route path="/bankservicesconfigs" element={<ProtectedRoute><BankServiceConfigs /></ProtectedRoute>} />
+                <Route path="/bankserviceconfigs/add" element={<ProtectedRoute><BankServiceConfigForm /></ProtectedRoute>} />
+                <Route path="/bankservicesconfigs/edit/:id" element={<ProtectedRoute><BankServiceConfigForm /></ProtectedRoute>} />
 
               </Routes>
 

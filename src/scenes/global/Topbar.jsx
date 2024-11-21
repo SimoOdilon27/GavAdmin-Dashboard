@@ -34,10 +34,28 @@ const Topbar = () => {
   const Space = useSelector(state => state.users?.selectedSpace?.intitule);
   const UserId = userData.userId;
   const [space, setSpace] = useState(selectedSpace);
+  const storedColorMode = useSelector((state) => state.users.colorMode);
 
   const handleRefresh = () => {
     window.location.reload();
   }
+
+  useEffect(() => {
+    if (storedColorMode && storedColorMode !== theme.palette.mode) {
+      colorMode.toggleColorMode();
+    }
+  }, [storedColorMode]);
+
+  const handleColorModeToggle = () => {
+    // Toggle color mode in context
+    colorMode.toggleColorMode();
+
+    // Update color mode in Redux store
+    dispatch({
+      type: 'SET_COLOR_MODE',
+      colorMode: theme.palette.mode === 'dark' ? 'light' : 'dark'
+    });
+  };
 
   const handleSpaceChange = async (event) => {
     const newSpace = event.target.value;
@@ -181,7 +199,7 @@ const Topbar = () => {
           </Box>
           {/* ICONS */}
           <Box display="flex">
-            <IconButton onClick={colorMode.toggleColorMode}>
+            <IconButton onClick={handleColorModeToggle}>
               {theme.palette.mode === "dark" ? (
                 <DarkModeOutlinedIcon />
               ) : (

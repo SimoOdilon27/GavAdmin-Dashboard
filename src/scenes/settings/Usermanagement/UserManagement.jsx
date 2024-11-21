@@ -12,8 +12,7 @@ import { LoadingButton } from '@mui/lab';
 import { Formik } from 'formik';
 import { formatValue } from '../../../tools/formatValue';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-
-
+import { FormFieldStyles } from '../../../tools/fieldValuestyle';
 
 
 const UserManagement = () => {
@@ -23,7 +22,8 @@ const UserManagement = () => {
 
     const [formData, setFormData] = useState({
         userNameOrEmail: '',
-        refId: ''
+        refId: '',
+        bankCode: '',
     })
     const [assignbankCode, setAssignbankCode] = useState({
         userNameOrEmail: '',
@@ -124,32 +124,7 @@ const UserManagement = () => {
         fetchUserData();
     }, []);
 
-    const handleConfirmRefId = async () => {
-        setLoading(true);
-        try {
-            const response = await CBS_Services('GATEWAY', `authentification/assignRefIdToUser/${formData.userNameOrEmail}/${formData.refId}`, 'POST', formData, token);
 
-            console.log("response", response);
-            if (response && response.status === 200) {
-                handleToggleModal();
-                await fetchUserData();
-                showSnackbar('Ref Id assigned successfully.', 'success');
-
-            } else if (response && response.status === 401) {
-                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
-            }
-
-            else {
-                showSnackbar(response.body.errors || 'Error Assigning RefId', 'error');
-
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showSnackbar('Network Error!!! Try again Later.', 'error');
-        }
-
-        setLoading(false);
-    };
 
     const handleAddUser = () => {
         navigate('/usermanagement/adduser');
@@ -160,6 +135,7 @@ const UserManagement = () => {
 
     const handleToggleModal = () => {
         setShowModal(!showModal);
+        setFormData({});
     }
 
     useEffect(() => {
@@ -179,7 +155,7 @@ const UserManagement = () => {
             console.log("fetchbankid", response);
 
             if (response && response.status === 200) {
-                setBankCode(response.body.data);
+                setBankCode(response.body.data || []);
 
             } else if (response && response.body.status === 401) {
                 // showSnackbar("Unauthorized to perform action", 'success');
@@ -193,36 +169,32 @@ const UserManagement = () => {
         }
     };
 
-    const handleAssignUserRole = (assignbankCode) => {
-        setSelectedRow(assignbankCode);
-        setAssignbankCode({
-            ...assignbankCode,
-            userNameOrEmail: assignbankCode,
-            bankCode: '',
-        });
-        setShowAssignBankCodeModal(!showAssignBankCodeModal);
-    };
 
-    const handleConfirmAssignBankCode = async () => {
+
+
+
+    const handleConfirmAssignment = async () => {
         setLoading(true);
         try {
+            // First, assign Ref ID
+            const refIdResponse = await CBS_Services('GATEWAY', `authentification/assignRefIdToUser/${formData.userNameOrEmail}/${formData.refId}`, 'POST', formData, token);
 
-            const response = await CBS_Services('GATEWAY', `authentification/assignBankCodeToUser/${selectedRow}/${assignbankCode.bankCode}`, 'POST', assignbankCode, token);
+            // Then, assign Bank Code
+            const bankCodeResponse = await CBS_Services('GATEWAY', `authentification/assignBankCodeToUser/${formData.userNameOrEmail}/${formData.bankCode}`, 'POST', formData, token);
 
-            console.log("responseassign", response);
+            console.log("formaData", formData);
 
-            if (response && response.status === 200) {
-                showSnackbar('Bank Code assigned successfully.', 'success');
-                handleToggleAssignBankCodeModal();
+            if (refIdResponse && refIdResponse.status === 200 && bankCodeResponse && bankCodeResponse.status === 200) {
                 await fetchUserData();
+                setShowModal(false);
+                showSnackbar('Ref ID and Bank Code assigned successfully', 'success');
             } else {
-                showSnackbar(response.body.errors || 'Error assigning Bank Code.', 'error');
+                showSnackbar('Error assigning Ref ID or Bank Code', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
             showSnackbar('Network Error! Try again later.', 'error');
         }
-
         setLoading(false);
     };
 
@@ -230,20 +202,20 @@ const UserManagement = () => {
         // { field: "id", headerName: "ID", flex: 1 },
         { field: "userName", headerName: "User Name", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
         { field: "email", headerName: "Email", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
-        { field: "role", headerName: "Role", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
+        { field: "createdBy", headerName: "Created By", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
         { field: "refId", headerName: "Ref Id", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
         { field: "bankCode", headerName: "Bank Code", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
-
+        { field: "createdAt", headerName: "Date Created", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
         {
             field: "permissions",
-            headerName: "Assign Bank Code",
+            headerName: "Assign Teller User To Bank",
             flex: 1,
             headerAlign: "center", align: "center",
             renderCell: (params) => {
                 const row = params.row;
                 return (
                     <>
-                        <Tooltip title="Assign Bank Code">
+                        <Tooltip title="Assign">
 
                             <Box
                                 width="30%"
@@ -253,21 +225,17 @@ const UserManagement = () => {
                                 justifyContent="center"
                                 backgroundColor={colors.greenAccent[600]}
                                 borderRadius="4px"
-                                onClick={() => handleAssignUserRole(row.userName)}
+                                onClick={() => {
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        userNameOrEmail: row.userName
+                                    }));
+                                    setShowModal(true);
+                                }}
                             >
                                 <AssuredWorkload />
                             </Box>
-                            {/* <Box
-                            width="30%"
-                            m="0"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.redAccent[600]}
-                            borderRadius="4px"
-                        >
-                            <Delete />
-                        </Box> */}
+
                         </Tooltip>
                     </>
                 );
@@ -334,7 +302,7 @@ const UserManagement = () => {
                         <Add sx={{ mr: "10px" }} />
                         Add User
                     </Button>
-                    <Button
+                    {/* <Button
                         sx={{
                             backgroundColor: colors.blueAccent[700],
                             color: colors.grey[100],
@@ -347,7 +315,7 @@ const UserManagement = () => {
                     >
                         <Add sx={{ mr: "10px" }} />
                         Assign RefId
-                    </Button>
+                    </Button> */}
 
                 </Box>
             </Box>
@@ -396,222 +364,69 @@ const UserManagement = () => {
 
 
             <Dialog open={showModal} onClose={handleToggleModal} fullWidth  >
-                <DialogTitle>Assign RefId</DialogTitle>
+                <DialogTitle>Assign Ref ID and Bank Code to {formatValue(formData?.userNameOrEmail)}</DialogTitle>
                 <DialogContent>
                     <form noValidate autoComplete="off">
-                        <Box
-                            display="grid"
-                            gap="30px"
-                            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                        >
-
+                        <Box display="grid" gap="30px" gridTemplateColumns="repeat(4, minmax(0, 1fr))">
                             {/* <TextField
                                 fullWidth
                                 variant="filled"
-                                type="text"
-                                label="UserName or Email"
-                                onChange={(e) => setFormData({ ...formData, userNameOrEmail: e.target.value })}
-                                name="userNameOrEmail"
+                                label="User Name"
                                 value={formData.userNameOrEmail}
+                                disabled
                                 sx={{ gridColumn: "span 4" }}
                             /> */}
 
-
-                            <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
-                                <InputLabel>Menu</InputLabel>
-                                <Select
-                                    label="UserName or Email"
-                                    onChange={(e) => setFormData({ ...formData, userNameOrEmail: e.target.value })}
-
-                                    name="userNameOrEmail"
-                                    value={formData.userNameOrEmail}
-                                    startAdornment={
-                                        <InputAdornment position="start">
-                                            <MenuBook />
-                                        </InputAdornment>
-                                    }
-                                    MenuProps={MenuProps}
-                                >
-                                    <ListSubheader>
-                                        <TextField
-                                            size="small"
-                                            autoFocus
-                                            placeholder="Type to search..."
-                                            fullWidth
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <Search />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key !== 'Escape') {
-                                                    e.stopPropagation();
-                                                }
-                                            }}
-                                        />
-                                    </ListSubheader>
-                                    <MenuItem value="">
-                                        <em>Select User</em>
-                                    </MenuItem>
-                                    {Array.isArray(usersData) && usersData.length > 0 ? (
-                                        usersData.filter(option =>
-                                            option.userName.toLowerCase().includes(searchTerm.toLowerCase())
-                                        ).map(option => (
-                                            <MenuItem key={option.userName} value={option.userName}>
-                                                {option.userName}
-                                            </MenuItem>
-                                        ))
-                                    ) : (
-                                        <MenuItem value="">No User available</MenuItem>
-                                    )}
-                                </Select>
-
-                            </FormControl>
                             <TextField
                                 fullWidth
                                 variant="filled"
-                                type="text"
-                                label="RefId"
-                                onChange={(e) => setFormData({ ...formData, refId: e.target.value })}
-                                name="refId"
+                                label="Ref ID"
                                 value={formData.refId}
-                                sx={{ gridColumn: "span 4" }}
+                                onChange={(e) => setFormData(prev => ({
+                                    ...prev,
+                                    refId: e.target.value
+                                }))}
+                                sx={FormFieldStyles("span 4")}
                             />
 
-
-
+                            <FormControl fullWidth variant="filled" sx={FormFieldStyles("span 4")} >
+                                <InputLabel>Bank</InputLabel>
+                                <Select
+                                    value={formData.bankCode || []}
+                                    onChange={(e) => setFormData(prev => ({
+                                        ...prev,
+                                        bankCode: e.target.value
+                                    }))}
+                                    startAdornment={
+                                        <InputAdornment position="start">
+                                            <AssuredWorkload />
+                                        </InputAdornment>
+                                    }
+                                >
+                                    <MenuItem value={""} disabled>Select Bank</MenuItem>
+                                    {(Array.isArray(bankCode) ? bankCode : []).map(bank => (
+                                        <MenuItem key={bank.bankCode} value={bank.bankCode}>
+                                            {bank.bankName}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Box>
 
                     </form>
                 </DialogContent>
                 <DialogActions>
-                    <LoadingButton onClick={handleConfirmRefId} variant="contained" color="primary" loading={loading} loadingPosition="start"
-                        startIcon={<Assignment />}>
-                        Assign RefId
-                    </LoadingButton>
                     <Button onClick={handleToggleModal} variant="outlined" color="secondary">
                         Cancel
                     </Button>
+                    <LoadingButton onClick={handleConfirmAssignment} variant="contained" color="primary" loading={loading} loadingPosition="start"
+                        startIcon={<Assignment />}>
+                        Assign
+                    </LoadingButton>
+
                 </DialogActions>
             </Dialog>
 
-            <Dialog open={showAssignBankCodeModal} onClose={handleToggleAssignBankCodeModal} fullWidth >
-                <DialogTitle>Assign Bank Code</DialogTitle>
-                <DialogContent>
-
-                    <Formik
-                        onSubmit={handleConfirmAssignBankCode}
-                        initialValues={assignbankCode}
-                        enableReinitialize={true}
-                    >
-                        {({
-                            values,
-                            errors,
-                            touched,
-                            handleBlur,
-                            handleChange,
-                            handleSubmit,
-                            setFieldValue
-                        }) => (
-                            <form onSubmit={handleSubmit}>
-                                <Box
-                                    display="grid"
-                                    gap="30px"
-                                    gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                                    sx={{
-                                        "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                                    }}
-                                >
-
-
-                                    <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
-                                        <InputLabel>Bank</InputLabel>
-                                        <Select
-                                            label="Bank"
-                                            onBlur={handleBlur}
-                                            onChange={(e) => {
-                                                handleChange(e);
-                                                setFieldValue("bankCode", e.target.value);
-                                                setAssignbankCode({ ...assignbankCode, bankCode: e.target.value });
-                                            }}
-                                            value={values.bankCode}
-                                            name="bankCode"
-                                            error={!!touched.bankCode && !!errors.bankCode}
-                                            startAdornment={
-                                                <InputAdornment position="start">
-                                                    <MenuBook />
-                                                </InputAdornment>
-                                            }
-                                            MenuProps={MenuProps}
-                                        >
-                                            <ListSubheader>
-                                                <TextField
-                                                    size="small"
-                                                    autoFocus
-                                                    placeholder="Type to search..."
-                                                    fullWidth
-                                                    InputProps={{
-                                                        startAdornment: (
-                                                            <InputAdornment position="start">
-                                                                <Search />
-                                                            </InputAdornment>
-                                                        ),
-                                                    }}
-                                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key !== 'Escape') {
-                                                            e.stopPropagation();
-                                                        }
-                                                    }}
-                                                />
-                                            </ListSubheader>
-                                            <MenuItem value="">
-                                                <em>Select Menu</em>
-                                            </MenuItem>
-                                            {Array.isArray(bankCode) && bankCode.length > 0 ? (
-                                                bankCode.filter(option =>
-                                                    option.id.toLowerCase().includes(searchTerm.toLowerCase())
-                                                ).map(option => (
-                                                    <MenuItem key={option.bankCode} value={option.bankCode}>
-                                                        {option.bankName}
-                                                    </MenuItem>
-                                                ))
-                                            ) : (
-                                                <MenuItem value="">No Bank available</MenuItem>
-                                            )}
-                                        </Select>
-                                        {touched.bankCode && errors.bankCode && (
-                                            <Alert severity="error">{errors.bankCode}</Alert>
-                                        )}
-                                    </FormControl>
-
-                                </Box>
-
-                            </form>
-                        )}
-                    </Formik>
-
-
-                </DialogContent>
-                <DialogActions>
-                    <Box display="flex" justifyContent="end" mt="20px">
-                        <Stack direction="row" spacing={2}>
-
-                            <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
-                                startIcon={<AssuredWorkload />} onClick={handleConfirmAssignBankCode}>
-                                Assign
-                            </LoadingButton>
-
-                            <Button color="primary" variant="contained" disabled={loading} onClick={handleToggleAssignBankCodeModal}>
-                                Cancel
-                            </Button>
-                        </Stack>
-                    </Box>
-                </DialogActions>
-            </Dialog>
 
             <Snackbar
                 open={snackbar.open}

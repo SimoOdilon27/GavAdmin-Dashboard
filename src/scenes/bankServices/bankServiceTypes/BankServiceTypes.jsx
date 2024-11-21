@@ -6,10 +6,10 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Add, Delete, EditOutlined } from '@mui/icons-material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useTheme } from '@mui/material';
-import { tokens } from '../../theme';
-import { formatValue } from '../../tools/formatValue';
-import CBS_Services from '../../services/api/GAV_Sercives';
-import Header from '../../components/Header';
+import { tokens } from '../../../theme';
+import { formatValue } from '../../../tools/formatValue';
+import CBS_Services from '../../../services/api/GAV_Sercives';
+import Header from '../../../components/Header';
 
 const BankServices = () => {
     const theme = useTheme();
@@ -22,6 +22,7 @@ const BankServices = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
     const open = Boolean(anchorEl);
+    const token = userData.token;
 
     const handleClick = (event, row) => {
         setAnchorEl(event.currentTarget);
@@ -49,7 +50,8 @@ const BankServices = () => {
                 requestBody: "",
                 spaceId: spaceId,
             }
-            const response = await CBS_Services('APE', 'gavServiceType/getAll', 'GET');
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            // const response = await CBS_Services('APE', 'gavServiceType/getAll', 'GET');
             if (response && response.status === 200) {
                 setBankServicesData(response.body.data || []);
             } else {

@@ -25,12 +25,14 @@ import {
     ManageAccounts,
     MapOutlined,
     Money,
+    SafetyDivider,
     Settings,
     SettingsApplicationsOutlined,
     SupervisedUserCircleOutlined,
     SupervisorAccountRounded,
     TypeSpecimen,
-    Widgets
+    Widgets,
+    Workspaces
 } from "@mui/icons-material";
 
 export const AVAILABLE_ICONS = {
@@ -64,6 +66,8 @@ export const AVAILABLE_ICONS = {
     AdminPanelSettings: AdminPanelSettings,
     SupervisorAccountRounded: SupervisorAccountRounded,
     Settings: Settings,
+    SafetyDivider: SafetyDivider,
+    Workspaces: Workspaces,
 };
 
 const IconSelector = ({ value, onChange, error, helperText, label = "Select Icon" }) => {
