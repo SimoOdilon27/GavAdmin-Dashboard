@@ -53,19 +53,23 @@ const RoleForm = () => {
 
     const handleFormSubmit = async (values) => {
         setPending(true);
+        console.log("values====", values);
 
         let submitData = {}
 
-        if (values.subsItemId.length === 0) {
+        if (values.subItemId.length > 0) {
+            // If sub-items are selected, send empty itemId
             submitData = {
                 ...values,
-                itemId: [values.itemId],
-
+                itemId: [],
+                subItemId: values.subItemId
             };
         } else {
+            // If only items are selected, send the selected items
             submitData = {
                 ...values,
-                itemId: []
+                itemId: values.itemId,
+                subItemId: []
             };
         }
         console.log("submitData====", submitData);
@@ -131,23 +135,51 @@ const RoleForm = () => {
     };
 
 
-    const fetchSubItemDataById = async (itemId) => {
+    // const fetchSubItemDataById = async (itemId) => {
+    //     setPending(true);
+    //     try {
+    //         const response = await CBS_Services('GATEWAY', `clientGateWay/subItem/getAllSubItemByItemId/${itemId}`, 'GET', null, token);
+    //         console.log("respone=====", response);
+
+    //         if (response && response.status === 200) {
+    //             setSubItemData(response.body.data || []);
+    //         } else {
+    //             setSubItemData([]);
+    //             showSnackbar('Error Finding SubItem Data.', 'error');
+    //         }
+    //     } catch (error) {
+    //         console.log('Error:', error);
+    //     }
+    //     setPending(false);
+    // };
+
+    const fetchSubItemDataByItemIds = async (itemIds) => {
         setPending(true);
         try {
-            const response = await CBS_Services('GATEWAY', `clientGateWay/subItem/getAllSubItemByItemId/${itemId}`, 'GET', null, token);
-            console.log("respone=====", response);
+            const subItemPromises = itemIds.map(itemId =>
+                CBS_Services('GATEWAY', `clientGateWay/subItem/getAllSubItemByItemId/${itemId}`, 'GET', null, token)
+            );
 
-            if (response && response.status === 200) {
-                setSubItemData(response.body.data || []);
-            } else {
-                setSubItemData([]);
-                showSnackbar('Error Finding SubItem Data.', 'error');
-            }
+            const responses = await Promise.all(subItemPromises);
+            const combinedSubItems = responses.reduce((acc, response) => {
+                if (response && response.status === 200) {
+                    return [...acc, ...(response.body.data || [])];
+                }
+                return acc;
+            }, []);
+
+            // Remove duplicate subitems
+            const uniqueSubItems = Array.from(new Set(combinedSubItems.map(item => item.id)))
+                .map(id => combinedSubItems.find(item => item.id === id));
+
+            setSubItemData(uniqueSubItems);
         } catch (error) {
             console.log('Error:', error);
+            showSnackbar('Error Finding SubItem Data.', 'error');
         }
         setPending(false);
     };
+
 
     useEffect(() => {
         fetchTypeData();
@@ -155,18 +187,18 @@ const RoleForm = () => {
         // fetchSubItemData();
     }, []);
 
-    const handleItemChange = (formikProps, itemId) => {
-        formikProps.setFieldValue("itemId", itemId);
+    const handleItemChange = (formikProps, itemIds) => {
+        formikProps.setFieldValue("itemId", itemIds);
         formikProps.setFieldValue("subItemId", []);
         setSelectedSubItems([]);
-        fetchSubItemDataById(itemId);
+        // fetchSubItemDataById(itemId);
+        fetchSubItemDataByItemIds(itemIds);
 
     };
 
     const filterItemDataByType = (typeId) => {
         // Ensure typeId is an array
         const typeArray = Array.isArray(typeId) ? typeId : [typeId];
-
         const filtered = itemData.filter((item) =>
             typeArray.some(type => item.typeId.includes(type))
         );
@@ -320,9 +352,10 @@ const RoleForm = () => {
                                     sx={FormFieldStyles("span 2")}
                                     disabled={!values.typeId}
                                 >
-                                    <InputLabel>Items</InputLabel>
+                                    <InputLabel>Menus</InputLabel>
                                     <Select
-                                        label="Items"
+                                        multiple
+                                        label="Menus"
                                         onBlur={handleBlur}
                                         onChange={(e) => {
                                             handleItemChange({ setFieldValue }, e.target.value);
@@ -330,6 +363,12 @@ const RoleForm = () => {
                                         value={values.itemId}
                                         name="itemId"
                                         error={!!touched.itemId && !!errors.itemId}
+                                        renderValue={(selected) =>
+                                            filteredItemData
+                                                .filter(item => selected.includes(item.id))
+                                                .map(item => item.title)
+                                                .join(", ")
+                                        }
                                     >
                                         <MenuItem value="" selected disabled>Select Menu</MenuItem>
                                         {Array.isArray(filteredItemData) && filteredItemData.length > 0 ? (
@@ -354,10 +393,10 @@ const RoleForm = () => {
                                     sx={FormFieldStyles("span 2")}
                                     disabled={!values.itemId?.length}
                                 >
-                                    <InputLabel>Sub Items</InputLabel>
+                                    <InputLabel>Sub Menus</InputLabel>
                                     <Select
                                         multiple
-                                        label="Sub Items"
+                                        label="Sub Menus"
                                         onBlur={handleBlur}
                                         onChange={(e) => {
                                             setFieldValue("subItemId", e.target.value);
