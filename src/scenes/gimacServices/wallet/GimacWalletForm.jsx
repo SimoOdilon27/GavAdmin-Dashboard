@@ -257,11 +257,13 @@ const GimacWalletForm = () => {
                                     >
                                         <MenuItem value="" selected disabled>Select Wallet Type</MenuItem>
                                         {Array.isArray(countryData) && countryData.length > 0 ? (
-                                            countryData.map((option) => (
-                                                <MenuItem key={option.countryId} value={option.countryId}>
-                                                    {option.country}
-                                                </MenuItem>
-                                            ))
+                                            countryData
+                                                .sort((a, b) => a.country.localeCompare(b.country)) // Correct alphabetical sorting
+                                                .map((option) => (
+                                                    <MenuItem key={option.countryId} value={option.countryId}>
+                                                        {option.country}
+                                                    </MenuItem>
+                                                ))
                                         ) : (
                                             <option value="">No Countries available</option>
                                         )}

@@ -158,8 +158,8 @@ const ClientForm = () => {
     return (
         <Box m="20px">
             <Header
-                title={msisdn ? "EDIT CLIENT ACCOUNT" : "ONBOARD CLIENT"}
-                subtitle={msisdn ? "Edit the client account" : "Onboard a new client"}
+                title={msisdn ? "EDIT CLIENT " : "ONBOARD CLIENT"}
+                subtitle={msisdn ? "Edit the client" : "Onboard a new client"}
             />
 
             <Formik
@@ -523,7 +523,7 @@ const ClientForm = () => {
                                     </Button>
                                     <LoadingButton type="submit" color="secondary" variant="contained" loading={pending} loadingPosition="start"
                                         startIcon={<Save />}>
-                                        {msisdn ? "Update Client Account" : "Onboard Client"}
+                                        {msisdn ? "Update Client" : "Onboard Client"}
                                     </LoadingButton>
 
                                 </Stack>

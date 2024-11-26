@@ -6,7 +6,7 @@ import { Box, Button, IconButton, Menu, MenuItem, Tab, Tabs, useTheme, Dialog, D
 import { tokens } from '../../../../theme';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../../../components/Header';
-import { Add, Delete, EditOutlined, Search, VerifiedUser } from '@mui/icons-material';
+import { Add, Delete, EditOutlined, Extension, Search, VerifiedUser } from '@mui/icons-material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { formatValue } from '../../../../tools/formatValue';
 import { LoadingButton } from '@mui/lab';
@@ -39,6 +39,7 @@ const Menus = () => {
             ressourceId: [],
         }
     )
+
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "" });
 
     const showSnackbar = (message, severity) => {
@@ -302,6 +303,7 @@ const Menus = () => {
         { field: "title", headerName: "Menu Title", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "typeId", headerName: "Type", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "icon", headerName: "Icon", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "route", headerName: "Route", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "menuOrder", headerName: "Menu Order", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {
             field: "actions",
@@ -347,6 +349,7 @@ const Menus = () => {
         { field: "title", headerName: "Sub-Menu Title", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         // { field: "itemId", headerName: "Parent Menu", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "icon", headerName: "Icon", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "menuOrder", headerName: "Sub-Menu Order", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "route", headerName: "Route", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {
             field: "permissions",
@@ -405,8 +408,8 @@ const Menus = () => {
                             <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
                             Edit
                         </MenuItem>
-                        <MenuItem onClick={() => handleEditSubMenu(currentRow)}>
-                            <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                        <MenuItem onClick={() => handleAssignUserRole(currentRow.id)}>
+                            <Extension fontSize="small" style={{ marginRight: "8px" }} />
                             Assign Resource
                         </MenuItem>
 
@@ -569,13 +572,13 @@ const Menus = () => {
                     fullWidth
                     maxWidth="md" // Increased width for better visibility
                 >
-                    <DialogTitle>Assign Role to Multiple Menus</DialogTitle>
+                    <DialogTitle>Assign Resource to Sub-Menu</DialogTitle>
                     <DialogContent>
                         <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
                             <TextField
                                 fullWidth
                                 sx={{ mb: 2 }}
-                                placeholder="Search menus..."
+                                placeholder="Search Resources..."
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 InputProps={{
                                     startAdornment: (
@@ -659,6 +662,15 @@ const Menus = () => {
                                 ) : ("")}
                             </Box>
                             <Stack direction="row" spacing={2}>
+
+                                <Button
+                                    color="primary"
+                                    variant="contained"
+                                    disabled={loading}
+                                    onClick={handleToggleAssignRoleModal}
+                                >
+                                    Cancel
+                                </Button>
                                 <LoadingButton
                                     type="submit"
                                     color="secondary"
@@ -671,14 +683,7 @@ const Menus = () => {
                                 >
                                     Assign
                                 </LoadingButton>
-                                <Button
-                                    color="primary"
-                                    variant="contained"
-                                    disabled={loading}
-                                    onClick={handleToggleAssignRoleModal}
-                                >
-                                    Cancel
-                                </Button>
+
                             </Stack>
                         </Box>
                     </DialogActions>

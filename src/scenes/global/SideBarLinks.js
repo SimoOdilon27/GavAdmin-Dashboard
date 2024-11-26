@@ -3,6 +3,7 @@ export const MenuLinks = [
 
     { linkname: "Account Settings", value: "" },
     { linkname: "Account type", value: "/accounttype" },
+    { linkname: "Add Account type", value: "/accounttype/add" },
     { linkname: "Charges", value: "/charges" },
     { linkname: "Pricing Configuration", value: "/pricing/configure" },
     { linkname: "Configure Charges", value: "/pricing/configurecharges" },

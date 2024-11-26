@@ -460,16 +460,54 @@ const CreateMenuForm = () => {
 
                                         {(initialValues.icon !== "") ? <>
                                             {(
-                                                <Box sx={formFieldStyles("span 4")}>
-                                                    <IconSelector
-                                                        value={values.icon}
-                                                        onChange={(newValue) => setFieldValue('icon', newValue)}
-                                                        error={!!touched.icon && !!errors.icon}
-                                                        helperText={touched.icon && errors.icon}
-                                                        label="Select Icon"
+                                                <>
+                                                    <Box sx={formFieldStyles("span 2")}>
+                                                        <IconSelector
+                                                            value={values.icon}
+                                                            onChange={(newValue) => setFieldValue('icon', newValue)}
+                                                            error={!!touched.icon && !!errors.icon}
+                                                            helperText={touched.icon && errors.icon}
+                                                            label="Select Icon"
 
-                                                    />
-                                                </Box>
+                                                        />
+                                                    </Box>
+
+                                                    <FormControl fullWidth variant="filled"
+                                                        sx={formFieldStyles("span 2")}>
+                                                        <InputLabel>Route</InputLabel>
+                                                        <Select
+                                                            label="Route"
+                                                            onBlur={handleBlur}
+                                                            onChange={handleChange}
+                                                            value={values.route}
+                                                            name="route"
+                                                            error={!!touched.route && !!errors.route}
+                                                        >
+                                                            <MenuItem value="" disabled>Select Path</MenuItem>
+                                                            {MenuLinks.map((menu) => (
+                                                                <MenuItem key={menu.value} sx={{
+                                                                    marginTop: !menu.value ? 2 : 0,
+                                                                }} value={menu.value} disabled={!menu.value}>
+                                                                    {formatValue(menu.linkname)}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                        {touched.route && errors.route && (
+                                                            <Alert severity="error">{errors.route}</Alert>
+                                                        )}
+                                                    </FormControl>
+
+                                                    <Button
+                                                        color="secondary"
+                                                        variant="outlined"
+                                                        startIcon={<Label />}
+                                                        onClick={() => handleOpenTagModal()}
+                                                        sx={{ mt: 0 }}
+                                                    >
+                                                        Select Tags ({(values?.tagId || []).length})
+                                                    </Button>
+
+                                                </>
                                             )}
                                         </> :
 
@@ -479,16 +517,53 @@ const CreateMenuForm = () => {
                                     </>
                                     : <>
                                         {(!values.hasSubMenu) && (
-                                            <Box sx={formFieldStyles("span 4")}>
-                                                <IconSelector
-                                                    value={values.icon}
-                                                    onChange={(newValue) => setFieldValue('icon', newValue)}
-                                                    error={!!touched.icon && !!errors.icon}
-                                                    helperText={touched.icon && errors.icon}
-                                                    label="Select Icon"
+                                            <>
+                                                <Box sx={formFieldStyles("span 2")}>
+                                                    <IconSelector
+                                                        value={values.icon}
+                                                        onChange={(newValue) => setFieldValue('icon', newValue)}
+                                                        error={!!touched.icon && !!errors.icon}
+                                                        helperText={touched.icon && errors.icon}
+                                                        label="Select Icon"
 
-                                                />
-                                            </Box>
+                                                    />
+                                                </Box>
+
+                                                <FormControl fullWidth variant="filled"
+                                                    sx={formFieldStyles("span 2")}>
+                                                    <InputLabel>Route</InputLabel>
+                                                    <Select
+                                                        label="Route"
+                                                        onBlur={handleBlur}
+                                                        onChange={handleChange}
+                                                        value={values.route}
+                                                        name="route"
+                                                        error={!!touched.route && !!errors.route}
+                                                    >
+                                                        <MenuItem value="" disabled>Select Path</MenuItem>
+                                                        {MenuLinks.map((menu) => (
+                                                            <MenuItem key={menu.value} sx={{
+                                                                marginTop: !menu.value ? 2 : 0,
+                                                            }} value={menu.value} disabled={!menu.value}>
+                                                                {formatValue(menu.linkname)}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                    {touched.route && errors.route && (
+                                                        <Alert severity="error">{errors.route}</Alert>
+                                                    )}
+                                                </FormControl>
+
+                                                <Button
+                                                    color="secondary"
+                                                    variant="outlined"
+                                                    startIcon={<Label />}
+                                                    onClick={() => handleOpenTagModal()}
+                                                    sx={{ mt: 0 }}
+                                                >
+                                                    Select Tags ({(values?.tagId || []).length})
+                                                </Button>
+                                            </>
                                         )}
                                     </>
                                 }

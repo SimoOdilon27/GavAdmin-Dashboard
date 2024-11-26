@@ -49,6 +49,7 @@ const UserSubMenuForm = () => {
         title: "",
         route: "",
         icon: "",
+        menuOrder: "",
         tagId: []
     })
 
@@ -303,7 +304,20 @@ const UserSubMenuForm = () => {
                                     name="title"
                                     error={!!touched.title && !!errors.title}
                                     helperText={touched.title && errors.title}
-                                    sx={formFieldStyles("span 4")}
+                                    sx={formFieldStyles("span 3")}
+                                />
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="number"
+                                    label="Sub Menu Order"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.menuOrder}
+                                    name="menuOrder"
+                                    error={!!touched.menuOrder && !!errors.menuOrder}
+                                    helperText={touched.menuOrder && errors.menuOrder}
+                                    sx={formFieldStyles("span 1")}
                                 />
                                 <TextField
                                     fullWidth
@@ -344,15 +358,15 @@ const UserSubMenuForm = () => {
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>
-
+                                    <Button color="primary" variant="contained" disabled={pending} onClick={() => navigate(-1)}>
+                                        Cancel
+                                    </Button>
                                     <LoadingButton type="submit" color="secondary" variant="contained" loading={pending} loadingPosition="start"
                                         startIcon={<Save />}>
                                         {id ? "Update SubMenu" : "Create SubMenu"}
                                     </LoadingButton>
 
-                                    <Button color="primary" variant="contained" disabled={pending} onClick={() => navigate(-1)}>
-                                        Cancel
-                                    </Button>
+
                                 </Stack>
                             </Box>
                         </form>

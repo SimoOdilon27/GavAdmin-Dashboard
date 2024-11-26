@@ -52,8 +52,10 @@ const AccountTypeForm = () => {
                 const payload = {
                     serviceReference: 'UPDATE_ACCOUNT_TYPE',
                     requestBody: JSON.stringify(values),
+                    spaceId: spaceId,
                 }
-                console.log("values", values);
+                console.log("payload", payload);
+                // console.log("values", values);
 
                 response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
@@ -72,18 +74,20 @@ const AccountTypeForm = () => {
                 const payload = {
                     serviceReference: 'CREATE_ACCOUNT_TYPE',
                     requestBody: JSON.stringify(values),
+                    spaceId: spaceId,
                 }
                 console.log("values", values);
                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+                console.log("response", response);
 
                 // response = await CBS_Services('APE', 'teller/create', 'POST', values);
                 if (response && response.body.meta.statusCode === 200) {
-                    showSnackbar('Teller Created Successfully.', 'success');
+                    showSnackbar('Account type Created Successfully.', 'success');
                     setTimeout(() => {
-                        navigate('/accountype');
+                        navigate(-1);
                     }, 2000);
                 } else {
-                    showSnackbar(response.body.errors || 'Error Adding Teller', 'error');
+                    showSnackbar(response.body.errors || 'Error Adding Account Type', 'error');
                 }
             }
         } catch (error) {

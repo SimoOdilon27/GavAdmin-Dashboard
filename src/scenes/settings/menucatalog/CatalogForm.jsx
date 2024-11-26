@@ -109,8 +109,8 @@ const CatalogForm = () => {
     return (
         <Box m="20px">
             <Header
-                title={id ? "EDIT CATALOG ITEM" : "ADD CATALOG ITEM"}
-                subtitle={id ? "Edit the catalog item" : "Add a new catalog item"}
+                title={id ? "EDIT RESOURCE ITEM" : "ADD RESOURCE ITEM"}
+                subtitle={id ? "Edit the Resource item" : "Add a new Resource item"}
             />
 
             <Formik
