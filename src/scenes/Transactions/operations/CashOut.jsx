@@ -7,6 +7,8 @@ import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
 import { tokens } from '../../../theme';
 import { FormFieldStyles } from '../../../tools/fieldValuestyle';
+import * as yup from 'yup';
+
 
 const CashOut = () => {
     const theme = useTheme();
@@ -89,7 +91,7 @@ const CashOut = () => {
 
             if (response?.body?.meta?.statusCode === 200) {
                 // Assuming the response contains an array of available banks
-                if (Array.isArray(response.body.data)) {
+                if (Array.isArray(response.body.data.length > 0)) {
                     setAvailableBanks(response.body.data);
                     showSnackbar("Available banks fetched successfully", 'success');
 
@@ -98,7 +100,7 @@ const CashOut = () => {
                         formikRef.current.setFieldValue('clientBankCode', '');
                     }
                 } else {
-                    showSnackbar("No banks available for this MSISDN", 'warning');
+                    // showSnackbar("No banks available for this MSISDN", 'warning');
                     setAvailableBanks([]);
                 }
             } else if (response?.body?.status === 401) {
@@ -207,6 +209,23 @@ const CashOut = () => {
         fetchAvailableBanks();
     }, [])
 
+    const checkoutSchema = yup.object().shape({
+        msisdn: yup
+            .string()
+            .required('MSISDN is required')
+            .min(9, 'MSISDN must be at least 9 characters')
+            .test(
+                'msisdn-banks-validation',
+                'No banks available for this MSISDN',
+                function (value) {
+                    // Only validate banks if MSISDN meets minimum length
+                    if (value && value.length >= 9) {
+                        return availableBanks.length > 0;
+                    }
+                    return true;
+                }
+            ),
+    });
 
 
     return (
@@ -222,6 +241,7 @@ const CashOut = () => {
                 onSubmit={handleCashOut}
                 initialValues={initialValues}
                 enableReinitialize={true}
+                validationSchema={checkoutSchema}
             >
                 {({
                     values,
@@ -240,6 +260,11 @@ const CashOut = () => {
                         }}
                     >
                         <form onSubmit={handleSubmit}>
+                            {values.msisdn && values.msisdn.length >= 9 && availableBanks.length === 0 && (
+                                <Alert severity="warning" sx={{ width: '100%', mb: 2 }}>
+                                    This MSISDN is not registered with any banks
+                                </Alert>
+                            )}
                             <Box
                                 display="grid"
                                 gap="30px"

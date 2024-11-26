@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { tokens } from '../../../theme';
 import { FormFieldStyles } from '../../../tools/fieldValuestyle';
+import * as yup from 'yup';
 
 const CashIn = () => {
     const theme = useTheme();
@@ -26,6 +27,10 @@ const CashIn = () => {
     const [loadingBanks, setLoadingBanks] = useState(false);
     const [transactionDetails, setTransactionDetails] = useState({
         amount: 0
+    });
+    const [errors, setErrors] = React.useState({
+        isError: false,
+        description: ''
     });
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
     const formikRef = useRef();
@@ -71,10 +76,11 @@ const CashIn = () => {
             };
 
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
+            console.log("response", response);
 
             if (response?.body?.meta?.statusCode === 200) {
                 // Assuming the response contains an array of available banks
-                if (Array.isArray(response.body.data)) {
+                if (Array.isArray(response.body.data.length > 0)) {
                     setAvailableBanks(response.body.data);
                     showSnackbar("Available banks fetched successfully", 'success');
 
@@ -82,8 +88,15 @@ const CashIn = () => {
                     if (formikRef.current) {
                         formikRef.current.setFieldValue('clientBankCode', '');
                     }
-                } else {
-                    showSnackbar("No banks available for this MSISDN", 'warning');
+                }
+                // else if (availableBanks.length === 0) {
+                //     setErrors({ isError: true, description: 'No banks available for this MSISDN' });
+                //     setAvailableBanks([]);
+                // }
+
+                else {
+                    // showSnackbar("This MSISDN is not registered with any banks", 'warning');
+                    // setErrors({ isError: true, description: 'This MSISDN is not registered with any banks' });
                     setAvailableBanks([]);
                 }
             } else if (response?.body?.status === 401) {
@@ -142,6 +155,24 @@ const CashIn = () => {
         setPending(false);
     };
 
+    const checkoutSchema = yup.object().shape({
+        msisdn: yup
+            .string()
+            .required('MSISDN is required')
+            .min(9, 'MSISDN must be at least 9 characters')
+            .test(
+                'msisdn-banks-validation',
+                'No banks available for this MSISDN',
+                function (value) {
+                    // Only validate banks if MSISDN meets minimum length
+                    if (value && value.length >= 9) {
+                        return availableBanks.length > 0;
+                    }
+                    return true;
+                }
+            ),
+    });
+
     return (
         <Box>
             <Box sx={{ marginLeft: '100px', marginBottom: '10px' }}>
@@ -149,6 +180,11 @@ const CashIn = () => {
                     Cash In Transaction
                 </Typography>
             </Box>
+            {/* {errors.isError && (
+                <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+                    {errors.description}
+                </Alert>
+            )} */}
 
             <Formik
                 innerRef={formikRef}
@@ -157,6 +193,7 @@ const CashIn = () => {
                     setConfirmDialog(true);
                 }}
                 initialValues={initialValues}
+                validationSchema={checkoutSchema}
                 enableReinitialize={true}
             >
                 {({
@@ -175,6 +212,11 @@ const CashIn = () => {
                         }}
                     >
                         <form onSubmit={handleSubmit}>
+                            {values.msisdn && values.msisdn.length >= 9 && availableBanks.length === 0 && (
+                                <Alert severity="warning" sx={{ width: '100%', mb: 2 }}>
+                                    This MSISDN is not registered with any banks
+                                </Alert>
+                            )}
                             <Box
                                 display="grid"
                                 gap="30px"
@@ -186,6 +228,8 @@ const CashIn = () => {
                                     "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
                                 }}
                             >
+
+
                                 <TextField
                                     fullWidth
                                     variant="filled"
@@ -384,7 +428,11 @@ const CashIn = () => {
                 </Alert>
             </Snackbar>
         </Box>
+
+
     );
 };
+
+
 
 export default CashIn

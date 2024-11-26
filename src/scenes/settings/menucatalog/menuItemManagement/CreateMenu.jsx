@@ -549,7 +549,9 @@ const CreateMenuForm = () => {
                                                             >
                                                                 <MenuItem value="" disabled>Select Path</MenuItem>
                                                                 {MenuLinks.map((menu) => (
-                                                                    <MenuItem key={menu.value} value={menu.value} disabled={!menu.value}>
+                                                                    <MenuItem key={menu.value} sx={{
+                                                                        marginTop: !menu.value ? 2 : 0,
+                                                                    }} value={menu.value} disabled={!menu.value}>
                                                                         {formatValue(menu.linkname)}
                                                                     </MenuItem>
                                                                 ))}
@@ -614,6 +616,14 @@ const CreateMenuForm = () => {
 
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>
+                                    <Button
+                                        color="primary"
+                                        variant="contained"
+                                        disabled={pending}
+                                        onClick={() => navigate(-1)}
+                                    >
+                                        Cancel
+                                    </Button>
                                     <LoadingButton
                                         type="submit"
                                         color="secondary"
@@ -624,14 +634,7 @@ const CreateMenuForm = () => {
                                         {id ? "Update Item" : "Create Item"}
                                     </LoadingButton>
 
-                                    <Button
-                                        color="primary"
-                                        variant="contained"
-                                        disabled={pending}
-                                        onClick={() => navigate(-1)}
-                                    >
-                                        Cancel
-                                    </Button>
+
                                 </Stack>
                             </Box>
 
@@ -720,12 +723,12 @@ const CreateMenuForm = () => {
                                 </Box>
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={handleCloseTagModal} color="primary" variant="contained">
+                                <Button onClick={handleCloseTagModal} color="secondary" variant="contained">
                                     Done
                                 </Button>
-                                <Button onClick={handleUnselectAll} color="secondary" variant="contained">
+                                {/* <Button onClick={handleUnselectAll} color="secondary" variant="contained">
                                     Clear Selected Tags
-                                </Button>
+                                </Button> */}
                             </DialogActions>
                         </Dialog>
                     </Box>

@@ -28,8 +28,6 @@ const Clients = () => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const [showActivateClientModal, setShowActivateClientModal] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
-    const [showModal, setShowModal] = useState(false);
-    const [bankID, setBankID] = useState('');
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentRow, setCurrentRow] = useState(null);
     const open = Boolean(anchorEl);
@@ -61,17 +59,9 @@ const Clients = () => {
         activationCode: '',
         internalId: 'backOffice',
     })
-    const [resetClientPinFormData, setresetClientPinFormData] = useState({
-        bankCode: "",
-        msisdn: "",
-        pin: "",
-        internalId: "back-office"
 
-    })
 
-    const handleToggleModal = () => {
-        setShowModal(!showModal);
-    }
+
 
     const fetchClientData = async () => {
         setLoading(true);
@@ -104,64 +94,14 @@ const Clients = () => {
         setLoading(false)
     };
 
-    const fetchBankID = async () => {
-        setLoading(true);
-        try {
-            const payload = {
-                serviceReference: 'GET_ALL_BANKS',
-                requestBody: '',
-                spaceId: spaceId,
-            }
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            if (response && response.status === 200) {
-                setBankID(response.body.data);
 
-            } else if (response && response.body.status === 401) {
-                // setErrorMessage(response.body.errors || 'Unauthorized to perform action');
-            }
-            else {
-                console.error('Error fetching data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-        setLoading(false)
-    };
 
     useEffect(() => {
         fetchClientData();
-        fetchBankID();
+
     }, []);
 
-    const handleResetClientPin = async (values) => {
-        setLoading(true);
-        try {
-            const payload = {
-                serviceReference: 'RESET_CLIENT_PIN',
-                requestBody: JSON.stringify(values),
-                spaceId: spaceId,
 
-            }
-            console.log("values", values);
-
-            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            console.log("response", response);
-
-            if (response && response.body.meta.statusCode === 200) {
-                handleToggleModal();
-                await fetchClientData();
-                showSnackbar('Client PIN reset successfully.', 'success');
-            } else if (response && response.body.meta.statusCode === 401) {
-                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
-            } else {
-                showSnackbar(response.body.errors || 'An error occurred while resetting client PIN', 'error');
-            }
-        } catch (error) {
-            showSnackbar('An error occurred while resetting client PIN', 'error');
-
-        }
-        setLoading(false);
-    }
 
     const handleToggleActivateClientModal = (selectedClient) => {
         setSelectedMsisdn(selectedClient);
@@ -241,11 +181,11 @@ const Clients = () => {
 
 
     const columns = [
-        { field: "name", headerName: "Client Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "name", headerName: "Client Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "msisdn", headerName: "MSISDN", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "language", headerName: "Language", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "dateOfBirth", headerName: "Date of Birth", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "cniNumber", headerName: "Cni", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "cniNumber", headerName: "CNI", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "initialBalance", headerName: "Initial Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "email", headerName: "Email", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "address", headerName: "Address", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
@@ -365,20 +305,7 @@ const Clients = () => {
                         <Add sx={{ mr: "10px" }} />
                         Onboard Client
                     </Button>
-                    <Button
-                        sx={{
-                            backgroundColor: colors.blueAccent[700],
-                            color: colors.grey[100],
-                            fontSize: "14px",
-                            fontWeight: "bold",
-                            padding: "10px 20px",
-                            marginRight: "10px",
-                        }}
-                        onClick={handleToggleModal}
-                    >
-                        <Lock sx={{ mr: "10px" }} />
-                        Reset Client Pin
-                    </Button>
+
                 </Box>
 
             </Box>
@@ -461,114 +388,7 @@ const Clients = () => {
                 </DialogActions>
             </Dialog>
 
-            <Dialog open={showModal} onClose={() => handleToggleModal(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>Reset Client PIN</DialogTitle>
-                <DialogContent>
-                    <Formik
-                        onSubmit={handleResetClientPin}
-                        initialValues={resetClientPinFormData}
-                        enableReinitialize={true}
-                        validationSchema={checkoutSchema}
-                    >
-                        {({
-                            values,
-                            errors,
-                            touched,
-                            handleBlur,
-                            handleChange,
-                            handleSubmit,
 
-                        }) => (
-                            <form onSubmit={handleSubmit}>
-                                <Box
-                                    display="grid"
-                                    gap="30px"
-                                    gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                                    sx={{
-                                        "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                                    }}
-                                >
-
-                                    <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="text"
-                                        label="Msisdn (Begin with 237)"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.msisdn}
-                                        name="msisdn"
-                                        error={!!touched.msisdn && !!errors.msisdn}
-                                        helperText={touched.msisdn && errors.msisdn}
-                                        sx={FormFieldStyles("span 4")}
-                                        required
-                                    />
-
-                                    <FormControl fullWidth variant="filled"
-                                        sx={FormFieldStyles("span 4")} required>
-                                        <InputLabel>Bank</InputLabel>
-                                        <Select
-                                            label="Bank"
-                                            onBlur={handleBlur}
-                                            onChange={handleChange}
-                                            value={values.bankCode}
-                                            name="bankCode"
-                                            error={!!touched.bankCode && !!errors.bankCode}
-                                        >
-                                            <MenuItem value="" selected disabled>Select Bank</MenuItem>
-                                            {Array.isArray(bankID) && bankID.length > 0 ? (
-                                                bankID.map((option) => (
-                                                    <MenuItem key={option.bankCode} value={option.bankCode}>
-                                                        {option.bankName}
-                                                    </MenuItem>
-                                                ))
-                                            ) : (
-                                                <option value="">No Bank available</option>
-                                            )}
-                                        </Select>
-                                        {touched.bankCode && errors.bankCode && (
-                                            <Alert severity="error">{errors.bankCode}</Alert>
-                                        )}
-
-                                    </FormControl>
-                                    <TextField
-                                        fullWidth
-                                        variant="filled"
-                                        type="number"
-                                        label="Pin (5 digits)"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.pin}
-                                        name="pin"
-                                        error={!!touched.pin && !!errors.pin}
-                                        helperText={touched.pin && errors.pin}
-                                        sx={FormFieldStyles("span 4")}
-                                        required
-
-                                    />
-
-                                </Box>
-                                <Box display="flex" justifyContent="end" mt="20px">
-                                    <Stack direction="row" spacing={2}>
-
-                                        <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
-                                            startIcon={<Lock />} >
-                                            Reset
-                                        </LoadingButton>
-
-                                        <Button color="primary" variant="contained" disabled={loading} onClick={handleToggleModal}>
-                                            Cancel
-                                        </Button>
-                                    </Stack>
-                                </Box>
-                            </form>
-
-                        )}
-
-                    </Formik>
-                </DialogContent>
-
-            </Dialog>
 
             <Snackbar
                 open={snackbar.open}
@@ -586,13 +406,5 @@ const Clients = () => {
     )
 }
 
-const checkoutSchema = yup.object().shape({
-    msisdn: yup
-        .string()
-        .matches(/^\d{12}$/, "MSISDN must be exactly 12 digits")
-        .required("Required"),
-    bankCode: yup.string().required("Required"),
-    pin: yup.number().required("Required"),
-});
 
 export default Clients

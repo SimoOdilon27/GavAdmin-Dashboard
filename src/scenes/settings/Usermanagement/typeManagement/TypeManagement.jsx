@@ -265,7 +265,7 @@ const TypeManagement = () => {
             </Snackbar>
 
             <Dialog open={showModal} onClose={handleToggletypeModal} fullWidth>
-                <DialogTitle>Add type</DialogTitle>
+                <DialogTitle>Add Space Category</DialogTitle>
                 <DialogContent>
 
                     <Formik
@@ -297,7 +297,7 @@ const TypeManagement = () => {
                                         fullWidth
                                         variant="filled"
                                         type="text"
-                                        label="Type Name"
+                                        label="Space Category Name"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
                                         value={values.intitule}
@@ -323,15 +323,15 @@ const TypeManagement = () => {
                                 </Box>
                                 <Box display="flex" justifyContent="end" mt="20px">
                                     <Stack direction="row" spacing={2}>
-
+                                        <Button color="primary" variant="contained" disabled={loading} onClick={handleToggletypeModal}>
+                                            Cancel
+                                        </Button>
                                         <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
                                             startIcon={<Save />} >
                                             Add
                                         </LoadingButton>
 
-                                        <Button color="primary" variant="contained" disabled={loading} onClick={handleToggletypeModal}>
-                                            Cancel
-                                        </Button>
+
                                     </Stack>
                                 </Box>
                             </form>

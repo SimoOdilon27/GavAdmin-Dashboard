@@ -1,4 +1,4 @@
-import { Box, Button, CardContent, Tooltip, TextField, Chip, IconButton, Typography, Grid, Card, Avatar, useTheme, Tab, Tabs } from "@mui/material";
+import { Box, Button, CardContent, Tooltip, TextField, Chip, IconButton, Typography, Grid, Card, Avatar, useTheme, Tab, Tabs, Dialog, DialogTitle, DialogContent, useMediaQuery, Snackbar, FormControl, InputLabel, Select, MenuItem, Alert, Stack } from "@mui/material";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -18,24 +18,30 @@ import {
     Work,
     Badge,
     Assignment,
-    AttachMoney
+    AttachMoney,
+    Lock
 } from "@mui/icons-material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import CBS_Services from "../../services/api/GAV_Sercives";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
 import { formatValue } from "../../tools/formatValue";
+import { Formik } from "formik";
+import { FormFieldStyles } from "../../tools/fieldValuestyle";
+import * as yup from "yup";
+
 
 const ViewClientDetails = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const userData = useSelector((state) => state.users);
     const token = userData.token;
+    const isNonMobile = useMediaQuery("(min-width:600px)");
     const spaceId = userData?.selectedSpace?.id
     const { msisdn } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-
+    const [showModal, setShowModal] = useState(false);
     const [initialValues, setInitialValues] = useState({});
     const [transactionData, setTransactionData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -43,6 +49,28 @@ const ViewClientDetails = () => {
     const [rowCount, setRowCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
+    const [bankID, setBankID] = useState('');
+
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+
+    const [resetClientPinFormData, setresetClientPinFormData] = useState({
+        bankCode: "",
+        msisdn: msisdn,
+        pin: "",
+        internalId: "back-office"
+
+    })
+
+    const showSnackbar = (message, severity) => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbar({ ...snackbar, open: false });
+    };
 
     // Similar fetchTransactions function as in your template
     const fetchTransactions = async (page, pageSize) => {
@@ -71,6 +99,7 @@ const ViewClientDetails = () => {
 
     useEffect(() => {
         fetchTransactions(currentPage, pageSize);
+        fetchBankID();
     }, [msisdn]);
 
     useEffect(() => {
@@ -78,6 +107,65 @@ const ViewClientDetails = () => {
             setInitialValues(location.state.branchData);
         }
     }, [msisdn, location.state]);
+
+    const handleToggleModal = () => {
+        setShowModal(!showModal);
+    }
+
+    const handleResetClientPin = async (values) => {
+        setLoading(true);
+        try {
+            const payload = {
+                serviceReference: 'RESET_CLIENT_PIN',
+                requestBody: JSON.stringify(values),
+                spaceId: spaceId,
+
+            }
+            console.log("values", values);
+
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            console.log("response", response);
+
+            if (response && response.body.meta.statusCode === 200) {
+                handleToggleModal();
+                showSnackbar('Client PIN reset successfully.', 'success');
+            } else if (response && response.body.meta.statusCode === 401) {
+                showSnackbar(response.body.errors || 'Unauthorized to perform action', 'error');
+            } else {
+                showSnackbar(response.body.errors || 'An error occurred while resetting client PIN', 'error');
+            }
+        } catch (error) {
+            showSnackbar('An error occurred while resetting client PIN', 'error');
+
+        }
+        setLoading(false);
+    }
+
+    const fetchBankID = async () => {
+        setLoading(true);
+        try {
+            const payload = {
+                serviceReference: 'GET_ALL_BANKS',
+                requestBody: '',
+                spaceId: spaceId,
+            }
+            const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+            if (response && response.status === 200) {
+                setBankID(response.body.data);
+
+            } else if (response && response.body.status === 401) {
+                // setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+            }
+            else {
+                console.error('Error fetching data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        setLoading(false)
+    };
+
+
 
     const InfoItem = ({ icon, label, value }) => (
         <Box display="flex" alignItems="center" mb={2}>
@@ -202,19 +290,40 @@ const ViewClientDetails = () => {
                     title="Client DETAILS"
                     subtitle={`Viewing details for ${initialValues.name || 'Unknown Branch'}`}
                 />
-                <Button
-                    onClick={() => navigate(-1)}
-                    startIcon={<ArrowBack />}
-                    sx={{
-                        backgroundColor: colors.blueAccent[700],
-                        color: colors.grey[100],
-                        fontSize: "14px",
-                        fontWeight: "bold",
-                        padding: "10px 20px",
-                    }}
-                >
-                    Back
-                </Button>
+                <Box display="flex">
+
+                    <Button
+                        sx={{
+                            backgroundColor: colors.blueAccent[700],
+                            color: colors.grey[100],
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                            padding: "10px 20px",
+                            marginRight: "10px",
+                        }}
+                        onClick={handleToggleModal}
+                    >
+                        <Lock sx={{ mr: "10px" }} />
+                        Reset Client Pin
+                    </Button>
+                    <Button
+                        onClick={() => navigate(-1)}
+                        startIcon={<ArrowBack />}
+                        sx={{
+                            backgroundColor: colors.blueAccent[700],
+                            color: colors.grey[100],
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                            padding: "10px 20px",
+                            marginRight: "10px",
+                        }}
+                    >
+                        Back
+                    </Button>
+
+
+                </Box>
+
             </Box>
 
             <Card sx={{ backgroundColor: colors.primary[400], mb: 3 }}>
@@ -352,8 +461,138 @@ const ViewClientDetails = () => {
                     </Box>
                 </TabPanel>
             </Card>
+
+            <Dialog open={showModal} onClose={() => handleToggleModal(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>Reset Client PIN ({`${msisdn}`})</DialogTitle>
+                <DialogContent>
+                    <Formik
+                        onSubmit={handleResetClientPin}
+                        initialValues={resetClientPinFormData}
+                        enableReinitialize={true}
+                        validationSchema={checkoutSchema}
+                    >
+                        {({
+                            values,
+                            errors,
+                            touched,
+                            handleBlur,
+                            handleChange,
+                            handleSubmit,
+
+                        }) => (
+                            <form onSubmit={handleSubmit}>
+                                <Box
+                                    display="grid"
+                                    gap="30px"
+                                    gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+                                    sx={{
+                                        "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                                    }}
+                                >
+
+                                    {/* <TextField
+                                        fullWidth
+                                        variant="filled"
+                                        type="text"
+                                        label="Msisdn (Begin with 237)"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.msisdn}
+                                        name="msisdn"
+                                        error={!!touched.msisdn && !!errors.msisdn}
+                                        helperText={touched.msisdn && errors.msisdn}
+                                        sx={FormFieldStyles("span 4")}
+                                        required
+                                    /> */}
+
+                                    <FormControl fullWidth variant="filled"
+                                        sx={FormFieldStyles("span 4")} required>
+                                        <InputLabel>Bank</InputLabel>
+                                        <Select
+                                            label="Bank"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.bankCode}
+                                            name="bankCode"
+                                            error={!!touched.bankCode && !!errors.bankCode}
+                                        >
+                                            <MenuItem value="" selected disabled>Select Bank</MenuItem>
+                                            {Array.isArray(bankID) && bankID.length > 0 ? (
+                                                bankID.map((option) => (
+                                                    <MenuItem key={option.bankCode} value={option.bankCode}>
+                                                        {option.bankName}
+                                                    </MenuItem>
+                                                ))
+                                            ) : (
+                                                <option value="">No Bank available</option>
+                                            )}
+                                        </Select>
+                                        {touched.bankCode && errors.bankCode && (
+                                            <Alert severity="error">{errors.bankCode}</Alert>
+                                        )}
+
+                                    </FormControl>
+                                    <TextField
+                                        fullWidth
+                                        variant="filled"
+                                        type="number"
+                                        label="Pin (5 digits)"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.pin}
+                                        name="pin"
+                                        error={!!touched.pin && !!errors.pin}
+                                        helperText={touched.pin && errors.pin}
+                                        sx={FormFieldStyles("span 4")}
+                                        required
+
+                                    />
+
+                                </Box>
+                                <Box display="flex" justifyContent="end" mt="20px">
+                                    <Stack direction="row" spacing={2}>
+                                        <Button color="primary" variant="contained" disabled={loading} onClick={handleToggleModal}>
+                                            Cancel
+                                        </Button>
+
+                                        <LoadingButton type="submit" color="secondary" variant="contained" loading={loading} loadingPosition="start"
+                                            startIcon={<Lock />} >
+                                            Reset
+                                        </LoadingButton>
+
+
+                                    </Stack>
+                                </Box>
+                            </form>
+
+                        )}
+
+                    </Formik>
+                </DialogContent>
+
+            </Dialog>
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
+
+const checkoutSchema = yup.object().shape({
+    msisdn: yup
+        .string()
+        .matches(/^\d{12}$/, "MSISDN must be exactly 12 digits")
+        .required("Required"),
+    bankCode: yup.string().required("Required"),
+    pin: yup.number().required("Required"),
+});
 
 export default ViewClientDetails;

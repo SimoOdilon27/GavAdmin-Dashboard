@@ -363,15 +363,15 @@ const SpaceForm = () => {
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>
-
+                                    <Button color="primary" variant="contained" disabled={pending} onClick={() => navigate(-1)}>
+                                        Cancel
+                                    </Button>
                                     <LoadingButton type="submit" color="secondary" variant="contained" loading={pending} loadingPosition="start"
                                         startIcon={<Save />}>
                                         {id ? "Update Space" : "Create Space"}
                                     </LoadingButton>
 
-                                    <Button color="primary" variant="contained" disabled={pending} onClick={() => navigate(-1)}>
-                                        Cancel
-                                    </Button>
+
                                 </Stack>
                             </Box>
                         </form>

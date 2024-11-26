@@ -341,20 +341,25 @@ const ViewAccountDetails = () => {
                 />
                 <Box >
 
-                    <Button
-                        sx={{
-                            backgroundColor: colors.blueAccent[700],
-                            color: colors.grey[100],
-                            fontSize: "14px",
-                            fontWeight: "bold",
-                            padding: "10px 20px",
-                            marginRight: "10px",
-                        }}
-                        onClick={() => handleToggleInvestmentModal(initialValues.accountId)}
-                    >
-                        <MoneyRounded sx={{ mr: "10px" }} />
-                        Invest
-                    </Button>
+                    {initialValues.type === "CLIENT" ?
+                        "" :
+
+                        <Button
+                            sx={{
+                                backgroundColor: colors.blueAccent[700],
+                                color: colors.grey[100],
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                                padding: "10px 20px",
+                                marginRight: "10px",
+                            }}
+                            onClick={() => handleToggleInvestmentModal(initialValues.accountId)}
+                        >
+                            <MoneyRounded sx={{ mr: "10px" }} />
+                            Invest
+                        </Button>
+                    }
+
 
                     <Button
                         sx={{
@@ -616,7 +621,7 @@ const ViewAccountDetails = () => {
                                 />
                                 <LoadingButton
                                     variant="contained"
-                                    color="primary"
+                                    color="secondary"
                                     onClick={handleFetchData}
                                     loading={loading}
                                     loadingPosition="start"
@@ -624,11 +629,7 @@ const ViewAccountDetails = () => {
                                 >
                                     Fetch Data
                                 </LoadingButton>
-                                <Tooltip title="Refresh current page">
-                                    <IconButton onClick={handleRefresh} sx={{ color: colors.grey[300] }}>
-                                        <Refresh />
-                                    </IconButton>
-                                </Tooltip>
+
                             </Box>
                             <Box>
                                 <Typography variant="body2" color={colors.grey[400]}>
@@ -673,7 +674,6 @@ const ViewAccountDetails = () => {
                         components={{
                             Toolbar: GridToolbar,
                         }}
-                        checkboxSelection
                         disableRowSelectionOnClick
                     />
                 </Box>

@@ -158,8 +158,8 @@ const ClientForm = () => {
     return (
         <Box m="20px">
             <Header
-                title={msisdn ? "EDIT CLIENT ACCOUNT" : "ADD CLIENT ACCOUNT"}
-                subtitle={msisdn ? "Edit the client account" : "Add a new client account"}
+                title={msisdn ? "EDIT CLIENT ACCOUNT" : "ONBOARD CLIENT"}
+                subtitle={msisdn ? "Edit the client account" : "Onboard a new client"}
             />
 
             <Formik
@@ -278,7 +278,7 @@ const ClientForm = () => {
                                             />
                                         </Grid>
 
-                                        <Grid item xs={8}>
+                                        <Grid item xs={4}>
                                             <TextField
                                                 sx={FormFieldStyles("")}
                                                 fullWidth
@@ -291,6 +291,24 @@ const ClientForm = () => {
                                                 name="placeOfBirth"
 
                                             />
+                                        </Grid>
+
+                                        <Grid item xs={4}>
+
+                                            <FormControl fullWidth variant="filled" sx={FormFieldStyles("")}>
+                                                <InputLabel>Gender</InputLabel>
+                                                <Select
+                                                    label="Request Type"
+                                                    onBlur={handleBlur}
+                                                    onChange={handleChange}
+                                                    value={values.sex}
+                                                    name="sex"
+                                                >
+                                                    <MenuItem value="MALE">MALE</MenuItem>
+                                                    <MenuItem value="FEMALE">FEMALE</MenuItem>
+
+                                                </Select>
+                                            </FormControl>
                                         </Grid>
 
                                         <Grid item xs={6} >
@@ -327,7 +345,7 @@ const ClientForm = () => {
                                             </FormControl>
                                         </Grid>
 
-                                        <Grid item xs={8}>
+                                        <Grid item xs={12}>
                                             <TextField
                                                 sx={FormFieldStyles("")}
                                                 fullWidth
@@ -341,23 +359,37 @@ const ClientForm = () => {
 
                                             />
                                         </Grid>
+                                        {/* Identification Information */}
+                                        <Grid item xs={12}>
+                                            <Typography variant="h4">Identification Information</Typography>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={6}>
+                                            <TextField
+                                                sx={FormFieldStyles("")}
+                                                fullWidth
+                                                variant="filled"
+                                                type="text"
+                                                label="CNI Number"
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                                value={values.cniNumber}
+                                                name="cniNumber"
 
-                                        <Grid item xs={4}>
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={6}>
+                                            <TextField
+                                                sx={FormFieldStyles("")}
+                                                fullWidth
+                                                variant="filled"
+                                                type="date"
+                                                label="CNI Creation Date"
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                                value={values.cniCreationDate}
+                                                name="cniCreationDate"
 
-                                            <FormControl fullWidth variant="filled" sx={FormFieldStyles("")}>
-                                                <InputLabel>Gender</InputLabel>
-                                                <Select
-                                                    label="Request Type"
-                                                    onBlur={handleBlur}
-                                                    onChange={handleChange}
-                                                    value={values.sex}
-                                                    name="sex"
-                                                >
-                                                    <MenuItem value="MALE">MALE</MenuItem>
-                                                    <MenuItem value="FEMALE">FEMALE</MenuItem>
-
-                                                </Select>
-                                            </FormControl>
+                                            />
                                         </Grid>
 
                                         {/* Family Information */}
@@ -392,40 +424,6 @@ const ClientForm = () => {
 
                                             />
                                         </Grid>
-
-                                        {/* Identification Information */}
-                                        <Grid item xs={12}>
-                                            <Typography variant="h4">Identification Information</Typography>
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={6}>
-                                            <TextField
-                                                sx={FormFieldStyles("")}
-                                                fullWidth
-                                                variant="filled"
-                                                type="text"
-                                                label="CNI Number"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.cniNumber}
-                                                name="cniNumber"
-
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={6}>
-                                            <TextField
-                                                sx={FormFieldStyles("")}
-                                                fullWidth
-                                                variant="filled"
-                                                type="date"
-                                                label="CNI Creation Date"
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.cniCreationDate}
-                                                name="cniCreationDate"
-
-                                            />
-                                        </Grid>
-
 
 
                                         {/* Other Information */}
@@ -520,13 +518,14 @@ const ClientForm = () => {
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>
-                                    <LoadingButton type="submit" color="secondary" variant="contained" loading={pending} loadingPosition="start"
-                                        startIcon={<Save />}>
-                                        {msisdn ? "Update Client Account" : "Create Client Account"}
-                                    </LoadingButton>
                                     <Button color="primary" variant="contained" disabled={pending} onClick={() => navigate(-1)}>
                                         Cancel
                                     </Button>
+                                    <LoadingButton type="submit" color="secondary" variant="contained" loading={pending} loadingPosition="start"
+                                        startIcon={<Save />}>
+                                        {msisdn ? "Update Client Account" : "Onboard Client"}
+                                    </LoadingButton>
+
                                 </Stack>
                             </Box>
 

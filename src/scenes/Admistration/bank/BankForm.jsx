@@ -231,9 +231,49 @@ const BankForm = () => {
                                     sx={FormFieldStyles("span 2")}
                                 />
 
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="Bank Manager"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.bankManager}
+                                    name="bankManager"
+                                    error={!!touched.bankManager && !!errors.bankManager}
+                                    helperText={touched.bankManager && errors.bankManager}
+                                    sx={FormFieldStyles("span 2")}
 
 
+                                />
 
+                                <FormControl fullWidth variant="filled"
+                                    sx={FormFieldStyles("span 2")}>
+                                    <InputLabel>Bank CBS</InputLabel>
+                                    <Select
+                                        label="Bank CBS"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.cbsBankId}
+                                        name="cbsBankId"
+                                        error={!!touched.cbsBankId && !!errors.cbsBankId}
+                                    >
+                                        <MenuItem value="" selected disabled>Select Bank CBS</MenuItem>
+                                        {Array.isArray(CBSData) && CBSData.length > 0 ? (
+                                            CBSData.map((option) => (
+                                                <MenuItem key={option.bankId} value={option.bankId}>
+                                                    {option.bankName}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <option value="">No CBS available</option>
+                                        )}
+                                    </Select>
+                                    {touched.cbsBankId && errors.cbsBankId && (
+                                        <Alert severity="error">{errors.cbsBankId}</Alert>
+                                    )}
+
+                                </FormControl>
 
                                 {!id &&
                                     (<TextField
@@ -252,49 +292,9 @@ const BankForm = () => {
                                     />)}
 
 
-                                <FormControl fullWidth variant="filled"
-                                    sx={FormFieldStyles("span 2")}>
-                                    <InputLabel>CBS Bank ID</InputLabel>
-                                    <Select
-                                        label="CBS Bank ID"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.cbsBankId}
-                                        name="cbsBankId"
-                                        error={!!touched.cbsBankId && !!errors.cbsBankId}
-                                    >
-                                        <MenuItem value="" selected disabled>Select CBS Bank ID</MenuItem>
-                                        {Array.isArray(CBSData) && CBSData.length > 0 ? (
-                                            CBSData.map((option) => (
-                                                <MenuItem key={option.bankId} value={option.bankId}>
-                                                    {option.bankName}
-                                                </MenuItem>
-                                            ))
-                                        ) : (
-                                            <option value="">No CBS available</option>
-                                        )}
-                                    </Select>
-                                    {touched.cbsBankId && errors.cbsBankId && (
-                                        <Alert severity="error">{errors.cbsBankId}</Alert>
-                                    )}
-
-                                </FormControl>
-
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="Bank Manager"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.bankManager}
-                                    name="bankManager"
-                                    error={!!touched.bankManager && !!errors.bankManager}
-                                    helperText={touched.bankManager && errors.bankManager}
-                                    sx={FormFieldStyles("span 2")}
 
 
-                                />
+
                                 <TextField
                                     fullWidth
                                     variant="filled"
@@ -398,6 +398,15 @@ const BankForm = () => {
 
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>
+                                    <Button
+                                        color="primary"
+                                        variant="contained"
+                                        disabled={pending}
+                                        onClick={() => navigate(-1)}
+                                    >
+                                        Cancel
+                                    </Button>
+
                                     <LoadingButton
                                         type="submit"
                                         color="secondary"
@@ -409,14 +418,7 @@ const BankForm = () => {
                                         {id ? "Update Bank" : "Create Bank"}
                                     </LoadingButton>
 
-                                    <Button
-                                        color="primary"
-                                        variant="contained"
-                                        disabled={pending}
-                                        onClick={() => navigate(-1)}
-                                    >
-                                        Cancel
-                                    </Button>
+
                                 </Stack>
                             </Box>
                         </form>

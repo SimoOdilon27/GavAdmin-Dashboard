@@ -1,17 +1,17 @@
 export const MenuLinks = [
     { linkname: "Dashboard", value: "/dashboard" },
 
-    { linkname: "* * * * * * * Account Settings * * * * * * *", value: "" },
+    { linkname: "Account Settings", value: "" },
     { linkname: "Account type", value: "/accounttype" },
     { linkname: "Charges", value: "/charges" },
     { linkname: "Pricing Configuration", value: "/pricing/configure" },
     { linkname: "Configure Charges", value: "/pricing/configurecharges" },
 
-    { linkname: "* * * * * * * GAV Accounts * * * * * * *", value: "" },
+    { linkname: "GAV Accounts ", value: "" },
     { linkname: "Accounts", value: "/bankaccount" },
     { linkname: "Investments", value: "/bankinvestment" },
 
-    { linkname: "* * * * * * * Administration * * * * * * *", value: "" },
+    { linkname: "Administration ", value: "" },
     { linkname: "Bank", value: "/bank" },
     { linkname: "Branches", value: "/branches" },
     { linkname: "Corporation", value: "/corporation" },
@@ -20,24 +20,24 @@ export const MenuLinks = [
     { linkname: "Space Management", value: "/space-management" },
     { linkname: "Type Management", value: "/type-management" },
 
-    { linkname: "* * * * * * * Authorization * * * * * * *", value: "" },
+    { linkname: "Authorization ", value: "" },
     { linkname: "Menu Resources", value: "/menu-catalog" },
     { linkname: "Menu Management", value: "/menu-catalog" },
     { linkname: "Role Management", value: "/rolemanagement" },
     { linkname: "User Management", value: "/usermanagement" },
 
-    { linkname: "* * * * * * * Client Management * * * * * * *", value: "" },
+    { linkname: "Client Management ", value: "" },
     { linkname: "Clients", value: "/client" },
 
-    { linkname: "* * * * * * * Gimac Services * * * * * * *", value: "" },
+    { linkname: "Gimac Services ", value: "" },
     { linkname: "Countries", value: "/gimac-countries" },
     { linkname: "GIMAC Services - Wallet", value: "/gimac-wallets" },
 
-    { linkname: "* * * * * * * Operations * * * * * * *", value: "" },
+    { linkname: "Operations ", value: "" },
     { linkname: "Operations", value: "/cashtransactions" },
     { linkname: "Transactions", value: "/viewtransactions" },
 
-    { linkname: "* * * * * * * Bank Services * * * * * * *", value: "" },
+    { linkname: "Bank Services ", value: "" },
     { linkname: "Bank Services", value: "/bankservices" },
     { linkname: "Services Configurations", value: "/bankservicesconfigs" },
 ];

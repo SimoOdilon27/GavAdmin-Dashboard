@@ -88,7 +88,7 @@ const GimacWallets = () => {
 
     const columns = [
         // { field: "id", headerName: "ID", flex: 1 },
-        { field: "name", headerName: "Wallet Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "name", headerName: "Wallet Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "gimacMemberCode", headerName: "Gimac Member Code", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "walletType", headerName: "Wallet Type", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "countryName", headerName: "Country", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },

@@ -389,8 +389,8 @@ const RoleManagement = () => {
             field: "description",
             headerName: "Description",
             flex: 1,
-            headerAlign: "center", // Center the header
-            align: "center", // Center the content
+            // headerAlign: "center", // Center the header
+            // align: "center", // Center the content
             valueGetter: (params) => formatValue(params.value),
             renderCell: (params) => (
                 <Typography variant="body2" style={{ fontWeight: 'medium' }}>

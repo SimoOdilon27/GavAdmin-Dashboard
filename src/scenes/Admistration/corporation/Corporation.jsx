@@ -17,8 +17,6 @@ import { formatValue } from "../../../tools/formatValue";
 const Corporation = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-
-
     const [corporationData, setCorporationData] = useState([]);
 
     const [corpID, setCorpID] = useState([]);

@@ -135,23 +135,32 @@ const RoleForm = () => {
     };
 
 
-    // const fetchSubItemDataById = async (itemId) => {
-    //     setPending(true);
-    //     try {
-    //         const response = await CBS_Services('GATEWAY', `clientGateWay/subItem/getAllSubItemByItemId/${itemId}`, 'GET', null, token);
-    //         console.log("respone=====", response);
+    //    const fetchSubItemDataByItemIds = async (itemIds) => {
+    //         setPending(true);
+    //         try {
+    //             const subItemPromises = itemIds.map(itemId =>
+    //                 CBS_Services('GATEWAY', `clientGateWay/subItem/getAllSubItemByItemId/${itemId}`, 'GET', null, token)
+    //             );
 
-    //         if (response && response.status === 200) {
-    //             setSubItemData(response.body.data || []);
-    //         } else {
-    //             setSubItemData([]);
+    //             const responses = await Promise.all(subItemPromises);
+    //             const combinedSubItems = responses.reduce((acc, response) => {
+    //                 if (response && response.status === 200) {
+    //                     return [...acc, ...(response.body.data || [])];
+    //                 }
+    //                 return acc;
+    //             }, []);
+
+    //             // Remove duplicate subitems
+    //             const uniqueSubItems = Array.from(new Set(combinedSubItems.map(item => item.id)))
+    //                 .map(id => combinedSubItems.find(item => item.id === id));
+
+    //             setSubItemData(uniqueSubItems);
+    //         } catch (error) {
+    //             console.log('Error:', error);
     //             showSnackbar('Error Finding SubItem Data.', 'error');
     //         }
-    //     } catch (error) {
-    //         console.log('Error:', error);
-    //     }
-    //     setPending(false);
-    // };
+    //         setPending(false);
+    //     };
 
     const fetchSubItemDataByItemIds = async (itemIds) => {
         setPending(true);
@@ -161,25 +170,27 @@ const RoleForm = () => {
             );
 
             const responses = await Promise.all(subItemPromises);
-            const combinedSubItems = responses.reduce((acc, response) => {
+
+            // Create a structured object to group subitems by their parent menu
+            const groupedSubItems = responses.reduce((acc, response, index) => {
+                const parentItemId = itemIds[index];
                 if (response && response.status === 200) {
-                    return [...acc, ...(response.body.data || [])];
+                    const subItems = response.body.data || [];
+                    acc[parentItemId] = {
+                        parentItemTitle: filteredItemData.find(item => item.id === parentItemId)?.title || 'Unknown Menu',
+                        subitems: subItems
+                    };
                 }
                 return acc;
-            }, []);
+            }, {});
 
-            // Remove duplicate subitems
-            const uniqueSubItems = Array.from(new Set(combinedSubItems.map(item => item.id)))
-                .map(id => combinedSubItems.find(item => item.id === id));
-
-            setSubItemData(uniqueSubItems);
+            setSubItemData(groupedSubItems);
         } catch (error) {
             console.log('Error:', error);
             showSnackbar('Error Finding SubItem Data.', 'error');
         }
         setPending(false);
     };
-
 
     useEffect(() => {
         fetchTypeData();
@@ -220,12 +231,29 @@ const RoleForm = () => {
         setSelectedType(typeId);
     };
 
+    // const handleSelectAllSubItems = () => {
+    //     if (selectedSubItems.length === subItemData.length) {
+    //         setSelectedSubItems([]);
+    //     } else {
+    //         setSelectedSubItems(subItemData.map((item) => item.id));
+    //     }
+    // };
+
     const handleSelectAllSubItems = () => {
-        if (selectedSubItems.length === subItemData.length) {
+        const allSubItems = Object.values(subItemData).flatMap(group => group.subitems);
+        if (selectedSubItems.length === allSubItems.length) {
             setSelectedSubItems([]);
         } else {
-            setSelectedSubItems(subItemData.map((item) => item.id));
+            setSelectedSubItems(allSubItems.map((item) => item.id));
         }
+    };
+
+    const getSelectedSubItemTitles = () => {
+        const allSubItems = Object.values(subItemData).flatMap(group => group.subitems);
+        return allSubItems
+            .filter((item) => selectedSubItems.includes(item.id))
+            .map((item) => item.title)
+            .join(", ");
     };
 
     const handleSubItemSelect = (id) => {
@@ -235,9 +263,9 @@ const RoleForm = () => {
             setSelectedSubItems([...selectedSubItems, id]);
         }
     };
-    const getSelectedSubItemTitles = () => {
-        return subItemData.filter((item) => selectedSubItems.includes(item.id)).map((item) => item.title).join(", ");
-    };
+    // const getSelectedSubItemTitles = () => {
+    //     return subItemData.filter((item) => selectedSubItems.includes(item.id)).map((item) => item.title).join(", ");
+    // };
 
 
     useEffect(() => {
@@ -387,7 +415,7 @@ const RoleForm = () => {
                                 </FormControl>
 
 
-                                <FormControl
+                                {/* <FormControl
                                     fullWidth
                                     variant="filled"
                                     sx={FormFieldStyles("span 2")}
@@ -437,10 +465,72 @@ const RoleForm = () => {
                                     {touched.subItemId && errors.subItemId && (
                                         <Alert severity="error">{errors.subItemId}</Alert>
                                     )}
+                                </FormControl> */}
+
+                                <FormControl
+                                    fullWidth
+                                    variant="filled"
+                                    sx={FormFieldStyles("span 2")}
+                                    disabled={!values.itemId?.length}
+                                >
+                                    <InputLabel>Sub Menus</InputLabel>
+                                    <Select
+                                        multiple
+                                        label="Sub Menus"
+                                        onBlur={handleBlur}
+                                        onChange={(e) => {
+                                            setFieldValue("subItemId", e.target.value);
+                                            setSelectedSubItems(e.target.value);
+                                        }}
+                                        value={selectedSubItems}
+                                        name="subItemId"
+                                        error={!!touched.subItemId && !!errors.subItemId}
+                                        renderValue={(selected) => {
+                                            // Existing renderValue logic
+                                            const selectedSubItemTitles = Object.values(subItemData)
+                                                .flatMap(group => group.subitems)
+                                                .filter((item) => selected.includes(item.id))
+                                                .map((item) => item.title)
+                                                .join(", ");
+                                            return selectedSubItemTitles;
+                                        }}
+                                    >
+                                        {/* Render grouped subitems */}
+                                        {Object.entries(subItemData).map(([parentItemId, { parentItemTitle, subitems }]) => [
+                                            <MenuItem key={`header-${parentItemId}`} disabled>
+                                                <strong>{parentItemTitle}</strong>
+                                            </MenuItem>,
+                                            ...subitems.map((subItem) => (
+                                                <MenuItem key={subItem.id} value={subItem.id}>
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                checked={selectedSubItems.includes(subItem.id)}
+                                                                onChange={() => handleSubItemSelect(subItem.id)}
+                                                                color="secondary"
+                                                            />
+                                                        }
+                                                        label={subItem.title}
+                                                    />
+                                                </MenuItem>
+                                            ))
+                                        ])}
+                                    </Select>
+                                    {touched.subItemId && errors.subItemId && (
+                                        <Alert severity="error">{errors.subItemId}</Alert>
+                                    )}
                                 </FormControl>
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>
+                                    <Button
+                                        color="primary"
+                                        variant="contained"
+                                        disabled={pending}
+                                        onClick={() => navigate(-1)}
+                                    >
+                                        Cancel
+                                    </Button>
                                     <LoadingButton
                                         type="submit"
                                         color="secondary"
@@ -451,14 +541,7 @@ const RoleForm = () => {
                                     >
                                         {id ? "Update Role" : "Create Role"}
                                     </LoadingButton>
-                                    <Button
-                                        color="primary"
-                                        variant="contained"
-                                        disabled={pending}
-                                        onClick={() => navigate(-1)}
-                                    >
-                                        Cancel
-                                    </Button>
+
                                 </Stack>
                             </Box>
                         </form>

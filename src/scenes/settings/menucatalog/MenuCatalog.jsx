@@ -71,10 +71,10 @@ const MenuCatalog = () => {
     };
 
     const columns = [
-        { field: "id", headerName: "Catalog Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "id", headerName: "Catalog Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "serviceProvider", headerName: "Service Provider", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "description", headerName: "Description", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "endPoint", headerName: "Endpoint", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "description", headerName: "Description", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "endPoint", headerName: "Endpoint", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "requestType", headerName: "Request Type", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {
             field: "actions",

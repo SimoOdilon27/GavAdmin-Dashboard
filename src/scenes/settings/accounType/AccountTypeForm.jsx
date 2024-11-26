@@ -10,6 +10,7 @@ import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
 import { Alert, Box, Button, Snackbar, Stack, TextField, useTheme } from "@mui/material";
 import { tokens } from "../../../theme";
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 
 const AccountTypeForm = () => {
@@ -152,18 +153,7 @@ const AccountTypeForm = () => {
                                     name="idTag"
                                     error={!!touched.idTag && !!errors.idTag}
                                     helperText={touched.idTag && errors.idTag}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={FormFieldStyles("span 2")}
                                 />
 
                                 <TextField
@@ -177,18 +167,8 @@ const AccountTypeForm = () => {
                                     name="type"
                                     error={!!touched.type && !!errors.type}
                                     helperText={touched.type && errors.type}
-                                    sx={{
-                                        gridColumn: "span 2",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={FormFieldStyles("span 2")}
+
                                 />
                                 <TextField
                                     fullWidth
@@ -201,25 +181,22 @@ const AccountTypeForm = () => {
                                     name="description"
                                     error={!!touched.description && !!errors.description}
                                     helperText={touched.description && errors.description}
-                                    sx={{
-                                        gridColumn: "span 4",
-                                        '& .MuiInputLabel-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Dark label for light mode, white for dark mode
-                                        },
-                                        '& .MuiFilledInput-root': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Optional: input text color
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: theme.palette.mode === 'light' ? 'black' : 'white', // Same behavior when focused
-                                        },
-                                    }}
+                                    sx={FormFieldStyles("span 4")}
+
                                 />
 
 
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>
-
+                                    <Button
+                                        color="primary"
+                                        variant="contained"
+                                        disabled={pending}
+                                        onClick={() => navigate(-1)}
+                                    >
+                                        Cancel
+                                    </Button>
                                     <LoadingButton
                                         type="submit"
                                         color="secondary"
@@ -231,14 +208,7 @@ const AccountTypeForm = () => {
                                         {id ? "Update Account Type" : "Create Account Type"}
                                     </LoadingButton>
 
-                                    <Button
-                                        color="primary"
-                                        variant="contained"
-                                        disabled={pending}
-                                        onClick={() => navigate(-1)}
-                                    >
-                                        Cancel
-                                    </Button>
+
                                 </Stack>
                             </Box>
                         </form>

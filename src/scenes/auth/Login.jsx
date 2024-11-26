@@ -85,7 +85,7 @@ export default function Login() {
                 const loginCount = data.body.data.loginCount || "0";
                 const userSpaces = data.body.data.listSpaces || [];
 
-                if (loginCount === "1") {
+                if (loginCount === "0") {
                     navigate('/updatepassword');
                 } else if (userSpaces.length === 1) {
                     dispatch({
@@ -93,7 +93,10 @@ export default function Login() {
                         selectedSpace: userSpaces[0]
                     });
                     navigate('/dashboard');
-                } else {
+                } else if (userSpaces.length === 0) {
+                    setErrors({ isError: true, description: "No Spaces Found for this User" });
+                }
+                else {
                     navigate('/select-space');
                 }
             } else {
@@ -208,6 +211,7 @@ export default function Login() {
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
+
                         }}
                     >
                         <Avatar sx={{ m: 1, bgcolor: 'secondary.main', width: 56, height: 56 }}>

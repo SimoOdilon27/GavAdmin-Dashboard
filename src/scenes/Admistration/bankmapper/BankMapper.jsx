@@ -208,9 +208,9 @@ const BankMapper = () => {
 
 
     const columns = [
-        { field: "bankNameGav", headerName: "GAV Bank Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "bankNameGav", headerName: "GAV Bank Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
         // { field: "bankIdGav", headerName: "GAV Bank ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "branchNameGav", headerName: "GAV Branch Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "branchNameGav", headerName: "GAV Branch Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
         // { field: "branchIdGav", headerName: "GAV Branch ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "bankIdCbs", headerName: "CBS Bank ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "branchIdCbs", headerName: "CBS Branch ID", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },

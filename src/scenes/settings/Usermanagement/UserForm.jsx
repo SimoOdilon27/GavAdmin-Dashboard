@@ -315,6 +315,45 @@ const UserForm = () => {
 
                                 )}
 
+
+
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="email"
+                                    label="Email"
+                                    onBlur={handleBlur}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setFieldValue("email", e.target.value);
+                                        setInitialValues({ ...initialValues, email: e.target.value });
+                                    }}
+                                    value={values.email}
+                                    name="email"
+                                    error={!!touched.email && !!errors.email}
+                                    helperText={touched.email && errors.email}
+                                    sx={formFieldStyles("span 2")}
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="tel"
+                                    label="Phone Number"
+                                    onBlur={handleBlur}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setFieldValue("tel", e.target.value);
+                                        setInitialValues({ ...initialValues, tel: e.target.value });
+                                    }}
+                                    value={values.tel}
+                                    name="tel"
+                                    error={!!touched.tel && !!errors.tel}
+                                    helperText={touched.tel && errors.tel}
+                                    sx={formFieldStyles("span 2")}
+                                />
+
                                 <TextField
                                     fullWidth
                                     variant="filled"
@@ -344,44 +383,8 @@ const UserForm = () => {
                                     }}
                                 />
 
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="tel"
-                                    label="Phone Number"
-                                    onBlur={handleBlur}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        setFieldValue("tel", e.target.value);
-                                        setInitialValues({ ...initialValues, tel: e.target.value });
-                                    }}
-                                    value={values.tel}
-                                    name="tel"
-                                    error={!!touched.tel && !!errors.tel}
-                                    helperText={touched.tel && errors.tel}
-                                    sx={formFieldStyles("span 2")}
-                                />
 
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="email"
-                                    label="Email"
-                                    onBlur={handleBlur}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        setFieldValue("email", e.target.value);
-                                        setInitialValues({ ...initialValues, email: e.target.value });
-                                    }}
-                                    value={values.email}
-                                    name="email"
-                                    error={!!touched.email && !!errors.email}
-                                    helperText={touched.email && errors.email}
-                                    sx={formFieldStyles("span 3")}
-                                />
-
-
-                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 1")}>
+                                <FormControl fullWidth variant="filled" sx={formFieldStyles("span 2")}>
                                     <InputLabel>Language</InputLabel>
                                     <Select
                                         label="Language"

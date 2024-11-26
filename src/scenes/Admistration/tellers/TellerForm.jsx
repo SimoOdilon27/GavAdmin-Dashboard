@@ -377,6 +377,15 @@ const TellerForm = () => {
                                 >
                                     {id ? "Update Teller" : "Create Teller"}
                                 </LoadingButton> */}
+
+                                    <Button
+                                        color="primary"
+                                        variant="contained"
+                                        disabled={pending}
+                                        onClick={() => navigate(-1)}
+                                    >
+                                        Cancel
+                                    </Button>
                                     {id ? "" :
                                         <LoadingButton
                                             type="submit"
@@ -390,14 +399,7 @@ const TellerForm = () => {
                                             Create Teller
                                         </LoadingButton>
                                     }
-                                    <Button
-                                        color="primary"
-                                        variant="contained"
-                                        disabled={pending}
-                                        onClick={() => navigate(-1)}
-                                    >
-                                        Cancel
-                                    </Button>
+
                                 </Stack>
                             </Box>
                         </form>

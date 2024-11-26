@@ -4,7 +4,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import React, { useEffect, useState } from 'react'
 import { tokens } from '../../../theme';
 import Header from '../../../components/Header';
-import { Add, Assignment, AssuredWorkload, BackupRounded, Delete, EditOutlined, LocalActivitySharp, MenuBook, Save, Search, SwitchAccessShortcut, SwitchAccount, VerifiedUser } from '@mui/icons-material';
+import { Add, Assignment, AssuredWorkload, BackupRounded, Delete, EditOutlined, LocalActivitySharp, ManageAccounts, MenuBook, Save, Search, SwitchAccessShortcut, SwitchAccount, VerifiedUser, Workspaces } from '@mui/icons-material';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -203,44 +203,44 @@ const UserManagement = () => {
         { field: "userName", headerName: "User Name", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
         { field: "email", headerName: "Email", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
         { field: "createdBy", headerName: "Created By", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
-        { field: "refId", headerName: "Ref Id", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
+        { field: "refId", headerName: "Phone Number", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
         { field: "bankCode", headerName: "Bank Code", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
         { field: "createdAt", headerName: "Date Created", flex: 1, valueGetter: (params) => formatValue(params.value), headerAlign: "center", align: "center" },
-        {
-            field: "permissions",
-            headerName: "Assign Teller User To Bank",
-            flex: 1,
-            headerAlign: "center", align: "center",
-            renderCell: (params) => {
-                const row = params.row;
-                return (
-                    <>
-                        <Tooltip title="Assign">
+        // {
+        //     field: "permissions",
+        //     headerName: "Assign Teller User To Bank",
+        //     flex: 1,
+        //     headerAlign: "center", align: "center",
+        //     renderCell: (params) => {
+        //         const row = params.row;
+        //         return (
+        //             <>
+        //                 <Tooltip title="Assign">
 
-                            <Box
-                                width="30%"
-                                m="0 4px"
-                                p="5px"
-                                display="flex"
-                                justifyContent="center"
-                                backgroundColor={colors.greenAccent[600]}
-                                borderRadius="4px"
-                                onClick={() => {
-                                    setFormData(prev => ({
-                                        ...prev,
-                                        userNameOrEmail: row.userName
-                                    }));
-                                    setShowModal(true);
-                                }}
-                            >
-                                <AssuredWorkload />
-                            </Box>
+        //                     <Box
+        //                         width="30%"
+        //                         m="0 4px"
+        //                         p="5px"
+        //                         display="flex"
+        //                         justifyContent="center"
+        //                         backgroundColor={colors.greenAccent[600]}
+        //                         borderRadius="4px"
+        //                         onClick={() => {
+        //                             setFormData(prev => ({
+        //                                 ...prev,
+        //                                 userNameOrEmail: row.userName
+        //                             }));
+        //                             setShowModal(true);
+        //                         }}
+        //                     >
+        //                         <AssuredWorkload />
+        //                     </Box>
 
-                        </Tooltip>
-                    </>
-                );
-            },
-        },
+        //                 </Tooltip>
+        //             </>
+        //         );
+        //     },
+        // },
         {
             field: "actions",
             headerName: "Actions",
@@ -268,14 +268,24 @@ const UserManagement = () => {
                         }}
                     >
                         <MenuItem onClick={() => handleEditUser(currentRow)}>
-                            <SwitchAccount fontSize="small" style={{ marginRight: "8px" }} />
+                            <Workspaces fontSize="small" style={{ marginRight: "8px" }} />
                             Update Space
                         </MenuItem>
+                        <MenuItem onClick={() => {
+                            setFormData(prev => ({
+                                ...prev,
+                                userNameOrEmail: currentRow.userName
+                            }));
+                            setShowModal(true);
+                        }}>
+                            <ManageAccounts fontSize="small" style={{ marginRight: "8px" }} />
+                            Assign to Teller
+                        </MenuItem>
 
-                        <MenuItem onClick={() => handleDelete(currentRow)}>
+                        {/* <MenuItem onClick={() => handleDelete(currentRow)}>
                             <Delete fontSize="small" style={{ marginRight: "8px" }} />
                             Delete
-                        </MenuItem>
+                        </MenuItem> */}
                     </Menu>
                 </>
             ),
@@ -364,7 +374,7 @@ const UserManagement = () => {
 
 
             <Dialog open={showModal} onClose={handleToggleModal} fullWidth  >
-                <DialogTitle>Assign Ref ID and Bank Code to {formatValue(formData?.userNameOrEmail)}</DialogTitle>
+                <DialogTitle>Assign Phone Number and Bank Code to {formatValue(formData?.userNameOrEmail)}</DialogTitle>
                 <DialogContent>
                     <form noValidate autoComplete="off">
                         <Box display="grid" gap="30px" gridTemplateColumns="repeat(4, minmax(0, 1fr))">
@@ -380,7 +390,7 @@ const UserManagement = () => {
                             <TextField
                                 fullWidth
                                 variant="filled"
-                                label="Ref ID"
+                                label="Phone Number"
                                 value={formData.refId}
                                 onChange={(e) => setFormData(prev => ({
                                     ...prev,

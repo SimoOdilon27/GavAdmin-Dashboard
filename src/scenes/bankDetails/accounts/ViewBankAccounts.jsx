@@ -166,8 +166,8 @@ const BankAccount = () => {
 
 
     const columns = [
-        { field: "name", headerName: "Account Name", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "type", headerName: "Account Type", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "name", headerName: "Account Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "type", headerName: "Account Type", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "totalCapitalInvested", headerName: "Total Capital Invested", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
         { field: "totalCreditBalance", headerName: "Total Credit Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },
         { field: "balance", headerName: "Account Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value) },

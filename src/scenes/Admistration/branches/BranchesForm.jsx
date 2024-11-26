@@ -230,7 +230,7 @@ const BranchesForm = () => {
                                         {Array.isArray(CBSData) && CBSData.length > 0 ? (
                                             CBSData.map((option) => (
                                                 <MenuItem key={option.branchId} value={option.branchId}>
-                                                    {option.branchId}
+                                                    {option.bankName}
                                                 </MenuItem>
                                             ))
                                         ) : (
@@ -301,6 +301,15 @@ const BranchesForm = () => {
                             </Box>
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>
+
+                                    <Button
+                                        color="primary"
+                                        variant="contained"
+                                        disabled={pending}
+                                        onClick={() => navigate(-1)}
+                                    >
+                                        Cancel
+                                    </Button>
                                     <LoadingButton
                                         type="submit"
                                         color="secondary"
@@ -312,14 +321,7 @@ const BranchesForm = () => {
                                         {id ? "Update Branch" : "Create Branch"}
                                     </LoadingButton>
 
-                                    <Button
-                                        color="primary"
-                                        variant="contained"
-                                        disabled={pending}
-                                        onClick={() => navigate(-1)}
-                                    >
-                                        Cancel
-                                    </Button>
+
                                 </Stack>
                             </Box>
                         </form>

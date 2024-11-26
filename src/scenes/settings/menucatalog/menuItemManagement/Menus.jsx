@@ -299,8 +299,8 @@ const Menus = () => {
     };
 
     const columns = [
-        { field: "title", headerName: "Menu Title", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "typeId", headerName: "Type", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "title", headerName: "Menu Title", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "typeId", headerName: "Type", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "icon", headerName: "Icon", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "menuOrder", headerName: "Menu Order", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         {
@@ -396,7 +396,7 @@ const Menus = () => {
                         PaperProps={{
                             style: {
                                 maxHeight: 48 * 4.5,
-                                width: "20ch",
+                                width: "23ch",
                                 transform: "translateX(-50%)",
                             },
                         }}
@@ -529,7 +529,6 @@ const Menus = () => {
                                 columns
                     }
                     components={{ Toolbar: GridToolbar }}
-                    disableSelectionOnClick
                     loading={loading}
                 />
             </Box>
