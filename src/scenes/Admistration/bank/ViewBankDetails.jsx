@@ -219,7 +219,7 @@ const ViewBankDetails = () => {
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Header
-                    title="CORPORATION DETAILS"
+                    title="BANK DETAILS"
                     subtitle={`Viewing details for ${initialValues.bankName}`}
                 />
 

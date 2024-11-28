@@ -31,7 +31,6 @@ import UserForm from "./scenes/settings/Usermanagement/UserForm";
 import Tellers from "./scenes/Admistration/tellers/Tellers";
 import TellerForm from "./scenes/Admistration/tellers/TellerForm";
 import Pricing from "./scenes/Transactions/pricing/Pricing";
-import Charges from "./scenes/Transactions/pricing/Charges";
 import GimacWallets from "./scenes/gimacServices/wallet/GimacWallets";
 import GimacWalletForm from "./scenes/gimacServices/wallet/GimacWalletForm";
 import GimacCountries from "./scenes/gimacServices/countries/GimacCountries";
@@ -66,6 +65,12 @@ import BankServicesForm from "./scenes/bankServices/bankServiceTypes/BankService
 import BankServiceConfigForm from "./scenes/bankServices/bankServicesConfigs/BankServiceConfigForm";
 import BankServiceConfigs from "./scenes/bankServices/bankServicesConfigs/BankServiceConfigs";
 import { useDispatch } from "react-redux";
+import Partners from "./scenes/pricing/Partners";
+import TaxesConfig from "./scenes/pricing/TaxesConfig";
+import OperationConfig from "./scenes/pricing/OperationConfig";
+import ChargesPricing from "./scenes/Transactions/pricing/Charges";
+import Charges from "./scenes/pricing/Charges";
+import ClientApproval from "./scenes/GavClients/clientApproval/ClientApproval";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -128,6 +133,7 @@ function App() {
                 <Route path="/menu-catalog" element={<ProtectedRoute><MenuCatalog /></ProtectedRoute>} />
                 <Route path="/menu-catalog/add" element={<ProtectedRoute><CatalogForm /></ProtectedRoute>} />
                 <Route path="/menu-catalog/edit/:id" element={<ProtectedRoute><CatalogForm /></ProtectedRoute>} />
+                <Route path="/clientapproval" element={<ProtectedRoute><ClientApproval /></ProtectedRoute>} />
                 <Route path="/client" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
                 <Route path="/client/add-client" element={<ProtectedRoute><ClientForm /></ProtectedRoute>} />
                 <Route path="/client/edit/:msisdn" element={<ProtectedRoute><ClientForm /></ProtectedRoute>} />
@@ -140,8 +146,8 @@ function App() {
                 <Route path="/usermanagement" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
                 <Route path="/usermanagement/adduser" element={<ProtectedRoute><UserForm /></ProtectedRoute>} />
                 <Route path="/usermanagement/userconfig/:userName" element={<ProtectedRoute><AssignUsertoSpace /></ProtectedRoute>} />
-                <Route path="/charges" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
-                <Route path="/pricing/configure" element={<ProtectedRoute><Charges /></ProtectedRoute>} />
+                <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
+                <Route path="/pricing/configure" element={<ProtectedRoute><ChargesPricing /></ProtectedRoute>} />
                 <Route path="/pricing/configurecharges" element={<ProtectedRoute><ConfigureCharges /></ProtectedRoute>} />
                 <Route path="/gimac-wallets" element={<ProtectedRoute><GimacWallets /></ProtectedRoute>} />
                 <Route path="/gimac-wallets/add" element={<ProtectedRoute><GimacWalletForm /></ProtectedRoute>} />
@@ -167,6 +173,10 @@ function App() {
                 <Route path="/bankservicesconfigs" element={<ProtectedRoute><BankServiceConfigs /></ProtectedRoute>} />
                 <Route path="/bankserviceconfigs/add" element={<ProtectedRoute><BankServiceConfigForm /></ProtectedRoute>} />
                 <Route path="/bankservicesconfigs/edit/:id" element={<ProtectedRoute><BankServiceConfigForm /></ProtectedRoute>} />
+                <Route path="/charges" element={<ProtectedRoute><Charges /></ProtectedRoute>} />
+                <Route path="/operationconfigurations" element={<ProtectedRoute><OperationConfig /></ProtectedRoute>} />
+                <Route path="/taxconfigurations" element={<ProtectedRoute><TaxesConfig /></ProtectedRoute>} />
+                <Route path="/partners" element={<ProtectedRoute><Partners /></ProtectedRoute>} />
 
               </Routes>
 

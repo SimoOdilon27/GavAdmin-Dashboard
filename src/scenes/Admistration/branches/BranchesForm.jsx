@@ -87,6 +87,10 @@ const BranchesForm = () => {
                     spaceId: spaceId,
                 };
                 response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+                console.log("payload", payload);
+                console.log("submitData", submitData);
+
+                console.log("response", response);
 
                 if (response && response.body.meta.statusCode === 200) {
                     showSnackbar('Branch Created Successfully.', 'success');

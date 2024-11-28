@@ -61,8 +61,11 @@ const Branches = () => {
                 }
             }
 
+            console.log("payload", payload);
+
+
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
-            console.log("response", response);
+            console.log("response=====", response);
             // const response = await CBS_Services('AP', 'api/gav/bank_branch/getAll', 'GET', null);
 
             if (response && response.body.meta.statusCode === 200) {

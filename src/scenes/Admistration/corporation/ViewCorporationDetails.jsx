@@ -401,14 +401,7 @@ const ViewCorporationDetails = () => {
                                 >
                                     Fetch Data
                                 </LoadingButton>
-                                <Tooltip title="Refresh current page">
-                                    <IconButton
-                                        onClick={handleRefresh}
-                                        sx={{ color: colors.grey[300] }}
-                                    >
-                                        <Refresh />
-                                    </IconButton>
-                                </Tooltip>
+
                             </Box>
                             <Box>
                                 <Typography variant="body2" color={colors.grey[400]}>

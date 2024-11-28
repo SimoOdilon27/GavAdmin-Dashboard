@@ -10,7 +10,7 @@ import BankCharges from './ChargesConfigurations/BankCharges';
 import AssignCharges from './ChargesConfigurations/AssignCharges';
 
 
-const Charges = () => {
+const ChargesPricing = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [value, setValue] = React.useState('1');
@@ -88,4 +88,4 @@ const Charges = () => {
     )
 }
 
-export default Charges
+export default ChargesPricing

@@ -20,16 +20,23 @@ import CollectionsIcon from "@mui/icons-material/Collections";
 import TagIcon from "@mui/icons-material/Tag";
 import {
     AccountCircle,
+    AddBusiness,
+    AddHome,
     AdminPanelSettings,
+    BuildCircle,
+    DesignServices,
     Extension,
+    Handshake,
     ManageAccounts,
     MapOutlined,
     Money,
     SafetyDivider,
     Settings,
     SettingsApplicationsOutlined,
+    SettingsSuggest,
     SupervisedUserCircleOutlined,
     SupervisorAccountRounded,
+    Toll,
     TypeSpecimen,
     Widgets,
     Workspaces
@@ -68,6 +75,13 @@ export const AVAILABLE_ICONS = {
     Settings: Settings,
     SafetyDivider: SafetyDivider,
     Workspaces: Workspaces,
+    DesignServices: DesignServices,
+    Toll: Toll,
+    Handshake: Handshake,
+    SettingsSuggest: SettingsSuggest,
+    BuildCircle: BuildCircle,
+    AddHome: AddHome,
+    AddBusiness: AddBusiness,
 };
 
 const IconSelector = ({ value, onChange, error, helperText, label = "Select Icon" }) => {

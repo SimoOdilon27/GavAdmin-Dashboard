@@ -29,6 +29,7 @@ export const MenuLinks = [
 
     { linkname: "Client Management ", value: "" },
     { linkname: "Clients", value: "/client" },
+    { linkname: "Client  Approval", value: "/clientapproval" },
 
     { linkname: "Gimac Services ", value: "" },
     { linkname: "Countries", value: "/gimac-countries" },
@@ -41,4 +42,13 @@ export const MenuLinks = [
     { linkname: "Bank Services ", value: "" },
     { linkname: "Bank Services", value: "/bankservices" },
     { linkname: "Services Configurations", value: "/bankservicesconfigs" },
+
+    { linkname: "Pricing", value: "" },
+    { linkname: "Operation Configurations", value: "/operationconfigurations" },
+    { linkname: "Tax Configuration", value: "/taxconfigurations" },
+    { linkname: "Partners", value: "/partners" },
+    { linkname: "Charges", value: "/charges" },
+
+    { linkname: "Profile ", value: "" },
+    { linkname: "Profile", value: "/profile" },
 ];

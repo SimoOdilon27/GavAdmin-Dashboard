@@ -29,28 +29,6 @@ const TellerForm = () => {
     const [filteredBanks, setFilteredBanks] = useState([]);
     const [filteredBranches, setFilteredBranches] = useState([]);
 
-    const handleCorporationChange = (event, setFieldValue) => {
-        const corporationId = event.target.value;
-        setFieldValue('corporationId', corporationId);
-        setFieldValue('bankId', ''); // Reset bank selection
-        setFieldValue('branchId', ''); // Reset branch selection
-
-        // Filter banks based on selected corporation
-        const relatedBanks = banks.filter(bank => bank.corporationId === corporationId);
-        setFilteredBanks(relatedBanks);
-        setFilteredBranches([]); // Reset filtered branches
-    };
-
-    const handleBankChange = (event, setFieldValue) => {
-        const bankId = event.target.value;
-        setFieldValue('bankId', bankId);
-        setFieldValue('branchId', ''); // Reset branch selection
-
-        // Filter branches based on selected bank
-        const relatedBranches = branches.filter(branch => branch.bankId === bankId);
-        setFilteredBranches(relatedBranches);
-    };
-
     const [formData] = useState({
         request: id,
         bankCode: '001',
@@ -63,16 +41,6 @@ const TellerForm = () => {
         cbsAccountId: "",
         tellerName: "",
         internalId: "",
-        dailyLimit: 0,
-        minimumAccountLimit: 0,
-        maximumAccountLimit: 0,
-        otherCbs: false,
-        bankId: '',
-        accountId: '',
-        corporationId: '',
-        balance: 0,
-        virtualBalance: 0,
-        active: false
     });
 
 
@@ -128,7 +96,7 @@ const TellerForm = () => {
                     spaceId: spaceId,
 
                 }
-                console.log("submitData", submitData);
+                console.log("payload", payload);
                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
                 console.log("response", response);
 
@@ -312,6 +280,21 @@ const TellerForm = () => {
                                 />
 
 
+
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    type="text"
+                                    label="CBS Account Number"
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    value={values.cbsAccountId}
+                                    name="cbsAccountId"
+                                    error={!!touched.cbsAccountId && !!errors.cbsAccountId}
+                                    helperText={touched.cbsAccountId && errors.cbsAccountId}
+                                    sx={FormFieldStyles("span 3")}
+                                />
+
                                 <FormControl fullWidth variant="filled" sx={FormFieldStyles("span 1")}>
                                     <InputLabel>Language</InputLabel>
                                     <Select
@@ -331,39 +314,9 @@ const TellerForm = () => {
                                         <Alert severity="error">{errors.language}</Alert>
                                     )}
                                 </FormControl>
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="text"
-                                    label="CBS Account ID"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.cbsAccountId}
-                                    name="cbsAccountId"
-                                    error={!!touched.cbsAccountId && !!errors.cbsAccountId}
-                                    helperText={touched.cbsAccountId && errors.cbsAccountId}
-                                    sx={FormFieldStyles("span 2")}
-                                />
-                                <TextField
-                                    fullWidth
-                                    variant="filled"
-                                    type="number"
-                                    label="Daily Limit"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.dailyLimit}
-                                    name="dailyLimit"
-                                    error={!!touched.dailyLimit && !!errors.dailyLimit}
-                                    helperText={touched.dailyLimit && errors.dailyLimit}
-                                    sx={FormFieldStyles("span 1")}
-                                />
-
-
-
-
-
-
                             </Box>
+
+
                             <Box display="flex" justifyContent="end" mt="20px">
                                 <Stack direction="row" spacing={2}>
 
@@ -426,7 +379,6 @@ const checkoutSchema = yup.object().shape({
     language: yup.string().required("required"),
     cbsAccountId: yup.string(),
     tellerName: yup.string().required("required"),
-    dailyLimit: yup.number().required("required"),
 
 });
 

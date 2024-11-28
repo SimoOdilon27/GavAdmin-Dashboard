@@ -24,7 +24,9 @@ const Clients = () => {
     const userData = useSelector((state) => state.users);
     const token = userData.token;
     const spaceId = userData?.selectedSpace?.id
+    const usertype = userData.selectedSpace.role
     const [selectedMsisdn, setSelectedMsisdn] = useState('');
+    const [approvedclientData, setApprovedClientData] = useState([]);
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const [showActivateClientModal, setShowActivateClientModal] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
@@ -58,19 +60,29 @@ const Clients = () => {
         msisdn: '',
         activationCode: '',
         internalId: 'backOffice',
+        branchId: ""
     })
-
-
-
 
     const fetchClientData = async () => {
         setLoading(true);
         try {
 
-            const payload = {
-                serviceReference: 'GET_ALLCLIENT_ACCOUNTS',
-                spaceId: spaceId,
+            let payload = {}
+
+            if (usertype === "CREDIX_ADMIN") {
+                payload = {
+                    serviceReference: 'GET_ALLCLIENT_ACCOUNTS',
+                    requestBody: '',
+                    spaceId: spaceId,
+                }
+            } else {
+                payload = {
+                    serviceReference: 'GET_APPROVED_CLIENTS_BY_ID',
+                    requestBody: spaceId,
+                    spaceId: spaceId,
+                }
             }
+
 
             console.log("payload", payload);
 
@@ -94,21 +106,53 @@ const Clients = () => {
         setLoading(false)
     };
 
+    //     const fetchApprovedClientData = async () => {
+    //         setLoading(true);
+    //         try {
 
+    //  const payload = {
+    //                 serviceReference: 'GET_APPROVED_CLIENTS_BY_ID',
+    //                 requestBody: spaceId,
+    //                 spaceId: spaceId,
+    //             }
+
+    //             console.log("payload", payload);
+
+    //             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
+    //             // const response = await CBS_Services('AP', 'api/gav/client/getAllClients', 'POST', null);
+
+    //             console.log("respfetch=========", response);
+
+    //             if (response && response.body.meta.statusCode === 200) {
+    //                 setApprovedClientData(response.body.data || []);
+
+    //             }
+    //             else if (response && response.body.status === 401) {
+    //                 // setErrorMessage(response.body.errors || 'Unauthorized to perform action');
+    //             }
+    //             else {
+    //                 console.error('Error fetching data');
+    //             }
+    //         } catch (error) {
+    //             console.error('Error:', error);
+    //         }
+    //         setLoading(false)
+    //     };
 
     useEffect(() => {
         fetchClientData();
-
+        // fetchApprovedClientData()
     }, []);
-
-
 
     const handleToggleActivateClientModal = (selectedClient) => {
         setSelectedMsisdn(selectedClient);
 
+        console.log("spaceId", spaceId);
+
         setActivateClientFormData(prevFormData => ({
             ...prevFormData,
-            msisdn: selectedClient,
+            msisdn: selectedClient?.msisdn,
+            branchId: spaceId,
             activationCode: '',
 
             // Add other properties you want to update here
@@ -255,7 +299,126 @@ const Clients = () => {
                             <MenuItem
                                 onClick={() => {
                                     if (!currentRow.active) {
-                                        handleToggleActivateClientModal(currentRow.msisdn);
+                                        handleToggleActivateClientModal(currentRow);
+                                    }
+                                    handleClose();
+                                }}
+                                disabled={currentRow?.active}
+                                style={{
+                                    color: currentRow?.active ? colors.greenAccent[500] : 'inherit',
+                                }}
+                            >
+                                {currentRow?.active ? (""
+                                    // <>
+                                    //     <Verified style={{ marginRight: "8px", color: colors.greenAccent[500] }} />
+                                    //     Already Active
+                                    // </>
+                                ) : (
+                                    <>
+                                        <VerifiedOutlined style={{ marginRight: "8px" }} />
+                                        Activate
+                                    </>
+                                )}
+
+                            </MenuItem>
+
+                        </Menu>
+                    </>
+                );
+            },
+        }
+
+    ];
+
+    // table for client Account
+    const columns2 = [
+        { field: "name", headerName: "Client Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
+        { field: "msisdn", headerName: "MSISDN", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        { field: "balance", headerName: "Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        {
+            field: "approvalstatus",
+            headerName: "Approval Status",
+            flex: 1,
+            headerAlign: "center",
+            align: "center",
+            renderCell: (params) => {
+                const isActive = params.row.accepted;
+                return (
+                    <Chip
+                        label={isActive ? "Approved" : "Pending Approval"}
+                        color={isActive ? "success" : "warning"}
+                        variant="filled"
+                        size="small"
+                    />
+                );
+            },
+        },
+        {
+            field: "status",
+            headerName: "Status",
+            flex: 1, headerAlign: "center", align: "center",
+            renderCell: (params) => {
+                const isActive = params.row.active; // Access the "active" field from the row data
+                return (
+                    <Chip
+                        label={isActive ? "Active" : "Inactive"}
+                        style={{
+                            backgroundColor: isActive ? "green" : "red",
+                            color: "white",
+                            padding: "1px 1px 1px 1px",
+                        }}
+                    />
+                );
+            },
+        },
+        {
+            field: "actions",
+            headerName: "Actions",
+            flex: 1, headerAlign: "center", align: "center",
+            renderCell: (params) => {
+                const isActive = params.row.active;
+
+                return (
+                    <>
+                        <IconButton
+                            aria-label="more"
+                            aria-controls={`actions-menu-${params.row.msisdn}`}
+                            aria-haspopup="true"
+                            onClick={(event) => handleClick(event, params.row)}
+                        >
+                            <MoreVertIcon />
+                        </IconButton>
+                        <Menu
+                            id={`actions-menu-${params.row.msisdn}`}
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl) && currentRow?.msisdn === params.row.msisdn}
+                            onClose={handleClose}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 48 * 4.5,
+                                    width: "20ch",
+                                    transform: "translateX(-50%)",
+                                },
+                            }}
+                        >
+                            <MenuItem onClick={() => {
+                                handleEdit(currentRow);
+                                handleClose();
+                            }}>
+                                <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+                                Edit
+                            </MenuItem>
+                            <MenuItem onClick={() => {
+                                handleView(currentRow);
+                                handleClose();
+                            }}>
+                                <RemoveRedEyeSharp fontSize="small" style={{ marginRight: "8px" }} />
+                                View
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    if (!currentRow.active) {
+                                        handleToggleActivateClientModal(currentRow);
                                     }
                                     handleClose();
                                 }}
@@ -343,7 +506,7 @@ const Clients = () => {
             >
                 <DataGrid
                     rows={clientData}
-                    columns={columns}
+                    columns={(usertype === "CREDIX_ADMIN") ? columns : columns2}
                     components={{ Toolbar: GridToolbar }}
                     disableSelectionOnClick
                     loading={loading}

@@ -351,33 +351,33 @@ const Menus = () => {
         { field: "icon", headerName: "Icon", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "menuOrder", headerName: "Sub-Menu Order", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "route", headerName: "Route", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        {
-            field: "permissions",
-            headerName: "Permissions",
-            flex: 1,
-            headerAlign: "center", // Center the header
-            align: "center", // Center the content
-            renderCell: (params) => {
-                const row = params.row;
-                return (
-                    <Tooltip title="Assign Menu Resources">
-                        <Box
-                            width="30%"
-                            m="0 auto"
-                            p="5px"
-                            display="flex"
-                            justifyContent="center"
-                            backgroundColor={colors.greenAccent[600]}
-                            borderRadius="4px"
-                            onClick={() => handleAssignUserRole(row.id)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <VerifiedUser />
-                        </Box>
-                    </Tooltip>
-                );
-            },
-        },
+        // {
+        //     field: "permissions",
+        //     headerName: "Permissions",
+        //     flex: 1,
+        //     headerAlign: "center", // Center the header
+        //     align: "center", // Center the content
+        //     renderCell: (params) => {
+        //         const row = params.row;
+        //         return (
+        //             <Tooltip title="Assign Menu Resources">
+        //                 <Box
+        //                     width="30%"
+        //                     m="0 auto"
+        //                     p="5px"
+        //                     display="flex"
+        //                     justifyContent="center"
+        //                     backgroundColor={colors.greenAccent[600]}
+        //                     borderRadius="4px"
+        //                     onClick={() => handleAssignUserRole(row.id)}
+        //                     style={{ cursor: 'pointer' }}
+        //                 >
+        //                     <VerifiedUser />
+        //                 </Box>
+        //             </Tooltip>
+        //         );
+        //     },
+        // },
         {
             field: "actions",
             headerName: "Actions",
@@ -422,6 +422,10 @@ const Menus = () => {
             ),
         },
     ];
+
+    const sortAlphabetically = (data, field = 'title') => {
+        return [...data].sort((a, b) => a[field].localeCompare(b[field]));
+    };
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -522,9 +526,9 @@ const Menus = () => {
             >
                 <DataGrid
                     rows={
-                        selectedTab === 0 ? MenuData :
-                            selectedTab === 1 ? SubMenuData :
-                                MenuData
+                        selectedTab === 0 ? sortAlphabetically(MenuData) :
+                            selectedTab === 1 ? sortAlphabetically(SubMenuData) :
+                                sortAlphabetically(MenuData)
                     }
                     columns={
                         selectedTab === 0 ? columns :

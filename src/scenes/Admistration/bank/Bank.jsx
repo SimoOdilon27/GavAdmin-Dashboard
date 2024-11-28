@@ -75,6 +75,9 @@ const Bank = () => {
                 }
             }
 
+            console.log("payload", payload);
+
+
 
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
             // const response = await CBS_Services('AP', 'api/gav/bank/getAll', 'GET', null);

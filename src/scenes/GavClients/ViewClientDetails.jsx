@@ -102,11 +102,32 @@ const ViewClientDetails = () => {
         fetchBankID();
     }, [msisdn]);
 
+
     useEffect(() => {
-        if (msisdn && location.state && location.state.branchData) {
-            setInitialValues(location.state.branchData);
+
+        const formData = {
+            request: msisdn,
+            internalId: "string"
         }
-    }, [msisdn, location.state]);
+        if (msisdn) {
+            // Fetch the existing catalog item by ID to populate the form for editing
+            CBS_Services("CLIENT", `api/gav/client/getClientByMsisdn`, "POST", formData,)
+                .then((response) => {
+                    if (response && response.status === 200) {
+                        setInitialValues(response.body.data);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching catalog item:", error);
+                });
+        }
+    }, []);
+
+    // useEffect(() => {
+    //     if (msisdn && location.state && location.state.branchData) {
+    //         setInitialValues(location.state.branchData);
+    //     }
+    // }, [msisdn, location.state]);
 
     const handleToggleModal = () => {
         setShowModal(!showModal);

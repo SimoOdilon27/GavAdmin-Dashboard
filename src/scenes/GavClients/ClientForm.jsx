@@ -63,6 +63,15 @@ const ClientForm = () => {
         internalId: "back-office",
         otherCbs: true
     });
+
+    // const [formValues, setFormValues] = useState({
+    //     msisdn: "",
+    //     branchId: "",
+    //     cni: "",
+    //     cbsAccountNumber: "",
+    //     internalId: "",
+    //     userId: ""
+    // });
     const [pending, setPending] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
@@ -107,11 +116,16 @@ const ClientForm = () => {
                 }
             } else {
                 // Add new client account
+
+
                 const payload = {
                     serviceReference: 'ADD_CLIENT_ACCOUNT',
                     requestBody: JSON.stringify(submitData),
                     spaceId: spaceId,
                 }
+
+                console.log("submitdata====", submitData);
+
                 const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
                 console.log("addresp", response);
 
@@ -479,7 +493,7 @@ const ClientForm = () => {
                                         }}
                                     >
                                         <TextField
-                                            sx={FormFieldStyles("span 4")}
+                                            sx={FormFieldStyles("span 2")}
                                             fullWidth
                                             variant="filled"
                                             type="text"
@@ -493,6 +507,20 @@ const ClientForm = () => {
 
                                         />
 
+                                        <TextField
+                                            sx={FormFieldStyles("span 2")}
+                                            fullWidth
+                                            variant="filled"
+                                            type="text"
+                                            label="CNI"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.cni}
+                                            name="cni"
+                                            error={!!touched.cni && !!errors.cni}
+                                            helperText={touched.cni && errors.cni}
+
+                                        />
 
                                         <TextField
                                             sx={FormFieldStyles("span 4")}
@@ -508,9 +536,6 @@ const ClientForm = () => {
                                             helperText={touched.cbsAccountNumber && errors.cbsAccountNumber}
 
                                         />
-
-
-
 
                                     </Box>
                                 }

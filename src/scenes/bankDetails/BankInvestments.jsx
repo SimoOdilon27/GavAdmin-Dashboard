@@ -149,10 +149,7 @@ const BankInvestments = () => {
         fetchAwaitingInvestmentApprovalData();
     }, []);
 
-    const toSentenceCase = (text) => {
-        if (!text) return '';
-        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    };
+
 
     const InvestmentColumns = [
         // { field: 'id', headerName: ' Investment ID', flex: 1 },
