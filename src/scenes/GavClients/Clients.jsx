@@ -72,7 +72,6 @@ const Clients = () => {
             if (usertype === "CREDIX_ADMIN") {
                 payload = {
                     serviceReference: 'GET_ALLCLIENT_ACCOUNTS',
-                    requestBody: '',
                     spaceId: spaceId,
                 }
             } else {
