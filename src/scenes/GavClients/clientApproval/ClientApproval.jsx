@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Header from '../../../components/Header';
 import { formatValue } from '../../../tools/formatValue';
-import { Add } from '@mui/icons-material';
+import { Add, TaskAlt } from '@mui/icons-material';
 import CBS_Services from '../../../services/api/GAV_Sercives';
 
 const ClientApproval = () => {
@@ -135,7 +135,7 @@ const ClientApproval = () => {
                     onClick={() => {
                         setOpenConfirmDialog(params.row);
                     }}
-                >
+                ><TaskAlt sx={{ mr: "10px" }} />
                     Approve
                 </Button>
             ),
@@ -158,7 +158,7 @@ const ClientApproval = () => {
                         }}
                         onClick={() => setOpenConfirmDialog(true)}
                     >
-                        <Add sx={{ mr: "10px" }} />
+                        <TaskAlt sx={{ mr: "10px" }} />
                         Approve all {selectedClients.length} Clients
                     </Button>
 

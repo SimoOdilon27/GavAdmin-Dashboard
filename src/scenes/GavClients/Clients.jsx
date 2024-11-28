@@ -227,10 +227,10 @@ const Clients = () => {
         { field: "name", headerName: "Client Name", flex: 1, valueGetter: (params) => formatValue(params.value), },
         { field: "msisdn", headerName: "MSISDN", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "language", headerName: "Language", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "dateOfBirth", headerName: "Date of Birth", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        // { field: "dateOfBirth", headerName: "Date of Birth", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "cniNumber", headerName: "CNI", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "initialBalance", headerName: "Initial Balance", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
-        { field: "email", headerName: "Email", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
+        // { field: "email", headerName: "Email", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         { field: "address", headerName: "Address", flex: 1, headerAlign: "center", align: "center", valueGetter: (params) => formatValue(params.value), },
         // { field: "email", headerName: "Email", flex: 1 },
         {
