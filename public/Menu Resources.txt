@@ -43,5 +43,12 @@ Bank Services: {
 	Bank Services Type: [CREATE_BANK_SERVICE_TYPE, GET_BANK_SERVICE_TYPES]
 }
   
+
+Pricing: {
+    Charges: [GET_ALL_CHARGES, CREATE_CHARGE, GET_ALL_BANKS, GET_ALL_BANKS_BY_CORPORATION_ID],
+    Tax Configs: [],
+    Partners: [],
+    Charges: [],
+}
   
   

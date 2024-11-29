@@ -75,24 +75,21 @@ const CashIn = () => {
                 spaceId: spaceId,
             };
 
+            console.log("payload", payload);
             const response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, usertoken);
             console.log("response", response);
 
             if (response?.body?.meta?.statusCode === 200) {
                 // Assuming the response contains an array of available banks
-                if (Array.isArray(response.body.data.length > 0)) {
+                if (Array.isArray(response.body.data)) {
                     setAvailableBanks(response.body.data);
-                    showSnackbar("Available banks fetched successfully", 'success');
+                    // showSnackbar("Available banks fetched successfully", 'success');
 
                     // Reset bank selection when new MSISDN is entered
                     if (formikRef.current) {
                         formikRef.current.setFieldValue('clientBankCode', '');
                     }
                 }
-                // else if (availableBanks.length === 0) {
-                //     setErrors({ isError: true, description: 'No banks available for this MSISDN' });
-                //     setAvailableBanks([]);
-                // }
 
                 else {
                     // showSnackbar("This MSISDN is not registered with any banks", 'warning');

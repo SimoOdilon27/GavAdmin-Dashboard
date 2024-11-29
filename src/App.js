@@ -69,8 +69,9 @@ import Partners from "./scenes/pricing/Partners";
 import TaxesConfig from "./scenes/pricing/TaxesConfig";
 import OperationConfig from "./scenes/pricing/OperationConfig";
 import ChargesPricing from "./scenes/Transactions/pricing/Charges";
-import Charges from "./scenes/pricing/Charges";
+import Charges from "./scenes/pricing/charges/Charges";
 import ClientApproval from "./scenes/GavClients/clientApproval/ClientApproval";
+import ChargesForm from "./scenes/pricing/charges/ChargesForm";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -174,6 +175,7 @@ function App() {
                 <Route path="/bankserviceconfigs/add" element={<ProtectedRoute><BankServiceConfigForm /></ProtectedRoute>} />
                 <Route path="/bankservicesconfigs/edit/:id" element={<ProtectedRoute><BankServiceConfigForm /></ProtectedRoute>} />
                 <Route path="/charges" element={<ProtectedRoute><Charges /></ProtectedRoute>} />
+                <Route path="/charges/configurecharges" element={<ProtectedRoute><ChargesForm /></ProtectedRoute>} />
                 <Route path="/operationconfigurations" element={<ProtectedRoute><OperationConfig /></ProtectedRoute>} />
                 <Route path="/taxconfigurations" element={<ProtectedRoute><TaxesConfig /></ProtectedRoute>} />
                 <Route path="/partners" element={<ProtectedRoute><Partners /></ProtectedRoute>} />

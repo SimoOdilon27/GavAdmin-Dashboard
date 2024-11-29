@@ -58,6 +58,7 @@ const GimacWalletForm = () => {
                 const payload = {
                     serviceReference: 'ADD_UPDATE_GIMAC_WALLET',
                     requestBody: JSON.stringify(values),
+                    spaceId: spaceId
                 }
                 response = await CBS_Services('GATEWAY', 'gavClientApiService/request', 'POST', payload, token);
 
@@ -76,6 +77,7 @@ const GimacWalletForm = () => {
                 const payload = {
                     serviceReference: 'ADD_UPDATE_GIMAC_WALLET',
                     requestBody: JSON.stringify(values),
+                    spaceId: spaceId
                 }
 
                 console.log("values", values);
