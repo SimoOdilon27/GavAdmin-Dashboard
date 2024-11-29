@@ -91,9 +91,9 @@ const CashOut = () => {
 
             if (response?.body?.meta?.statusCode === 200) {
                 // Assuming the response contains an array of available banks
-                if (Array.isArray(response.body.data.length > 0)) {
+                if (Array.isArray(response.body.data)) {
                     setAvailableBanks(response.body.data);
-                    showSnackbar("Available banks fetched successfully", 'success');
+                    // showSnackbar("Available banks fetched successfully", 'success');
 
                     // Reset bank selection when new MSISDN is entered
                     if (formikRef.current) {
