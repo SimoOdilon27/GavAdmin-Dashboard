@@ -1,29 +1,62 @@
-import { Box, Button, Chip, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  Menu,
+  MenuItem,
+  useTheme,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { tokens } from "../../../theme";
 import Header from "../../../components/Header";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RemoveRedEyeSharp, Settings } from "@mui/icons-material";
-import { formatValue } from "../../../tools/formatValue";
+import { EditOutlined, RemoveRedEyeSharp, Settings } from "@mui/icons-material";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-const Charges = () => {
+const TaxesConfig = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [chargesData, setChargesData] = useState([]);
+  const [taxesConfigData, setTaxesConfigData] = useState([]);
   const [loading, setLoading] = useState(false);
   const userData = useSelector((state) => state.users);
   const token = userData.token;
   const spaceId = userData?.selectedSpace?.id;
   const navigate = useNavigate();
 
-  const fetchChargesData = async () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [currentRow, setCurrentRow] = useState(null);
+  const open = Boolean(anchorEl);
+
+  // Define or import the handleEdit and handleDelete functions
+
+  const handleDelete = (row) => {
+    console.log("Delete clicked", row);
+    // Your delete logic here
+  };
+  const handleEdit = (row) => {
+    console.log("Edit clicked", row);
+    // Your delete logic here
+  };
+
+  const handleClick = (event, row) => {
+    setAnchorEl(event.currentTarget);
+    setCurrentRow(row); // Store the current row to pass to actions
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setCurrentRow(null);
+  };
+
+  const fetchTaxesConfigData = async () => {
     setLoading(true);
     try {
       const payload = {
-        serviceReference: "GET_ALL_CHARGES",
+        serviceReference: "GET_ALL_TAXES_CONFIG",
         requestBody: "",
         spaceId: spaceId,
       };
@@ -36,9 +69,8 @@ const Charges = () => {
       );
       console.log("response====", response);
 
-      // const response = await CBS_Services('APE', 'pricing/get/all', 'GET');
       if (response && response.status === 200) {
-        setChargesData(response.body.data || []);
+        setTaxesConfigData(response.body.data || []);
       } else {
         console.error("Error fetching data");
       }
@@ -49,55 +81,51 @@ const Charges = () => {
   };
 
   useEffect(() => {
-    fetchChargesData();
+    fetchTaxesConfigData();
   }, []);
 
-  const handleConfigCharge = () => {
-    navigate("/charges/add");
+  const handleConfigTaxes = () => {
+    navigate("/taxconfigurations/add");
   };
+
   const columns = [
     {
-      field: "operationConfig.operationType.name",
-      headerName: "Operation Type",
+      field: "name",
+      headerName: "Tax Name",
       flex: 1,
       headerAlign: "center",
       align: "center",
-      valueGetter: (params) => {
-        return params.row.operationConfig?.operationType?.name || "N/A";
+    },
+    {
+      field: "value",
+      headerName: "Tax Value",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        return `${params.value}${params.row.percentage ? "%" : ""}`;
       },
     },
+
     {
-      field: "chargeValue",
-      headerName: "Charge Value",
+      field: "globallyApplied",
+      headerName: "Global Application",
       flex: 1,
       headerAlign: "center",
       align: "center",
-      valueGetter: (params) => params.row.chargeValue || "N/A",
-    },
-    {
-      field: "operationConfig.gimacCharge",
-      headerName: "GIMAC Charge",
-      flex: 1,
-      headerAlign: "center",
-      align: "center",
-      valueGetter: (params) => params.row.operationConfig?.gimacCharge || "N/A",
-    },
-    {
-      field: "operationConfig.externalCharge",
-      headerName: "External Charge",
-      flex: 1,
-      headerAlign: "center",
-      align: "center",
-      valueGetter: (params) =>
-        params.row.operationConfig?.externalCharge || "N/A",
-    },
-    {
-      field: "partner.name",
-      headerName: "Partner",
-      flex: 1,
-      headerAlign: "center",
-      align: "center",
-      valueGetter: (params) => params.row.partner?.name || "N/A",
+      renderCell: (params) => {
+        const isGloballyApplied = params.row.globallyApplied;
+        return (
+          <Chip
+            label={isGloballyApplied ? "Global" : "Limited"}
+            style={{
+              backgroundColor: isGloballyApplied ? "green" : "orange",
+              color: "white",
+              padding: "1px 1px 1px 1px",
+            }}
+          />
+        );
+      },
     },
     {
       field: "active",
@@ -119,12 +147,57 @@ const Charges = () => {
         );
       },
     },
+
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => (
+        <>
+          <IconButton
+            aria-label="more"
+            aria-controls="long-menu"
+            aria-haspopup="true"
+            onClick={(event) => handleClick(event, params.row)}
+          >
+            <MoreVertIcon />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            PaperProps={{
+              style: {
+                maxHeight: 48 * 4.5,
+                width: "20ch",
+                transform: "translateX(-50%)",
+              },
+            }}
+          >
+            <MenuItem onClick={() => handleEdit(currentRow)}>
+              <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+              Edit
+            </MenuItem>
+
+            <MenuItem onClick={() => handleDelete(currentRow)}>
+              <RemoveRedEyeSharp
+                fontSize="small"
+                style={{ marginRight: "8px" }}
+              />
+              View
+            </MenuItem>
+          </Menu>
+        </>
+      ),
+    },
   ];
 
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="Charges" subtitle="Charges Details" />
+        <Header title="Taxes Configuration" subtitle="Taxes Config Details" />
 
         <Box>
           <Button
@@ -136,10 +209,10 @@ const Charges = () => {
               padding: "10px 20px",
               marginRight: "10px",
             }}
-            onClick={handleConfigCharge}
+            onClick={handleConfigTaxes}
           >
             <Settings sx={{ mr: "10px" }} />
-            Configure New Charge
+            Configure New Tax
           </Button>
         </Box>
       </Box>
@@ -177,10 +250,9 @@ const Charges = () => {
         }}
       >
         <DataGrid
-          rows={chargesData}
+          rows={taxesConfigData}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
-          // checkboxSelection
           disableSelectionOnClick
           loading={loading}
         />
@@ -189,4 +261,4 @@ const Charges = () => {
   );
 };
 
-export default Charges;
+export default TaxesConfig;

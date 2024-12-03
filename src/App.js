@@ -65,13 +65,17 @@ import BankServicesForm from "./scenes/bankServices/bankServiceTypes/BankService
 import BankServiceConfigForm from "./scenes/bankServices/bankServicesConfigs/BankServiceConfigForm";
 import BankServiceConfigs from "./scenes/bankServices/bankServicesConfigs/BankServiceConfigs";
 import { useDispatch } from "react-redux";
-import Partners from "./scenes/pricing/Partners";
-import TaxesConfig from "./scenes/pricing/TaxesConfig";
-import OperationConfig from "./scenes/pricing/OperationConfig";
+import Partners from "./scenes/pricing/partners/Partners";
+import TaxesConfig from "./scenes/pricing/taxes/TaxesConfig";
+import OperationConfig from "./scenes/pricing/operationConfig/OperationConfig";
 import ChargesPricing from "./scenes/Transactions/pricing/Charges";
 import Charges from "./scenes/pricing/charges/Charges";
 import ClientApproval from "./scenes/GavClients/clientApproval/ClientApproval";
 import ChargesForm from "./scenes/pricing/charges/ChargesForm";
+import OperationConfigTypeForm from "./scenes/pricing/operationConfig/OperationConfigTypeForm";
+import OperationConfigForm from "./scenes/pricing/operationConfig/OperationConfigForm";
+import PartnerForm from "./scenes/pricing/partners/PartnerForm";
+import TaxConfigForm from "./scenes/pricing/taxes/TaxConfigForm";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -175,10 +179,17 @@ function App() {
                 <Route path="/bankserviceconfigs/add" element={<ProtectedRoute><BankServiceConfigForm /></ProtectedRoute>} />
                 <Route path="/bankservicesconfigs/edit/:id" element={<ProtectedRoute><BankServiceConfigForm /></ProtectedRoute>} />
                 <Route path="/charges" element={<ProtectedRoute><Charges /></ProtectedRoute>} />
-                <Route path="/charges/configurecharges" element={<ProtectedRoute><ChargesForm /></ProtectedRoute>} />
+                <Route path="/charges/add" element={<ProtectedRoute><ChargesForm /></ProtectedRoute>} />
+                <Route path="/charges/edit/:id" element={<ProtectedRoute><ChargesForm /></ProtectedRoute>} />
                 <Route path="/operationconfigurations" element={<ProtectedRoute><OperationConfig /></ProtectedRoute>} />
+                <Route path="/operationconfigurations/addoperationtype" element={<ProtectedRoute><OperationConfigTypeForm /></ProtectedRoute>} />
+                <Route path="/operationconfigurations/addoperationconfig" element={<ProtectedRoute><OperationConfigForm /></ProtectedRoute>} />
                 <Route path="/taxconfigurations" element={<ProtectedRoute><TaxesConfig /></ProtectedRoute>} />
+                <Route path="/taxconfigurations/add" element={<ProtectedRoute><TaxConfigForm /></ProtectedRoute>} />
+                <Route path="/taxconfigurations/edit/:id" element={<ProtectedRoute><TaxConfigForm /></ProtectedRoute>} />
                 <Route path="/partners" element={<ProtectedRoute><Partners /></ProtectedRoute>} />
+                <Route path="/partners/add" element={<ProtectedRoute><PartnerForm /></ProtectedRoute>} />
+                <Route path="/partners/edit/:id" element={<ProtectedRoute><PartnerForm /></ProtectedRoute>} />
 
               </Routes>
 
