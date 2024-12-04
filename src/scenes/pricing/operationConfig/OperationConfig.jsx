@@ -122,17 +122,28 @@ const OperationConfig = () => {
   const handleConfigOperationConfig = () => {
     navigate("/operationconfigurations/addoperationconfig");
   };
-  const handleConfigOperationType = () => {
-    navigate("/operationconfigurations/addoperationtype");
-  };
 
   const handleEditOperationConfig = (row) => {
     navigate(`/operationconfigurations/editoperationconfig/${row.id}`, {
       state: { OperationConfigData: row },
     });
   };
+  const handleViewOperationConfig = (row) => {
+    navigate(`/operationconfigurations/viewoperationconfig/${row.id}`, {
+      state: { OperationConfigData: row },
+    });
+  };
+
+  const handleConfigOperationType = () => {
+    navigate("/operationconfigurations/addoperationtype");
+  };
   const handleEditOperationType = (row) => {
     navigate(`/operationconfigurations/editoperationtype/${row.id}`, {
+      state: { OperationTypeData: row },
+    });
+  };
+  const handleViewOperationType = (row) => {
+    navigate(`/operationconfigurations/viewoperationtype/${row.id}`, {
       state: { OperationTypeData: row },
     });
   };
@@ -322,7 +333,7 @@ const OperationConfig = () => {
               Edit
             </MenuItem>
 
-            <MenuItem onClick={() => handleDelete(currentRow)}>
+            <MenuItem onClick={() => handleViewOperationConfig(currentRow)}>
               <RemoveRedEyeSharp
                 fontSize="small"
                 style={{ marginRight: "8px" }}

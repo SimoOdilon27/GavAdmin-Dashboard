@@ -92,8 +92,15 @@ const Charges = () => {
   };
 
   const handleEdit = (row) => {
-    console.log("Edit clicked", row);
-    // Your delete logic here
+    navigate(`/charges/edit/${row.id}`, {
+      state: { chargeData: row },
+    });
+  };
+
+  const handleView = (row) => {
+    navigate(`/charges/view/${row.id}`, {
+      state: { chargeData: row },
+    });
   };
   const columns = [
     {
@@ -208,7 +215,7 @@ const Charges = () => {
               Edit
             </MenuItem>
 
-            <MenuItem onClick={() => handleDelete(currentRow)}>
+            <MenuItem onClick={() => handleView(currentRow)}>
               <RemoveRedEyeSharp
                 fontSize="small"
                 style={{ marginRight: "8px" }}

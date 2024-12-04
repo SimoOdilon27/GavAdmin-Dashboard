@@ -55,6 +55,7 @@ const OperationConfigForm = () => {
     isChargePercentage: false,
     isGimacChargesPercentage: false,
     isExternalChargesPercentage: false,
+    operationType: "",
   });
 
   const [pending, setPending] = useState(false);
@@ -75,7 +76,19 @@ const OperationConfigForm = () => {
 
   useEffect(() => {
     if (id && location.state && location.state.OperationConfigData) {
-      setInitialValues(location.state.OperationConfigData);
+      const configData = location.state.OperationConfigData;
+
+      setInitialValues({
+        ...configData,
+        operationTypeId: configData.operationType?.id || "",
+        isMerchantDebit: configData.merchantDebit,
+        isChargePercentage: configData.chargePercentage,
+        isGimacChargesPercentage: configData.gimacChargesPercentage,
+        isExternalChargesPercentage: configData.externalChargesPercentage,
+      });
+
+      // Set the selected charge type to ensure conditional fields display
+      setSelectedChargeType(configData.fixedChargeType);
     }
   }, [id, location.state]);
 
@@ -279,6 +292,7 @@ const OperationConfigForm = () => {
                   }}
                 >
                   {/* Operation Type Dropdown */}
+
                   <FormControl
                     fullWidth
                     variant="filled"
@@ -289,8 +303,12 @@ const OperationConfigForm = () => {
                       label="Operation Type"
                       onBlur={handleBlur}
                       onChange={handleChange}
-                      value={values.operationTypeId}
-                      name="operationTypeId"
+                      value={
+                        id
+                          ? values.operationType?.id || values.operationTypeId
+                          : values.operationTypeId
+                      }
+                      name={id ? "operationType.id" : "operationTypeId"}
                       error={
                         !!touched.operationTypeId && !!errors.operationTypeId
                       }

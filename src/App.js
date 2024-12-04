@@ -76,6 +76,8 @@ import OperationConfigTypeForm from "./scenes/pricing/operationConfig/OperationC
 import OperationConfigForm from "./scenes/pricing/operationConfig/OperationConfigForm";
 import PartnerForm from "./scenes/pricing/partners/PartnerForm";
 import TaxConfigForm from "./scenes/pricing/taxes/TaxConfigForm";
+import ViewOperationConfigDetails from "./scenes/pricing/operationConfig/ViewOperationConfigDetails";
+import ViewChargeDetails from "./scenes/pricing/charges/ViewChargeDetails";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -181,10 +183,12 @@ function App() {
                 <Route path="/charges" element={<ProtectedRoute><Charges /></ProtectedRoute>} />
                 <Route path="/charges/add" element={<ProtectedRoute><ChargesForm /></ProtectedRoute>} />
                 <Route path="/charges/edit/:id" element={<ProtectedRoute><ChargesForm /></ProtectedRoute>} />
+                <Route path="/charges/view/:id" element={<ProtectedRoute><ViewChargeDetails /></ProtectedRoute>} />
                 <Route path="/operationconfigurations" element={<ProtectedRoute><OperationConfig /></ProtectedRoute>} />
                 <Route path="/operationconfigurations/addoperationtype" element={<ProtectedRoute><OperationConfigTypeForm /></ProtectedRoute>} />
                 <Route path="/operationconfigurations/addoperationconfig" element={<ProtectedRoute><OperationConfigForm /></ProtectedRoute>} />
                 <Route path="/operationconfigurations/editoperationconfig/:id" element={<ProtectedRoute><OperationConfigForm /></ProtectedRoute>} />
+                <Route path="/operationconfigurations/viewoperationconfig/:id" element={<ProtectedRoute><ViewOperationConfigDetails /></ProtectedRoute>} />
                 <Route path="/operationconfigurations/editoperationtype/:id" element={<ProtectedRoute><OperationConfigTypeForm /></ProtectedRoute>} />
                 <Route path="/taxconfigurations" element={<ProtectedRoute><TaxesConfig /></ProtectedRoute>} />
                 <Route path="/taxconfigurations/add" element={<ProtectedRoute><TaxConfigForm /></ProtectedRoute>} />
