@@ -1,13 +1,24 @@
-import { Box, Button, Tab, Tabs, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  Menu,
+  MenuItem,
+  Tab,
+  Tabs,
+  useTheme,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { tokens } from "../../../theme";
 import Header from "../../../components/Header";
-import { Add } from "@mui/icons-material";
+import { Add, EditOutlined, RemoveRedEyeSharp } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { useSelector } from "react-redux";
 import { formatValue } from "../../../tools/formatValue";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const OperationConfig = () => {
   const theme = useTheme();
@@ -20,6 +31,26 @@ const OperationConfig = () => {
   const spaceId = userData?.selectedSpace?.id;
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState(0);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [currentRow, setCurrentRow] = useState(null);
+  const open = Boolean(anchorEl);
+
+  // Define or import the handleEdit and handleDelete functions
+
+  const handleDelete = (row) => {
+    console.log("Delete clicked", row);
+    // Your delete logic here
+  };
+
+  const handleClick = (event, row) => {
+    setAnchorEl(event.currentTarget);
+    setCurrentRow(row); // Store the current row to pass to actions
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setCurrentRow(null);
+  };
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -95,6 +126,17 @@ const OperationConfig = () => {
     navigate("/operationconfigurations/addoperationtype");
   };
 
+  const handleEditOperationConfig = (row) => {
+    navigate(`/operationconfigurations/editoperationconfig/${row.id}`, {
+      state: { OperationConfigData: row },
+    });
+  };
+  const handleEditOperationType = (row) => {
+    navigate(`/operationconfigurations/editoperationtype/${row.id}`, {
+      state: { OperationTypeData: row },
+    });
+  };
+
   const operationtypecolumns = [
     // { field: "id", headerName: "ID", flex: 1 },
     {
@@ -121,6 +163,51 @@ const OperationConfig = () => {
       align: "center",
       valueGetter: (params) => formatValue(params.value),
     },
+
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => (
+        <>
+          <IconButton
+            aria-label="more"
+            aria-controls="long-menu"
+            aria-haspopup="true"
+            onClick={(event) => handleClick(event, params.row)}
+          >
+            <MoreVertIcon />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            PaperProps={{
+              style: {
+                maxHeight: 48 * 4.5,
+                width: "20ch",
+                transform: "translateX(-50%)",
+              },
+            }}
+          >
+            <MenuItem onClick={() => handleEditOperationType(currentRow)}>
+              <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+              Edit
+            </MenuItem>
+
+            <MenuItem onClick={() => handleDelete(currentRow)}>
+              <RemoveRedEyeSharp
+                fontSize="small"
+                style={{ marginRight: "8px" }}
+              />
+              View
+            </MenuItem>
+          </Menu>
+        </>
+      ),
+    },
   ];
 
   const operationconfigcolumns = [
@@ -136,19 +223,41 @@ const OperationConfig = () => {
     },
     {
       field: "fixedCharge",
-      headerName: "Fixed Charge",
+      headerName: "Charge",
       flex: 1,
       headerAlign: "center",
       align: "center",
-      valueGetter: (params) => formatValue(params.row.fixedCharge),
+      renderCell: (params) => {
+        return `${params.value}${params.row.chargePercentage ? "%" : ""}`;
+      },
     },
+
+    {
+      field: "minAmount",
+      headerName: "Min Amount",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
+      valueGetter: (params) => formatValue(params.row.minAmount),
+    },
+    {
+      field: "maxAmount",
+      headerName: "Max Amount",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
+      valueGetter: (params) => formatValue(params.row.maxAmount),
+    },
+
     {
       field: "gimacCharge",
       headerName: "GIMAC Charge",
       flex: 1,
       headerAlign: "center",
       align: "center",
-      valueGetter: (params) => formatValue(params.row.gimacCharge),
+      renderCell: (params) => {
+        return `${params.value}${params.row.gimacChargesPercentage ? "%" : ""}`;
+      },
     },
     {
       field: "externalCharge",
@@ -157,6 +266,72 @@ const OperationConfig = () => {
       headerAlign: "center",
       align: "center",
       valueGetter: (params) => formatValue(params.row.externalCharge),
+    },
+
+    {
+      field: "merchantDebit",
+      headerName: "Merchant Debit",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        const isMerchantDebit = params.row.merchantDebit;
+        return (
+          <Chip
+            label={isMerchantDebit ? "Debited" : "Not Debited"}
+            style={{
+              backgroundColor: isMerchantDebit ? "green" : "orange",
+              color: "white",
+              padding: "1px 1px 1px 1px",
+            }}
+          />
+        );
+      },
+    },
+
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => (
+        <>
+          <IconButton
+            aria-label="more"
+            aria-controls="long-menu"
+            aria-haspopup="true"
+            onClick={(event) => handleClick(event, params.row)}
+          >
+            <MoreVertIcon />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            PaperProps={{
+              style: {
+                maxHeight: 48 * 4.5,
+                width: "20ch",
+                transform: "translateX(-50%)",
+              },
+            }}
+          >
+            <MenuItem onClick={() => handleEditOperationConfig(currentRow)}>
+              <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+              Edit
+            </MenuItem>
+
+            <MenuItem onClick={() => handleDelete(currentRow)}>
+              <RemoveRedEyeSharp
+                fontSize="small"
+                style={{ marginRight: "8px" }}
+              />
+              View
+            </MenuItem>
+          </Menu>
+        </>
+      ),
     },
   ];
 
@@ -233,8 +408,8 @@ const OperationConfig = () => {
             },
           }}
         >
-          <Tab label="Operation Types" />
           <Tab label="Operation Configs" />
+          <Tab label="Operation Types" />
         </Tabs>
       </Box>
       <Box
@@ -272,17 +447,17 @@ const OperationConfig = () => {
         <DataGrid
           rows={
             selectedTab === 0
-              ? operationTypeData
-              : selectedTab === 1
               ? operationConfigData
-              : operationTypeData
+              : selectedTab === 1
+              ? operationTypeData
+              : operationConfigData
           }
           columns={
             selectedTab === 0
-              ? operationtypecolumns
-              : selectedTab === 1
               ? operationconfigcolumns
-              : operationtypecolumns
+              : selectedTab === 1
+              ? operationtypecolumns
+              : operationconfigcolumns
           }
           components={{ Toolbar: GridToolbar }}
           loading={loading}

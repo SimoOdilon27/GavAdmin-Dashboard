@@ -12,7 +12,12 @@ import { tokens } from "../../../theme";
 import Header from "../../../components/Header";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { EditOutlined, RemoveRedEyeSharp, Settings } from "@mui/icons-material";
+import {
+  Add,
+  EditOutlined,
+  RemoveRedEyeSharp,
+  Settings,
+} from "@mui/icons-material";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -35,10 +40,6 @@ const TaxesConfig = () => {
 
   const handleDelete = (row) => {
     console.log("Delete clicked", row);
-    // Your delete logic here
-  };
-  const handleEdit = (row) => {
-    console.log("Edit clicked", row);
     // Your delete logic here
   };
 
@@ -86,6 +87,10 @@ const TaxesConfig = () => {
 
   const handleConfigTaxes = () => {
     navigate("/taxconfigurations/add");
+  };
+
+  const handleEdit = (row) => {
+    navigate(`/taxconfigurations/edit/${row.id}`, { state: { taxData: row } });
   };
 
   const columns = [
@@ -197,7 +202,7 @@ const TaxesConfig = () => {
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="Taxes Configuration" subtitle="Taxes Config Details" />
+        <Header title="Tax" subtitle="Tax Details" />
 
         <Box>
           <Button
@@ -211,8 +216,8 @@ const TaxesConfig = () => {
             }}
             onClick={handleConfigTaxes}
           >
-            <Settings sx={{ mr: "10px" }} />
-            Configure New Tax
+            <Add sx={{ mr: "10px" }} />
+            New Tax
           </Button>
         </Box>
       </Box>

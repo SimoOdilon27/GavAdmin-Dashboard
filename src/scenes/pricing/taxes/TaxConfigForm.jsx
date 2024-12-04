@@ -14,7 +14,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../../components/Header";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CBS_Services from "../../../services/api/GAV_Sercives";
@@ -29,6 +29,7 @@ const TaxConfigForm = () => {
   const colors = tokens(theme.palette.mode);
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.users);
   const token = userData.token;
@@ -37,9 +38,9 @@ const TaxConfigForm = () => {
   const [initialValues, setInitialValues] = useState({
     name: "",
     value: 0,
-    isActive: true,
-    isGloballyApplied: false,
-    isPercentage: false,
+    active: false,
+    globallyApplied: false,
+    percentage: false,
   });
 
   const [pending, setPending] = useState(false);
@@ -64,9 +65,16 @@ const TaxConfigForm = () => {
     setPending(true);
 
     try {
+      const submitData = {
+        ...values,
+        isActive: values.active,
+        isGloballyApplied: values.globallyApplied,
+        isPercentage: values.percentage,
+      };
+
       const payload = {
         serviceReference: "CREATE_TAX",
-        requestBody: JSON.stringify(values),
+        requestBody: JSON.stringify(submitData),
         spaceId: spaceId,
       };
       const response = await CBS_Services(
@@ -76,6 +84,7 @@ const TaxConfigForm = () => {
         payload,
         token
       );
+      console.log("submitData", submitData);
       console.log("fetchbankidbycorp", response);
 
       if (response && response.body.meta.statusCode === 200) {
@@ -92,15 +101,19 @@ const TaxConfigForm = () => {
     }
   };
 
+  useEffect(() => {
+    if (id && location.state && location.state.taxData) {
+      setInitialValues(location.state.taxData);
+    }
+  }, [id, location.state]);
+
+  console.log("initialValues", initialValues);
+
   return (
     <Box m="20px">
       <Header
-        title={id ? "EDIT TAX CONFIGURATION" : "ADD TAX CONFIGURATION"}
-        subtitle={
-          id
-            ? "Edit the tax configuration details"
-            : "Add a new tax configuration"
-        }
+        title={id ? "EDIT TAX " : "ADD TAX "}
+        subtitle={id ? "Edit the tax details" : "Add a new tax "}
       />
 
       <Formik
@@ -141,7 +154,7 @@ const TaxConfigForm = () => {
                   fullWidth
                   variant="filled"
                   type="text"
-                  label="Tax Configuration Name"
+                  label="Tax Name"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.name}
@@ -161,49 +174,49 @@ const TaxConfigForm = () => {
                   name="value"
                   error={!!touched.value && !!errors.value}
                   helperText={touched.value && errors.value}
-                  sx={FormFieldStyles("span 2")}
+                  sx={FormFieldStyles("span 1")}
                   inputProps={{ step: 0.01 }}
                 />
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={values.isActive}
+                      checked={values.percentage}
                       onChange={(e) =>
-                        setFieldValue("isActive", e.target.checked)
+                        setFieldValue("percentage", e.target.checked)
                       }
-                      name="isActive"
+                      name="percentage"
                       color="secondary"
                     />
                   }
-                  label="Active Configuration"
+                  label="Value In Percentage"
                   sx={FormFieldStyles("span 1")}
                 />
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={values.isGloballyApplied}
+                      checked={values.active}
                       onChange={(e) =>
-                        setFieldValue("isGloballyApplied", e.target.checked)
+                        setFieldValue("active", e.target.checked)
                       }
-                      name="isGloballyApplied"
+                      name="active"
+                      color="secondary"
+                    />
+                  }
+                  label="Active"
+                  sx={FormFieldStyles("span 1")}
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={values.globallyApplied}
+                      onChange={(e) =>
+                        setFieldValue("globallyApplied", e.target.checked)
+                      }
+                      name="globallyApplied"
                       color="secondary"
                     />
                   }
                   label="Globally Applied"
-                  sx={FormFieldStyles("span 1")}
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={values.isPercentage}
-                      onChange={(e) =>
-                        setFieldValue("isPercentage", e.target.checked)
-                      }
-                      name="isPercentage"
-                      color="secondary"
-                    />
-                  }
-                  label="Is Percentage"
                   sx={FormFieldStyles("span 1")}
                 />
               </Box>
@@ -225,9 +238,7 @@ const TaxConfigForm = () => {
                     loadingPosition="start"
                     startIcon={<Save />}
                   >
-                    {id
-                      ? "Update Tax Configuration"
-                      : "Create Tax Configuration"}
+                    {id ? "Update Tax " : "Create Tax "}
                   </LoadingButton>
                 </Stack>
               </Box>
@@ -264,6 +275,14 @@ const taxConfigSchema = yup.object().shape({
       "maxDigitsAfterDecimal",
       "Value can have at most 2 decimal places",
       (value) => /^\d+(\.\d{1,2})?$/.test(value.toString())
+    )
+    .test(
+      "max-percentage",
+      "Percentage value cannot exceed 100",
+      function (value) {
+        // Only apply this validation if isPercentage is true
+        return !this.parent.isPercentage || value <= 100;
+      }
     ),
   isActive: yup.boolean(),
   isGloballyApplied: yup.boolean(),

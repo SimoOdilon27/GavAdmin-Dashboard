@@ -184,6 +184,8 @@ function App() {
                 <Route path="/operationconfigurations" element={<ProtectedRoute><OperationConfig /></ProtectedRoute>} />
                 <Route path="/operationconfigurations/addoperationtype" element={<ProtectedRoute><OperationConfigTypeForm /></ProtectedRoute>} />
                 <Route path="/operationconfigurations/addoperationconfig" element={<ProtectedRoute><OperationConfigForm /></ProtectedRoute>} />
+                <Route path="/operationconfigurations/editoperationconfig/:id" element={<ProtectedRoute><OperationConfigForm /></ProtectedRoute>} />
+                <Route path="/operationconfigurations/editoperationtype/:id" element={<ProtectedRoute><OperationConfigTypeForm /></ProtectedRoute>} />
                 <Route path="/taxconfigurations" element={<ProtectedRoute><TaxesConfig /></ProtectedRoute>} />
                 <Route path="/taxconfigurations/add" element={<ProtectedRoute><TaxConfigForm /></ProtectedRoute>} />
                 <Route path="/taxconfigurations/edit/:id" element={<ProtectedRoute><TaxConfigForm /></ProtectedRoute>} />

@@ -1,13 +1,27 @@
-import { Box, Button, Chip, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  Menu,
+  MenuItem,
+  useTheme,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { tokens } from "../../../theme";
 import Header from "../../../components/Header";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RemoveRedEyeSharp, Settings } from "@mui/icons-material";
+import {
+  Add,
+  EditOutlined,
+  RemoveRedEyeSharp,
+  Settings,
+} from "@mui/icons-material";
 import { formatValue } from "../../../tools/formatValue";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const Charges = () => {
   const theme = useTheme();
@@ -18,6 +32,27 @@ const Charges = () => {
   const token = userData.token;
   const spaceId = userData?.selectedSpace?.id;
   const navigate = useNavigate();
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [currentRow, setCurrentRow] = useState(null);
+  const open = Boolean(anchorEl);
+
+  // Define or import the handleEdit and handleDelete functions
+
+  const handleDelete = (row) => {
+    console.log("Delete clicked", row);
+    // Your delete logic here
+  };
+
+  const handleClick = (event, row) => {
+    setAnchorEl(event.currentTarget);
+    setCurrentRow(row); // Store the current row to pass to actions
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setCurrentRow(null);
+  };
 
   const fetchChargesData = async () => {
     setLoading(true);
@@ -55,6 +90,11 @@ const Charges = () => {
   const handleConfigCharge = () => {
     navigate("/charges/add");
   };
+
+  const handleEdit = (row) => {
+    console.log("Edit clicked", row);
+    // Your delete logic here
+  };
   const columns = [
     {
       field: "operationConfig.operationType.name",
@@ -75,22 +115,38 @@ const Charges = () => {
       valueGetter: (params) => params.row.chargeValue || "N/A",
     },
     {
-      field: "operationConfig.gimacCharge",
-      headerName: "GIMAC Charge",
+      field: "minAmount",
+      headerName: "Minimum Amount",
       flex: 1,
       headerAlign: "center",
       align: "center",
-      valueGetter: (params) => params.row.operationConfig?.gimacCharge || "N/A",
+      valueGetter: (params) => params.row.minAmount || "N/A",
     },
     {
-      field: "operationConfig.externalCharge",
-      headerName: "External Charge",
+      field: "maxAmount",
+      headerName: "Maximum Amount",
       flex: 1,
       headerAlign: "center",
       align: "center",
-      valueGetter: (params) =>
-        params.row.operationConfig?.externalCharge || "N/A",
+      valueGetter: (params) => params.row.maxAmount || "N/A",
     },
+    // {
+    //   field: "operationConfig.gimacCharge",
+    //   headerName: "GIMAC Charge",
+    //   flex: 1,
+    //   headerAlign: "center",
+    //   align: "center",
+    //   valueGetter: (params) => params.row.operationConfig?.gimacCharge || "N/A",
+    // },
+    // {
+    //   field: "operationConfig.externalCharge",
+    //   headerName: "External Charge",
+    //   flex: 1,
+    //   headerAlign: "center",
+    //   align: "center",
+    //   valueGetter: (params) =>
+    //     params.row.operationConfig?.externalCharge || "N/A",
+    // },
     {
       field: "partner.name",
       headerName: "Partner",
@@ -119,6 +175,50 @@ const Charges = () => {
         );
       },
     },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => (
+        <>
+          <IconButton
+            aria-label="more"
+            aria-controls="long-menu"
+            aria-haspopup="true"
+            onClick={(event) => handleClick(event, params.row)}
+          >
+            <MoreVertIcon />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            PaperProps={{
+              style: {
+                maxHeight: 48 * 4.5,
+                width: "20ch",
+                transform: "translateX(-50%)",
+              },
+            }}
+          >
+            <MenuItem onClick={() => handleEdit(currentRow)}>
+              <EditOutlined fontSize="small" style={{ marginRight: "8px" }} />
+              Edit
+            </MenuItem>
+
+            <MenuItem onClick={() => handleDelete(currentRow)}>
+              <RemoveRedEyeSharp
+                fontSize="small"
+                style={{ marginRight: "8px" }}
+              />
+              View
+            </MenuItem>
+          </Menu>
+        </>
+      ),
+    },
   ];
 
   return (
@@ -138,7 +238,7 @@ const Charges = () => {
             }}
             onClick={handleConfigCharge}
           >
-            <Settings sx={{ mr: "10px" }} />
+            <Add sx={{ mr: "10px" }} />
             Configure New Charge
           </Button>
         </Box>

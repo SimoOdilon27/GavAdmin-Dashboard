@@ -36,6 +36,7 @@ const PartnerForm = () => {
   const userData = useSelector((state) => state.users);
   const token = userData.token;
   const spaceId = userData?.selectedSpace?.id;
+  const [bankAccountData, setBankAccountData] = useState([]);
 
   const [initialValues, setInitialValues] = useState({
     id: "",
@@ -65,6 +66,41 @@ const PartnerForm = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  const fetchBankAccountData = async () => {
+    setPending(true);
+    try {
+      const payload = {
+        serviceReference: "GET_ALL_BANK_ACCOUNT",
+        requestBody: "",
+        spaceId: spaceId,
+      };
+
+      const response = await CBS_Services(
+        "GATEWAY",
+        "gavClientApiService/request",
+        "POST",
+        payload,
+        token
+      );
+      console.log("response", response);
+
+      if (response && response.body.meta.statusCode === 200) {
+        setBankAccountData(response.body.data || []);
+      } else {
+        showSnackbar(response.body.errors || `Error fetching data`, "error");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      showSnackbar(`Error fetching data`, "error");
+    } finally {
+      setPending(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBankAccountData();
+  }, []);
+
   const handleFormSubmit = async (values) => {
     setPending(true);
 
@@ -81,6 +117,7 @@ const PartnerForm = () => {
         payload,
         token
       );
+      console.log("values", values);
       console.log("fetchbankidbycorp", response);
 
       if (response && response.body.meta.statusCode === 200) {
@@ -95,6 +132,23 @@ const PartnerForm = () => {
       console.error("Error:", error);
       showSnackbar("Error Try Again Later", "error");
     }
+  };
+
+  const filterDataByType = (type) => {
+    const typeKeywords = {
+      OPERATION: ["operation"],
+      COMPENSATION: ["compensation"],
+      COMMISSION: ["commission"],
+      GIMAC: ["gimac"],
+      TAX: ["tax"],
+      CLIENT: ["client"],
+    };
+
+    return bankAccountData.filter((account) =>
+      typeKeywords[type].some((keyword) =>
+        account.type.toLowerCase().includes(keyword)
+      )
+    );
   };
 
   useEffect(() => {
@@ -155,7 +209,11 @@ const PartnerForm = () => {
                   <Select
                     label="Partner Type"
                     onBlur={handleBlur}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      handleChange(e);
+                      // Reset internal partner type when partner type changes
+                      setFieldValue("internalPartnerType", "");
+                    }}
                     value={values.type}
                     name="type"
                     error={!!touched.type && !!errors.type}
@@ -168,34 +226,37 @@ const PartnerForm = () => {
                     <Alert severity="error">{errors.type}</Alert>
                   )}
                 </FormControl>
-                <FormControl
-                  fullWidth
-                  variant="filled"
-                  sx={FormFieldStyles("span 2")}
-                >
-                  <InputLabel>Internal Partner Type</InputLabel>
-                  <Select
-                    label="Internal Partner Type"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.internalPartnerType}
-                    name="internalPartnerType"
-                    error={
-                      !!touched.internalPartnerType &&
-                      !!errors.internalPartnerType
-                    }
+
+                {values.type === "INTERNAL" && (
+                  <FormControl
+                    fullWidth
+                    variant="filled"
+                    sx={FormFieldStyles("span 2")}
                   >
-                    <MenuItem value="VENDOR">Vendor</MenuItem>
-                    <MenuItem value="RESELLER">Reseller</MenuItem>
-                    <MenuItem value="AFFILIATE">Affiliate</MenuItem>
-                  </Select>
-                  {touched.internalPartnerType &&
-                    errors.internalPartnerType && (
-                      <Alert severity="error">
-                        {errors.internalPartnerType}
-                      </Alert>
-                    )}
-                </FormControl>
+                    <InputLabel>Internal Partner Type</InputLabel>
+                    <Select
+                      label="Internal Partner Type"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.internalPartnerType}
+                      name="internalPartnerType"
+                      error={
+                        !!touched.internalPartnerType &&
+                        !!errors.internalPartnerType
+                      }
+                    >
+                      <MenuItem value="CREDIX">CREDIX</MenuItem>
+                      <MenuItem value="CORPORATION">CORPORATION</MenuItem>
+                      <MenuItem value="BANK">BANK</MenuItem>
+                    </Select>
+                    {touched.internalPartnerType &&
+                      errors.internalPartnerType && (
+                        <Alert severity="error">
+                          {errors.internalPartnerType}
+                        </Alert>
+                      )}
+                  </FormControl>
+                )}
 
                 <TextField
                   fullWidth
@@ -210,37 +271,83 @@ const PartnerForm = () => {
                   helperText={touched.name && errors.name}
                   sx={FormFieldStyles("span 2")}
                 />
-                <TextField
+
+                <FormControl
                   fullWidth
                   variant="filled"
-                  type="text"
-                  label="Taxes Account ID"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.taxesAccountId}
-                  name="taxesAccountId"
-                  error={!!touched.taxesAccountId && !!errors.taxesAccountId}
-                  helperText={touched.taxesAccountId && errors.taxesAccountId}
                   sx={FormFieldStyles("span 2")}
-                />
-                <TextField
+                >
+                  <InputLabel>Commission Account </InputLabel>
+                  <Select
+                    label="Commission Account"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.commissionAccountId}
+                    name="commissionAccountId"
+                    error={
+                      !!touched.commissionAccountId &&
+                      !!errors.commissionAccountId
+                    }
+                  >
+                    <MenuItem value="" selected disabled>
+                      Select Account
+                    </MenuItem>
+                    {Array.isArray(filterDataByType("COMMISSION")) &&
+                    filterDataByType("COMMISSION").length > 0 ? (
+                      filterDataByType("COMMISSION").map((option) => (
+                        <MenuItem
+                          key={option.accountId}
+                          value={option.accountId}
+                        >
+                          {option.name}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <option value="">No Accounts available</option>
+                    )}
+                  </Select>
+                  {touched.commissionAccountId &&
+                    errors.commissionAccountId && (
+                      <Alert severity="error">
+                        {errors.commissionAccountId}
+                      </Alert>
+                    )}
+                </FormControl>
+                <FormControl
                   fullWidth
                   variant="filled"
-                  type="text"
-                  label="Commission Account ID"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.commissionAccountId}
-                  name="commissionAccountId"
-                  error={
-                    !!touched.commissionAccountId &&
-                    !!errors.commissionAccountId
-                  }
-                  helperText={
-                    touched.commissionAccountId && errors.commissionAccountId
-                  }
                   sx={FormFieldStyles("span 2")}
-                />
+                >
+                  <InputLabel>Tax Account </InputLabel>
+                  <Select
+                    label="Tax Account"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.taxesAccountId}
+                    name="taxesAccountId"
+                    error={!!touched.taxesAccountId && !!errors.taxesAccountId}
+                  >
+                    <MenuItem value="" selected disabled>
+                      Select Account
+                    </MenuItem>
+                    {Array.isArray(filterDataByType("TAX")) &&
+                    filterDataByType("TAX").length > 0 ? (
+                      filterDataByType("TAX").map((option) => (
+                        <MenuItem
+                          key={option.accountId}
+                          value={option.accountId}
+                        >
+                          {option.name}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <option value="">No Tax Accounts available</option>
+                    )}
+                  </Select>
+                  {touched.taxesAccountId && errors.taxesAccountId && (
+                    <Alert severity="error">{errors.taxesAccountId}</Alert>
+                  )}
+                </FormControl>
 
                 <FormControlLabel
                   control={
@@ -303,15 +410,11 @@ const PartnerForm = () => {
 };
 
 const partnerSchema = yup.object().shape({
-  id: yup.string().required("Partner ID is required"),
   name: yup.string().required("Partner Name is required"),
   taxesAccountId: yup.string().required("Taxes Account ID is required"),
   commissionAccountId: yup
     .string()
     .required("Commission Account ID is required"),
-  internalPartnerType: yup
-    .string()
-    .required("Internal Partner Type is required"),
   type: yup.string().required("Partner Type is required"),
   isActive: yup.boolean(),
 });

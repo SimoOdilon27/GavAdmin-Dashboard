@@ -14,7 +14,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../../components/Header";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CBS_Services from "../../../services/api/GAV_Sercives";
@@ -29,6 +29,7 @@ const OperationConfigTypeForm = () => {
   const colors = tokens(theme.palette.mode);
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.users);
   const token = userData.token;
@@ -128,24 +129,17 @@ const OperationConfigTypeForm = () => {
   };
 
   useEffect(() => {
-    if (id) {
-      // Fetch the existing Operation-Type item by ID to populate the form for editing
-      CBS_Services("APE", `Operation-Type/get/${id}`, "GET", null)
-        .then((response) => {
-          if (response && response.status === 200) {
-            setInitialValues(response.body.data);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching Operation-Type item:", error);
-        });
+    if (id && location.state && location.state.OperationTypeData) {
+      setInitialValues(location.state.OperationTypeData);
     }
-  }, []);
+  }, [id, location.state]);
+
+  console.log("initialValues", initialValues);
 
   return (
     <Box m="20px">
       <Header
-        title={id ? "EDIT OPERATION TYPE ITEM" : "ADD OPERATION TYPE"}
+        title={id ? "EDIT OPERATION TYPE " : "ADD OPERATION TYPE"}
         subtitle={id ? "Edit the Operation Type" : "Add a new Operation Type"}
       />
 

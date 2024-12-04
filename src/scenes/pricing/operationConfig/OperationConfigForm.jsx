@@ -20,7 +20,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { LoadingButton } from "@mui/lab";
 import { HelpOutline, Save } from "@mui/icons-material";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@emotion/react";
@@ -34,6 +34,7 @@ const OperationConfigForm = () => {
   const colors = tokens(theme.palette.mode);
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.users);
   const token = userData.token;
@@ -71,6 +72,14 @@ const OperationConfigForm = () => {
     if (reason === "clickaway") return;
     setSnackbar({ ...snackbar, open: false });
   };
+
+  useEffect(() => {
+    if (id && location.state && location.state.OperationConfigData) {
+      setInitialValues(location.state.OperationConfigData);
+    }
+  }, [id, location.state]);
+
+  console.log("initialValues", initialValues);
 
   const handleFormSubmit = async (values) => {
     setPending(true);
@@ -149,7 +158,7 @@ const OperationConfigForm = () => {
     setPending(true);
     try {
       const payload = {
-        serviceReference: "GET_ALL_OPERATION_CONFIGURATIONS",
+        serviceReference: "GET_ALL_OPERATION_TYPES",
         requestBody: "",
         spaceId: spaceId,
       };
@@ -160,6 +169,8 @@ const OperationConfigForm = () => {
         payload,
         token
       );
+      console.log("response", response);
+
       if (response && response.status === 200) {
         setOperationConfigData(response.body.data || []);
       }
@@ -217,115 +228,6 @@ const OperationConfigForm = () => {
       />
     </Tooltip>
   );
-
-  const renderDynamicFields = (
-    values,
-    handleChange,
-    handleBlur,
-    setFieldValue,
-    touched,
-    errors
-  ) => {
-    const fieldConfigs = {
-      ENUM: [
-        {
-          name: "fixedCharge",
-          label: "Fixed Charge",
-          description: "Base charge amount for the operation",
-          span: "2",
-        },
-        {
-          name: "minCharge",
-          label: "Minimum Charge",
-          description: "Lowest possible charge for this operation",
-          span: "1",
-        },
-        {
-          name: "maxCharge",
-          label: "Maximum Charge",
-          description: "Highest possible charge for this operation",
-          span: "1",
-        },
-        {
-          name: "gimacCharge",
-          label: "GIMAC Charge",
-          description: "Charge associated with GIMAC processing",
-          span: "2",
-        },
-        {
-          name: "externalCharge",
-          label: "External Charge",
-          description: "Additional charges from external sources",
-          span: "2",
-        },
-      ],
-      PERCENTAGE: [
-        {
-          name: "fixedCharge",
-          label: "Fixed Charge Percentage",
-          description: "Base percentage charge for the operation",
-          span: "2",
-        },
-        {
-          name: "gimacCharge",
-          label: "GIMAC Charge Percentage",
-          description: "Percentage charge for GIMAC processing",
-          span: "1",
-        },
-        {
-          name: "externalCharge",
-          label: "External Charge Percentage",
-          description: "Percentage of external charges",
-          span: "1",
-        },
-      ],
-      AMOUNT: [
-        {
-          name: "fixedCharge",
-          label: "Fixed Charge Amount",
-          description: "Base charge amount for the operation",
-          span: "2",
-        },
-        {
-          name: "gimacCharge",
-          label: "GIMAC Charge Amount",
-          description: "Charge amount for GIMAC processing",
-          span: "1",
-        },
-        {
-          name: "externalCharge",
-          label: "External Charge Amount",
-          description: "Additional charge amount from external sources",
-          span: "1",
-        },
-      ],
-    };
-
-    return (
-      <>
-        {fieldConfigs[selectedChargeType]?.map((field) => (
-          <Box key={field.name} sx={FormFieldStyles(`span ${field.span}`)}>
-            <TextField
-              fullWidth
-              variant="filled"
-              type="number"
-              label={field.label}
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values[field.name]}
-              name={field.name}
-              error={!!touched[field.name] && !!errors[field.name]}
-              helperText={touched[field.name] && errors[field.name]}
-              sx={{ mb: 1 }}
-            />
-            <Typography variant="caption" color="textSecondary">
-              {field.description}
-            </Typography>
-          </Box>
-        ))}
-      </>
-    );
-  };
 
   return (
     <Box m="20px">
@@ -393,6 +295,9 @@ const OperationConfigForm = () => {
                         !!touched.operationTypeId && !!errors.operationTypeId
                       }
                     >
+                      <MenuItem selected disabled>
+                        Select Type
+                      </MenuItem>
                       {Array.isArray(operationConfigData) &&
                       operationConfigData.length > 0 ? (
                         operationConfigData.map((option) => (
@@ -438,29 +343,105 @@ const OperationConfigForm = () => {
                     </Select>
                   </FormControl>
 
-                  {/* Dynamic Fields Based on Charge Type */}
-                  {selectedChargeType &&
-                    renderDynamicFields(
-                      values,
-                      handleChange,
-                      handleBlur,
-                      setFieldValue,
-                      touched,
-                      errors
-                    )}
+                  {selectedChargeType && (
+                    <>
+                      {selectedChargeType === "ENUM" && (
+                        <>
+                          <TextField
+                            fullWidth
+                            variant="filled"
+                            type="number"
+                            label="Charge"
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values.fixedCharge}
+                            name="fixedCharge"
+                            error={
+                              !!touched.fixedCharge && !!errors.fixedCharge
+                            }
+                            helperText={
+                              touched.fixedCharge && errors.fixedCharge
+                            }
+                            sx={FormFieldStyles("span 2")}
+                            inputProps={{ step: 0.01 }}
+                          />
 
-                  <Divider sx={{ gridColumn: "span 4" }} />
-                  {/* Checkboxes */}
-                  <Box
-                    sx={{
-                      gridColumn: "span 4",
-                      display: "flex",
-                      flexWrap: "wrap",
-                      justifyContent: "space-between",
-                      gap: 2,
-                    }}
-                  >
-                    {/* Only show Percentage Checkbox for ENUM type */}
+                          <TextField
+                            fullWidth
+                            variant="filled"
+                            type="number"
+                            label="Minimum Charge"
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values.minCharge}
+                            name="minCharge"
+                            error={!!touched.minCharge && !!errors.minCharge}
+                            helperText={touched.minCharge && errors.minCharge}
+                            sx={FormFieldStyles("span 1")}
+                          />
+                          <TextField
+                            fullWidth
+                            variant="filled"
+                            type="number"
+                            label="Maximum Charge"
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values.maxCharge}
+                            name="maxCharge"
+                            error={!!touched.maxCharge && !!errors.maxCharge}
+                            helperText={touched.maxCharge && errors.maxCharge}
+                            sx={FormFieldStyles("span 1")}
+                          />
+                        </>
+                      )}
+
+                      {selectedChargeType === "PERCENTAGE" && (
+                        <>
+                          <TextField
+                            fullWidth
+                            variant="filled"
+                            type="number"
+                            label="Charge Percentage"
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values.fixedCharge}
+                            name="fixedCharge"
+                            error={
+                              !!touched.fixedCharge && !!errors.fixedCharge
+                            }
+                            helperText={
+                              touched.fixedCharge && errors.fixedCharge
+                            }
+                            sx={FormFieldStyles("span 2")}
+                          />
+                        </>
+                      )}
+
+                      {selectedChargeType === "AMOUNT" && (
+                        <>
+                          <TextField
+                            fullWidth
+                            variant="filled"
+                            type="number"
+                            label="Charge Amount"
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values.fixedCharge}
+                            name="fixedCharge"
+                            error={
+                              !!touched.fixedCharge && !!errors.fixedCharge
+                            }
+                            helperText={
+                              touched.fixedCharge && errors.fixedCharge
+                            }
+                            sx={FormFieldStyles("span 2")}
+                          />
+                        </>
+                      )}
+                    </>
+                  )}
+
+                  <Box sx={FormFieldStyles("span 4")}>
                     {selectedChargeType === "ENUM" && (
                       <TooltipCheckbox
                         label="Percentage Charge"
@@ -472,7 +453,6 @@ const OperationConfigForm = () => {
                         tooltipTitle="When checked, the fixed charge will be calculated as a percentage instead of a fixed amount"
                       />
                     )}
-
                     <TooltipCheckbox
                       label="Merchant Debit"
                       checked={values.isMerchantDebit}
@@ -482,32 +462,101 @@ const OperationConfigForm = () => {
                       name="isMerchantDebit"
                       tooltipTitle="When checked, the merchant will be debited for this operation"
                     />
+                  </Box>
 
-                    <TooltipCheckbox
-                      label="GIMAC Charge Percentage"
-                      checked={values.isGimacChargesPercentage}
-                      onChange={(e) =>
-                        setFieldValue(
-                          "isGimacChargesPercentage",
-                          e.target.checked
-                        )
-                      }
-                      name="isGimacChargesPercentage"
-                      tooltipTitle="When checked, GIMAC charges will be calculated as a percentage of the transaction"
-                    />
+                  <Divider sx={{ gridColumn: "span 4" }} />
 
-                    <TooltipCheckbox
-                      label="External Charge Percentage"
-                      checked={values.isExternalChargesPercentage}
-                      onChange={(e) =>
-                        setFieldValue(
-                          "isExternalChargesPercentage",
-                          e.target.checked
-                        )
-                      }
-                      name="isExternalChargesPercentage"
-                      tooltipTitle="When checked, external charges will be calculated as a percentage of the transaction"
-                    />
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="number"
+                    label="Min Amount"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.minAmount}
+                    name="minAmount"
+                    error={!!touched.minAmount && !!errors.minAmount}
+                    helperText={touched.minAmount && errors.minAmount}
+                    sx={FormFieldStyles("span 2")}
+                  />
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="number"
+                    label="Max Amount"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.maxAmount}
+                    name="maxAmount"
+                    error={!!touched.maxAmount && !!errors.maxAmount}
+                    helperText={touched.maxAmount && errors.maxAmount}
+                    sx={FormFieldStyles("span 2")}
+                  />
+
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="number"
+                    label="GIMAC Charge Amount"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.gimacCharge}
+                    name="gimacCharge"
+                    error={!!touched.gimacCharge && !!errors.gimacCharge}
+                    helperText={touched.gimacCharge && errors.gimacCharge}
+                    sx={FormFieldStyles("span 1")}
+                  />
+                  <TooltipCheckbox
+                    label="GIMAC Charge Percentage"
+                    checked={values.isGimacChargesPercentage}
+                    onChange={(e) =>
+                      setFieldValue(
+                        "isGimacChargesPercentage",
+                        e.target.checked
+                      )
+                    }
+                    name="isGimacChargesPercentage"
+                    tooltipTitle="When checked, GIMAC charges will be calculated as a percentage of the transaction"
+                  />
+                  <TextField
+                    fullWidth
+                    variant="filled"
+                    type="text"
+                    label="External Charge Amount"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.externalCharge}
+                    name="externalCharge"
+                    error={!!touched.externalCharge && !!errors.externalCharge}
+                    helperText={touched.externalCharge && errors.externalCharge}
+                    sx={FormFieldStyles("span 1")}
+                  />
+
+                  <TooltipCheckbox
+                    label="External Charge Percentage"
+                    checked={values.isExternalChargesPercentage}
+                    onChange={(e) =>
+                      setFieldValue(
+                        "isExternalChargesPercentage",
+                        e.target.checked
+                      )
+                    }
+                    name="isExternalChargesPercentage"
+                    tooltipTitle="When checked, external charges will be calculated as a percentage of the transaction"
+                  />
+
+                  {/* Dynamic Fields Based on Charge Type */}
+
+                  {/* Checkboxes */}
+                  <Box
+                    sx={{
+                      gridColumn: "span 4",
+                      display: "flex",
+                      flexWrap: "wrap",
+                      justifyContent: "space-between",
+                      gap: 2,
+                    }}
+                  >
                     {/* More checkboxes as needed */}
                   </Box>
                 </Box>
@@ -558,15 +607,51 @@ const OperationConfigForm = () => {
 
 const configSchema = yup.object().shape({
   operationTypeId: yup.string().required("Operation Type ID is required"),
+  //   fixedCharge: yup
+  //     .number()
+  //     .min(0, "Fixed Charge must be non-negative")
+  //     .required("Fixed Charge is required"),
   fixedCharge: yup
     .number()
-    .min(0, "Fixed Charge must be non-negative")
-    .required("Fixed Charge is required"),
+    .required("Charge is required")
+    .positive("Charge must be a positive number")
+    .test(
+      "maxDigitsAfterDecimal",
+      "Charge can have at most 2 decimal places",
+      (value) => /^\d+(\.\d{1,2})?$/.test(value.toString())
+    )
+    .test(
+      "max-percentage",
+      "Percentage value cannot exceed 100",
+      function (value) {
+        // Only apply this validation if isPercentage is true
+        return !this.parent.isChargePercentage || value <= 100;
+      }
+    ),
   fixedChargeType: yup.string().required("Fixed Charge Type is required"),
   maxCharge: yup.number().min(0, "Max Charge must be non-negative"),
   maxAmount: yup.number().min(0, "Max Amount must be non-negative"),
-  minCharge: yup.number().min(0, "Min Charge must be non-negative"),
-  minAmount: yup.number().min(0, "Min Amount must be non-negative"),
+  minCharge: yup
+    .number()
+    .min(0, "Min Charge must be non-negative")
+    .test(
+      "minChargeTest",
+      "Minimum charge cannot exceed maximum charge",
+      function (value) {
+        return value <= this.parent.maxCharge;
+      }
+    ),
+  minAmount: yup
+    .number()
+    .min(0, "Min Amount must be non-negative")
+    .test(
+      "minAmountTest",
+      "Minimum amount cannot exceed maximum amount",
+      function (value) {
+        return value <= this.parent.maxAmount;
+      }
+    ),
+
   gimacCharge: yup.number().min(0, "GIMAC Charge must be non-negative"),
   externalCharge: yup.number().min(0, "External Charge must be non-negative"),
 });
