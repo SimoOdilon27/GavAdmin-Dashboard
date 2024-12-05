@@ -184,7 +184,7 @@ const OperationConfigForm = () => {
       );
       console.log("response", response);
 
-      if (response && response.status === 200) {
+      if (response && response.body.meta.statusCode === 200) {
         setOperationConfigData(response.body.data || []);
       }
     } catch (error) {

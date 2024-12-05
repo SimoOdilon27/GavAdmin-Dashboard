@@ -9,6 +9,8 @@ import {
   TextField,
   Checkbox,
   FormControlLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -34,21 +36,87 @@ const TaxConfigForm = () => {
   const userData = useSelector((state) => state.users);
   const token = userData.token;
   const spaceId = userData?.selectedSpace?.id;
+  const [chargesData, setChargesData] = useState([]);
 
   const [initialValues, setInitialValues] = useState({
     name: "",
     value: 0,
-    active: false,
-    globallyApplied: false,
-    percentage: false,
+    isActive: false,
+    isGloballyApplied: false,
+    isPercentage: false,
+    chargeId: "", // New field for non-globally applied taxes
   });
 
   const [pending, setPending] = useState(false);
+  const [charges, setCharges] = useState([]); // State to store available charges
+  const [createdTaxId, setCreatedTaxId] = useState(null); // State to store newly created tax ID
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "",
   });
+
+  const fetchChargesData = async () => {
+    setPending(true);
+    try {
+      const payload = {
+        serviceReference: "GET_ALL_CHARGES",
+        requestBody: "",
+        spaceId: spaceId,
+      };
+      const response = await CBS_Services(
+        "GATEWAY",
+        "gavClientApiService/request",
+        "POST",
+        payload,
+        token
+      );
+      console.log("response====", response);
+
+      // const response = await CBS_Services('APE', 'pricing/get/all', 'GET');
+      if (response && response.status === 200) {
+        setChargesData(response.body.data || []);
+      } else {
+        console.error("Error fetching data");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+    setPending(false);
+  };
+
+  useEffect(() => {
+    fetchChargesData();
+  }, []);
+
+  // Fetch charges when component mounts
+  useEffect(() => {
+    const fetchCharges = async () => {
+      try {
+        const payload = {
+          serviceReference: "GET_CHARGES",
+          spaceId: spaceId,
+        };
+        const response = await CBS_Services(
+          "GATEWAY",
+          "gavClientApiService/request",
+          "POST",
+          payload,
+          token
+        );
+
+        if (response && response.body.meta.statusCode === 200) {
+          setCharges(response.body.data);
+        }
+      } catch (error) {
+        console.error("Error fetching charges:", error);
+        showSnackbar("Error fetching charges", "error");
+      }
+    };
+
+    fetchCharges();
+  }, [spaceId, token]);
 
   const showSnackbar = (message, severity) => {
     setSnackbar({ open: true, message, severity });
@@ -65,18 +133,20 @@ const TaxConfigForm = () => {
     setPending(true);
 
     try {
-      const submitData = {
-        ...values,
-        isActive: values.active,
-        isGloballyApplied: values.globallyApplied,
-        isPercentage: values.percentage,
-      };
+      // const submitData = {
+      //   ...values,
+      //   isActive: values.isActive,
+      //   isGloballyApplied: values.isGloballyApplied,
+      //   isPercentage: values.isPercentage,
+      // };
 
       const payload = {
         serviceReference: "CREATE_TAX",
-        requestBody: JSON.stringify(submitData),
+        requestBody: JSON.stringify(values),
         spaceId: spaceId,
       };
+      console.log("values", values);
+
       const response = await CBS_Services(
         "GATEWAY",
         "gavClientApiService/request",
@@ -84,11 +154,17 @@ const TaxConfigForm = () => {
         payload,
         token
       );
-      console.log("submitData", submitData);
-      console.log("fetchbankidbycorp", response);
 
       if (response && response.body.meta.statusCode === 200) {
+        const createdTaxId = response.body.data.id;
+        setCreatedTaxId(createdTaxId);
         showSnackbar("Tax Created Successfully.", "success");
+
+        // If not globally applied, create tax-charge mapping
+        if (!values.globallyApplied && values.chargeId) {
+          await createTaxChargeMapping(createdTaxId, values.chargeId);
+        }
+
         setTimeout(() => {
           navigate(-1);
         }, 2000);
@@ -98,6 +174,39 @@ const TaxConfigForm = () => {
     } catch (error) {
       console.error("Error:", error);
       showSnackbar("Error Try Again Later", "error");
+    } finally {
+      setPending(false);
+    }
+  };
+
+  // New function to create tax-charge mapping
+  const createTaxChargeMapping = async (taxId, chargeId) => {
+    try {
+      const mappingPayload = {
+        serviceReference: "CREATE_TAX_CHARGE_MAPPING",
+        requestBody: JSON.stringify({
+          taxesId: taxId,
+          chargesId: chargeId,
+        }),
+        spaceId: spaceId,
+      };
+
+      const mappingResponse = await CBS_Services(
+        "GATEWAY",
+        "gavClientApiService/request",
+        "POST",
+        mappingPayload,
+        token
+      );
+
+      if (mappingResponse && mappingResponse.body.meta.statusCode === 200) {
+        showSnackbar("Tax-Charge Mapping Created Successfully.", "success");
+      } else {
+        showSnackbar("Error Creating Tax-Charge Mapping", "error");
+      }
+    } catch (error) {
+      console.error("Error creating tax-charge mapping:", error);
+      showSnackbar("Error Creating Tax-Charge Mapping", "error");
     }
   };
 
@@ -106,8 +215,6 @@ const TaxConfigForm = () => {
       setInitialValues(location.state.taxData);
     }
   }, [id, location.state]);
-
-  console.log("initialValues", initialValues);
 
   return (
     <Box m="20px">
@@ -167,7 +274,7 @@ const TaxConfigForm = () => {
                   fullWidth
                   variant="filled"
                   type="number"
-                  label="Value"
+                  label="Charge"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.value}
@@ -180,11 +287,11 @@ const TaxConfigForm = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={values.percentage}
+                      checked={values.isPercentage}
                       onChange={(e) =>
-                        setFieldValue("percentage", e.target.checked)
+                        setFieldValue("isPercentage", e.target.checked)
                       }
-                      name="percentage"
+                      name="isPercentage"
                       color="secondary"
                     />
                   }
@@ -194,11 +301,11 @@ const TaxConfigForm = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={values.active}
+                      checked={values.isActive}
                       onChange={(e) =>
-                        setFieldValue("active", e.target.checked)
+                        setFieldValue("isActive", e.target.checked)
                       }
-                      name="active"
+                      name="isActive"
                       color="secondary"
                     />
                   }
@@ -208,17 +315,50 @@ const TaxConfigForm = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={values.globallyApplied}
+                      checked={values.isGloballyApplied}
                       onChange={(e) =>
-                        setFieldValue("globallyApplied", e.target.checked)
+                        setFieldValue("isGloballyApplied", e.target.checked)
                       }
-                      name="globallyApplied"
+                      name="isGloballyApplied"
                       color="secondary"
                     />
                   }
                   label="Globally Applied"
                   sx={FormFieldStyles("span 1")}
                 />
+                {!values.isGloballyApplied && (
+                  <FormControl
+                    fullWidth
+                    variant="filled"
+                    sx={FormFieldStyles("span 4")}
+                  >
+                    <InputLabel>Charge</InputLabel>
+                    <Select
+                      label="Charge"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.chargeId}
+                      name="chargeId"
+                      error={!!touched.chargeId && !!errors.chargeId}
+                    >
+                      <MenuItem value="" selected disabled>
+                        Select Charge
+                      </MenuItem>
+                      {Array.isArray(chargesData) && chargesData.length > 0 ? (
+                        chargesData.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.chargeValue}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem value="">No Charge available</MenuItem>
+                      )}
+                    </Select>
+                    {touched.chargeId && errors.chargeId && (
+                      <Alert severity="error">{errors.chargeId}</Alert>
+                    )}
+                  </FormControl>
+                )}
               </Box>
               <Box display="flex" justifyContent="end" mt="20px">
                 <Stack direction="row" spacing={2}>
@@ -284,6 +424,13 @@ const taxConfigSchema = yup.object().shape({
         return !this.parent.isPercentage || value <= 100;
       }
     ),
+
+  chargeId: yup.string().when("isGloballyApplied", {
+    is: false,
+    then: yup
+      .string()
+      .required("Charge is required when tax is not globally applied"),
+  }),
   isActive: yup.boolean(),
   isGloballyApplied: yup.boolean(),
   isPercentage: yup.boolean(),

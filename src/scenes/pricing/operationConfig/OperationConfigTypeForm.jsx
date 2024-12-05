@@ -79,7 +79,7 @@ const OperationConfigTypeForm = () => {
         if (response && response.status === 200) {
           showSnackbar("Operation-Type Edited Successfully.", "success");
           setTimeout(() => {
-            navigate("/menu-Operation-Type");
+            navigate(-1);
           }, 2000);
         } else {
           // toast.error(response.body.errors || "Error Editing Operation-Type");
@@ -107,7 +107,7 @@ const OperationConfigTypeForm = () => {
           showSnackbar("Operation-Type Created Successfully.", "success");
           // navigate("/menu-Operation-Type"); // Navigate back to the Operation-Type list
           setTimeout(() => {
-            navigate("/menu-Operation-Type");
+            navigate(-1);
           }, 2000);
         } else {
           showSnackbar(
@@ -117,8 +117,8 @@ const OperationConfigTypeForm = () => {
         }
       }
 
-      if (response && response.status === 200) {
-        navigate("/menu-Operation-Type"); // Navigate back to the Operation-Type list
+      if (response && response.body.meta.statusCode === 200) {
+        navigate(-1); // Navigate back to the Operation-Type list
       }
     } catch (error) {
       console.error("Error:", error);
