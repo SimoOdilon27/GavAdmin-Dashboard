@@ -270,7 +270,7 @@ const taxConfigSchema = yup.object().shape({
   value: yup
     .number()
     .required("Value is required")
-    .positive("Value must be a positive number")
+    .min(0, "Charge Value must be non-negative")
     .test(
       "maxDigitsAfterDecimal",
       "Value can have at most 2 decimal places",

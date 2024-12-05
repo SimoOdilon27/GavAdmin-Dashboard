@@ -2,10 +2,17 @@ import {
   Box,
   Button,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
   IconButton,
   Menu,
   MenuItem,
   useTheme,
+  Grid,
+  Typography,
+  Card,
+  CardContent,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { tokens } from "../../../theme";
@@ -16,7 +23,12 @@ import {
   Add,
   EditOutlined,
   RemoveRedEyeSharp,
-  Settings,
+  ArrowBack,
+  BusinessOutlined,
+  Business,
+  Description,
+  AccountBalance,
+  Close,
 } from "@mui/icons-material";
 import CBS_Services from "../../../services/api/GAV_Sercives";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
@@ -31,7 +43,7 @@ const Partners = () => {
   const token = userData.token;
   const spaceId = userData?.selectedSpace?.id;
   const navigate = useNavigate();
-
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentRow, setCurrentRow] = useState(null);
   const open = Boolean(anchorEl);
@@ -93,6 +105,116 @@ const Partners = () => {
     navigate(`/partners/edit/${row.id}`, { state: { partnerData: row } });
   };
 
+  const handleViewDialogOpen = (row) => {
+    setCurrentRow(row);
+    setViewDialogOpen(true);
+  };
+
+  const handleViewDialogClose = () => {
+    setViewDialogOpen(false);
+    setCurrentRow(null);
+  };
+
+  const InfoItem = ({ icon, label, value, valueColor = colors.grey[100] }) => (
+    <Box display="flex" alignItems="center" mb={2}>
+      <IconButton sx={{ color: colors.greenAccent[500], mr: 2 }}>
+        {icon}
+      </IconButton>
+      <Box>
+        <Typography variant="subtitle2" color={colors.grey[400]}>
+          {label}
+        </Typography>
+        <Typography variant="body1" color={valueColor}>
+          {value || "N/A"}
+        </Typography>
+      </Box>
+    </Box>
+  );
+
+  const ViewPartnerDialog = () => {
+    if (!currentRow) return null;
+
+    return (
+      <Dialog
+        open={viewDialogOpen}
+        onClose={handleViewDialogClose}
+        maxWidth="md"
+        fullWidth
+      >
+        <Box m="20px">
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={3}
+          >
+            <Typography variant="h5" mb={3} color={colors.greenAccent[500]}>
+              Partner Information
+            </Typography>
+            <IconButton onClick={handleViewDialogClose}>
+              <Close />
+            </IconButton>
+          </Box>
+
+          <Grid container spacing={3}>
+            {/* Partner Information */}
+            <Grid item xs={12}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <InfoItem
+                    icon={<BusinessOutlined />}
+                    label="Partner Name"
+                    value={currentRow.name}
+                  />
+                  <InfoItem
+                    icon={<Business />}
+                    label="Partner ID"
+                    value={currentRow.id}
+                  />
+                  <InfoItem
+                    icon={<Description />}
+                    label="Partner Type"
+                    value={currentRow.type}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <InfoItem
+                    icon={<Description />}
+                    label="Internal Partner Type"
+                    value={currentRow.internalPartnerType}
+                  />
+                  <InfoItem
+                    icon={<AccountBalance />}
+                    label="Commission Account ID"
+                    value={currentRow.commissionAccountId}
+                  />
+                  <InfoItem
+                    icon={<AccountBalance />}
+                    label="Taxes Account ID"
+                    value={currentRow.taxesAccountId}
+                  />
+                  <Grid item xs={4}>
+                    <Chip
+                      label={`Partner Status: ${
+                        currentRow.isActive ? "Active" : "Inactive"
+                      }`}
+                      sx={{
+                        width: "100%",
+                        backgroundColor: currentRow.isActive
+                          ? colors.greenAccent[500]
+                          : colors.redAccent[500],
+                        color: "white",
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Box>
+      </Dialog>
+    );
+  };
   const columns = [
     {
       field: "name",
@@ -182,7 +304,7 @@ const Partners = () => {
               Edit
             </MenuItem>
 
-            <MenuItem onClick={() => handleDelete(currentRow)}>
+            <MenuItem onClick={() => handleViewDialogOpen(currentRow)}>
               <RemoveRedEyeSharp
                 fontSize="small"
                 style={{ marginRight: "8px" }}
@@ -258,6 +380,7 @@ const Partners = () => {
           loading={loading}
         />
       </Box>
+      <ViewPartnerDialog />
     </Box>
   );
 };

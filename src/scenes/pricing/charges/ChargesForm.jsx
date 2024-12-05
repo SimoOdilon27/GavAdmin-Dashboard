@@ -538,22 +538,25 @@ const ChargesForm = () => {
 };
 
 const chargeSchema = yup.object().shape({
-  // bankId: yup.string().required("Bank ID is required"),
   chargeValue: yup
     .number()
     .required("Charge Value is required")
-    .positive("Charge Value must be positive"),
+    .min(0, "Charge Value must be non-negative"),
   maxAmount: yup
     .number()
     .required("Max Amount is required")
-    .positive("Max Amount must be positive"),
+    .min(0, "Charge Value must be non-negative"),
   minAmount: yup
     .number()
-    .required("Min Amount is required")
-    .positive("Min Amount must be positive"),
-  // operationConfigId: yup.number()
-  //     .required("Operation Config ID is required")
-  //     .positive("Operation Config ID must be positive"),
+    .min(0, "Min Amount must be non-negative")
+    .test(
+      "minAmountTest",
+      "Minimum Amount cannot exceed maximum charge",
+      function (value) {
+        return value <= this.parent.maxAmount;
+      }
+    ),
+
   partnerId: yup.string().required("Partner ID is required"),
   isActive: yup.boolean(),
   isChargePercentage: yup.boolean(),
