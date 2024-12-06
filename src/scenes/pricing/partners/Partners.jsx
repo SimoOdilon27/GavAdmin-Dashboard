@@ -176,6 +176,21 @@ const Partners = () => {
                     label="Partner Type"
                     value={currentRow.type}
                   />
+
+                  <Grid item xs={4}>
+                    <Chip
+                      label={`Partner Status: ${
+                        currentRow.active ? "Active" : "Inactive"
+                      }`}
+                      sx={{
+                        width: "100%",
+                        backgroundColor: currentRow.active
+                          ? colors.greenAccent[500]
+                          : colors.redAccent[500],
+                        color: "white",
+                      }}
+                    />
+                  </Grid>
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <InfoItem
@@ -193,20 +208,6 @@ const Partners = () => {
                     label="Taxes Account ID"
                     value={currentRow.taxesAccountId}
                   />
-                  <Grid item xs={4}>
-                    <Chip
-                      label={`Partner Status: ${
-                        currentRow.isActive ? "Active" : "Inactive"
-                      }`}
-                      sx={{
-                        width: "100%",
-                        backgroundColor: currentRow.isActive
-                          ? colors.greenAccent[500]
-                          : colors.redAccent[500],
-                        color: "white",
-                      }}
-                    />
-                  </Grid>
                 </Grid>
               </Grid>
             </Grid>

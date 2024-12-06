@@ -78,6 +78,7 @@ import PartnerForm from "./scenes/pricing/partners/PartnerForm";
 import TaxConfigForm from "./scenes/pricing/taxes/TaxConfigForm";
 import ViewOperationConfigDetails from "./scenes/pricing/operationConfig/ViewOperationConfigDetails";
 import ViewChargeDetails from "./scenes/pricing/charges/ViewChargeDetails";
+import ViewTaxConfigDetails from "./scenes/pricing/taxes/ViewTaxConfigDetails";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -193,6 +194,7 @@ function App() {
                 <Route path="/taxconfigurations" element={<ProtectedRoute><TaxesConfig /></ProtectedRoute>} />
                 <Route path="/taxconfigurations/add" element={<ProtectedRoute><TaxConfigForm /></ProtectedRoute>} />
                 <Route path="/taxconfigurations/edit/:id" element={<ProtectedRoute><TaxConfigForm /></ProtectedRoute>} />
+                <Route path="/taxconfigurations/view/:id" element={<ProtectedRoute><ViewTaxConfigDetails /></ProtectedRoute>} />
                 <Route path="/partners" element={<ProtectedRoute><Partners /></ProtectedRoute>} />
                 <Route path="/partners/add" element={<ProtectedRoute><PartnerForm /></ProtectedRoute>} />
                 <Route path="/partners/edit/:id" element={<ProtectedRoute><PartnerForm /></ProtectedRoute>} />

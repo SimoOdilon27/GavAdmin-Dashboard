@@ -92,6 +92,9 @@ const TaxesConfig = () => {
   const handleEdit = (row) => {
     navigate(`/taxconfigurations/edit/${row.id}`, { state: { taxData: row } });
   };
+  const handleView = (row) => {
+    navigate(`/taxconfigurations/view/${row.id}`, { state: { taxData: row } });
+  };
 
   const columns = [
     {
@@ -186,7 +189,7 @@ const TaxesConfig = () => {
               Edit
             </MenuItem>
 
-            <MenuItem onClick={() => handleDelete(currentRow)}>
+            <MenuItem onClick={() => handleView(currentRow)}>
               <RemoveRedEyeSharp
                 fontSize="small"
                 style={{ marginRight: "8px" }}
