@@ -548,7 +548,7 @@ const chargeSchema = yup.object().shape({
   chargeValue: yup
     .number()
     .required("Charge is required")
-    .positive("Charge must be a positive number")
+    .min(0, "Charge Value must be non-negative")
     .test(
       "maxDigitsAfterDecimal",
       "Charge can have at most 2 decimal places",
@@ -565,7 +565,7 @@ const chargeSchema = yup.object().shape({
   maxAmount: yup
     .number()
     .required("Max Amount is required")
-    .min(0, "Charge Value must be non-negative"),
+    .min(0, "Max Amount must be non-negative"),
   minAmount: yup
     .number()
     .min(0, "Min Amount must be non-negative")
