@@ -65,7 +65,7 @@ const OperationConfigTypeForm = () => {
         // Update existing Operation-Type item
         const payload = {
           serviceReference: "UPDATE_OPERATION_TYPE",
-          requestBody: "",
+          requestBody: JSON.stringify(values),
           spaceId: spaceId,
         };
         const response = await CBS_Services(
@@ -76,7 +76,7 @@ const OperationConfigTypeForm = () => {
           token
         );
 
-        if (response && response.status === 200) {
+        if (response && response.body.meta.statusCode === 200) {
           showSnackbar("Operation-Type Edited Successfully.", "success");
           setTimeout(() => {
             navigate(-1);
@@ -92,7 +92,7 @@ const OperationConfigTypeForm = () => {
         // Add new Operation-Type item
         const payload = {
           serviceReference: "CREATE_OPERATION_TYPE",
-          requestBody: "",
+          requestBody: JSON.stringify(values),
           spaceId: spaceId,
         };
         const response = await CBS_Services(
@@ -102,8 +102,9 @@ const OperationConfigTypeForm = () => {
           payload,
           token
         );
+        console.log("values", values);
 
-        if (response && response.status === 200) {
+        if (response && response.body.meta.statusCode === 200) {
           showSnackbar("Operation-Type Created Successfully.", "success");
           // navigate("/menu-Operation-Type"); // Navigate back to the Operation-Type list
           setTimeout(() => {

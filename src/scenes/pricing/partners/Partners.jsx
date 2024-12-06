@@ -258,7 +258,7 @@ const Partners = () => {
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
-        const isActive = params.row.isActive;
+        const isActive = params.row.active;
         return (
           <Chip
             label={isActive ? "Active" : "Inactive"}

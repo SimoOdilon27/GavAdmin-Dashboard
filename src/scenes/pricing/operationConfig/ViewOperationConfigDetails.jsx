@@ -212,7 +212,7 @@ const ViewOperationConfigDetails = () => {
                         sx={{
                           backgroundColor: initialValues.chargePercentage
                             ? colors.blueAccent[500]
-                            : colors.greyAccent[500],
+                            : colors.grey[500],
                           color: "white",
                         }}
                       />

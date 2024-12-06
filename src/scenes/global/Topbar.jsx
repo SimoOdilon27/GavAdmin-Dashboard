@@ -1,4 +1,15 @@
-import { Box, IconButton, useTheme, Menu, MenuItem, Snackbar, Alert, Typography, Select, FormControl } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  useTheme,
+  Menu,
+  MenuItem,
+  Snackbar,
+  Alert,
+  Typography,
+  Select,
+  FormControl,
+} from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { ColorModeContext, tokens } from "../../theme";
 import InputBase from "@mui/material/InputBase";
@@ -14,31 +25,35 @@ import { Lock, Refresh } from "@mui/icons-material";
 import CBS_Services from "../../services/api/GAV_Sercives";
 import FullscreenLoader from "../../tools/FullscreenLoader";
 
-const USER_TIMEOUT = 45 * 60 * 1000;
+const USER_TIMEOUT = 60 * 60 * 1000;
 
 const Topbar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
   // Get user spaces and selected space from Redux store
   const userData = useSelector((state) => state.users);
   const token = userData.token;
-  const userSpaces = useSelector(state => state.users?.listSpaces) || [];
-  const selectedSpace = useSelector(state => state.users?.selectedSpace);
-  const Space = useSelector(state => state.users?.selectedSpace?.intitule);
+  const userSpaces = useSelector((state) => state.users?.listSpaces) || [];
+  const selectedSpace = useSelector((state) => state.users?.selectedSpace);
+  const Space = useSelector((state) => state.users?.selectedSpace?.intitule);
   const UserId = userData.userId;
   const [space, setSpace] = useState(selectedSpace);
   const storedColorMode = useSelector((state) => state.users.colorMode);
 
   const handleRefresh = () => {
     window.location.reload();
-  }
+  };
 
   useEffect(() => {
     if (storedColorMode && storedColorMode !== theme.palette.mode) {
@@ -52,8 +67,8 @@ const Topbar = () => {
 
     // Update color mode in Redux store
     dispatch({
-      type: 'SET_COLOR_MODE',
-      colorMode: theme.palette.mode === 'dark' ? 'light' : 'dark'
+      type: "SET_COLOR_MODE",
+      colorMode: theme.palette.mode === "dark" ? "light" : "dark",
     });
   };
 
@@ -62,12 +77,16 @@ const Topbar = () => {
     // Update selected space in Redux
     dispatch({
       type: "SELECT_SPACE",
-      selectedSpace: newSpace
+      selectedSpace: newSpace,
     });
 
     // Fetch menus for the new space
     await handleGetUserMenus(UserId, newSpace.id);
-    setSnackbar({ open: true, message: `Switched to ${newSpace.intitule}`, severity: 'success' });
+    setSnackbar({
+      open: true,
+      message: `Switched to ${newSpace.intitule}`,
+      severity: "success",
+    });
     // handleRefresh();
   };
 
@@ -80,18 +99,18 @@ const Topbar = () => {
 
   const handleProfile = () => {
     handleMenuClose();
-    navigate('/profile'); // Adjust the path as necessary
+    navigate("/profile"); // Adjust the path as necessary
   };
 
   const handleLogout = () => {
     handleMenuClose();
     dispatch({
-      type: 'LOGOUT',
+      type: "LOGOUT",
       users: {},
-    })
-    console.log('Logout');
-    navigate('/')
-  }
+    });
+    console.log("Logout");
+    navigate("/");
+  };
 
   const handleSnackbarClose = () => {
     setSnackbar({ ...snackbar, open: false });
@@ -100,20 +119,33 @@ const Topbar = () => {
   const handleGetUserMenus = async (userId, spaceId) => {
     setLoading(true);
     try {
-      const response = await CBS_Services("GATEWAY", `clientGateWay/items/searchItems/${userId}/${spaceId}`, 'GET', null, token);
+      const response = await CBS_Services(
+        "GATEWAY",
+        `clientGateWay/items/searchItems/${userId}/${spaceId}`,
+        "GET",
+        null,
+        token
+      );
       console.log("response", response);
 
       if (response.status === 200) {
         // Dispatch menus to Redux store
         dispatch({ type: "SET_MENUS", menus: response.body.data });
-
       } else {
         dispatch({ type: "SET_MENUS", menus: [] });
-        setSnackbar({ open: true, message: 'Failed to load menus for the selected space', severity: 'error' });
+        setSnackbar({
+          open: true,
+          message: "Failed to load menus for the selected space",
+          severity: "error",
+        });
       }
     } catch (error) {
       console.error("Error fetching menus:", error);
-      setSnackbar({ open: true, message: 'Error loading menus. Please try again.', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: "Error loading menus. Please try again.",
+        severity: "error",
+      });
     }
     setLoading(false);
   };
@@ -129,12 +161,12 @@ const Topbar = () => {
   useEffect(() => {
     // Set a timer to log out the user after 1 hour
     const timer = setTimeout(() => {
-      dispatch({ type: 'LOGOUT' });
-      navigate('/');
+      dispatch({ type: "LOGOUT" });
+      navigate("/");
       setSnackbar({
         open: true,
-        message: 'Your Session has expired.Login again!!!.',
-        severity: 'warning',
+        message: "Your Session has expired.Login again!!!.",
+        severity: "warning",
       });
     }, USER_TIMEOUT);
 
@@ -149,10 +181,10 @@ const Topbar = () => {
 
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
-
-
       {/* SPACE SWITCHER */}
-      {loading ? <FullscreenLoader /> :
+      {loading ? (
+        <FullscreenLoader />
+      ) : (
         <>
           <Box
             display="flex"
@@ -170,29 +202,32 @@ const Topbar = () => {
                 value={selectedSpace}
                 onChange={handleSpaceChange}
                 sx={{
-                  '& .MuiSelect-select': {
+                  "& .MuiSelect-select": {
                     py: 1,
-                    color: theme.palette.mode === 'dark' ? colors.grey[100] : colors.primary[100],
+                    color:
+                      theme.palette.mode === "dark"
+                        ? colors.grey[100]
+                        : colors.primary[100],
                   },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    border: 'none',
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    border: "none",
                   },
-                  '&:hover .MuiOutlinedInput-notchedOutline': {
-                    border: 'none',
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    border: "none",
                   },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    border: 'none',
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    border: "none",
                   },
                 }}
                 displayEmpty
               >
-                <MenuItem value="" disabled>Select Space</MenuItem>
+                <MenuItem value="" disabled>
+                  Select Space
+                </MenuItem>
                 {userSpaces.map(() => (
-
                   <MenuItem key={space?.id} value={space}>
                     {toCapitalizeCase(space.intitule)}
                   </MenuItem>
-
                 ))}
               </Select>
             </FormControl>
@@ -231,22 +266,20 @@ const Topbar = () => {
             </Menu>
           </Box>
         </>
-
-      }
-
-
-
-
-
+      )}
 
       {/* Snackbar Notification */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
       >
-        <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>
