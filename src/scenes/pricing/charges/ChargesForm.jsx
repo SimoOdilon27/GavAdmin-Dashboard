@@ -122,7 +122,7 @@ const ChargesForm = () => {
   const fetchOperationConfigData = async () => {
     try {
       const payload = {
-        serviceReference: "GET_ALL_OPERATION_CONFIGS",
+        serviceReference: "GET_ALL_OPERATION_CONFIGURATIONS",
         requestBody: "",
         spaceId: spaceId,
       };
@@ -133,7 +133,7 @@ const ChargesForm = () => {
         payload,
         token
       );
-      console.log("fetchbankid", response);
+      console.log("fetchopdata", response);
 
       if (response && response.body.meta.statusCode === 200) {
         setOperationConfigData(response.body.data);
@@ -165,17 +165,19 @@ const ChargesForm = () => {
 
       if (usertype === "BANK_ADMIN") {
         payload = {
-          serviceReference: "CREATE_CHARGE",
+          serviceReference: "CREATE_NEW_CHARGE",
           requestBody: JSON.stringify(submitData),
           spaceId: spaceId,
         };
       } else {
         payload = {
-          serviceReference: "CREATE_CHARGE",
+          serviceReference: "CREATE_NEW_CHARGE",
           requestBody: JSON.stringify(values),
           spaceId: spaceId,
         };
       }
+
+      console.log("values", values);
 
       response = await CBS_Services(
         "GATEWAY",
@@ -184,6 +186,9 @@ const ChargesForm = () => {
         payload,
         token
       );
+
+      console.log("response", response);
+
       if (response && response.body.meta.statusCode === 200) {
         showSnackbar(
           id ? "Charge Updated Successfully." : "Charge Created Successfully.",
@@ -373,10 +378,11 @@ const ChargesForm = () => {
                     <MenuItem value="" selected disabled>
                       Select Operation Config
                     </MenuItem>
-                    {Array.isArray(partnerData) && partnerData.length > 0 ? (
-                      partnerData.map((option) => (
+                    {Array.isArray(OperationConfigData) &&
+                    OperationConfigData.length > 0 ? (
+                      OperationConfigData.map((option) => (
                         <MenuItem key={option.id} value={option.id}>
-                          {option.name}
+                          {option.operationType.name}
                         </MenuItem>
                       ))
                     ) : (
@@ -432,7 +438,36 @@ const ChargesForm = () => {
                   name="chargeValue"
                   error={!!touched.chargeValue && !!errors.chargeValue}
                   helperText={touched.chargeValue && errors.chargeValue}
-                  sx={FormFieldStyles("span 2")}
+                  sx={FormFieldStyles("span 1")}
+                />
+                <Box sx={FormFieldStyles("span 1")}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        color="secondary"
+                        checked={values.isChargePercentage}
+                        onChange={(e) =>
+                          setFieldValue("isChargePercentage", e.target.checked)
+                        }
+                        name="isChargePercentage"
+                      />
+                    }
+                    label="Is Charge Percentage"
+                  />
+                </Box>
+
+                <TextField
+                  fullWidth
+                  variant="filled"
+                  type="number"
+                  label="Min Amount"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.minAmount}
+                  name="minAmount"
+                  error={!!touched.minAmount && !!errors.minAmount}
+                  helperText={touched.minAmount && errors.minAmount}
+                  sx={FormFieldStyles("span 1")}
                 />
                 <TextField
                   fullWidth
@@ -445,19 +480,6 @@ const ChargesForm = () => {
                   name="maxAmount"
                   error={!!touched.maxAmount && !!errors.maxAmount}
                   helperText={touched.maxAmount && errors.maxAmount}
-                  sx={FormFieldStyles("span 1")}
-                />
-                <TextField
-                  fullWidth
-                  variant="filled"
-                  type="number"
-                  label="Min Amount"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.minAmount}
-                  name="minAmount"
-                  error={!!touched.minAmount && !!errors.minAmount}
-                  helperText={touched.minAmount && errors.minAmount}
                   sx={FormFieldStyles("span 1")}
                 />
 
@@ -474,21 +496,6 @@ const ChargesForm = () => {
                       />
                     }
                     label="Is Active"
-                  />
-                </Box>
-                <Box sx={FormFieldStyles("span 1")}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        color="secondary"
-                        checked={values.isChargePercentage}
-                        onChange={(e) =>
-                          setFieldValue("isChargePercentage", e.target.checked)
-                        }
-                        name="isChargePercentage"
-                      />
-                    }
-                    label="Is Charge Percentage"
                   />
                 </Box>
               </Box>
@@ -540,8 +547,21 @@ const ChargesForm = () => {
 const chargeSchema = yup.object().shape({
   chargeValue: yup
     .number()
-    .required("Charge Value is required")
-    .min(0, "Charge Value must be non-negative"),
+    .required("Charge is required")
+    .positive("Charge must be a positive number")
+    .test(
+      "maxDigitsAfterDecimal",
+      "Charge can have at most 2 decimal places",
+      (value) => /^\d+(\.\d{1,2})?$/.test(value.toString())
+    )
+    .test(
+      "max-percentage",
+      "Percentage value cannot exceed 100",
+      function (value) {
+        // Only apply this validation if isPercentage is true
+        return !this.parent.isChargePercentage || value <= 100;
+      }
+    ),
   maxAmount: yup
     .number()
     .required("Max Amount is required")
