@@ -276,7 +276,12 @@ const OperationConfig = () => {
       flex: 1,
       headerAlign: "center",
       align: "center",
-      valueGetter: (params) => formatValue(params.row.externalCharge),
+      // valueGetter: (params) => formatValue(params.row.externalCharge),
+      renderCell: (params) => {
+        return `${params.row.externalCharge}${
+          params.row.externalChargesPercentage ? "%" : ""
+        }`;
+      },
     },
 
     {

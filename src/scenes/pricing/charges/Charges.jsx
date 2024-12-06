@@ -119,7 +119,12 @@ const Charges = () => {
       flex: 1,
       headerAlign: "center",
       align: "center",
-      valueGetter: (params) => params.row.chargeValue || "N/A",
+      // valueGetter: (params) => params.row.chargeValue || "N/A",
+      renderCell: (params) => {
+        return `${params.row.chargeValue}${
+          params.row.chargePercentage ? "%" : ""
+        }`;
+      },
     },
     {
       field: "minAmount",
