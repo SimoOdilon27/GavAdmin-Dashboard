@@ -11,6 +11,7 @@ export const MenuLinks = [
     { linkname: "GAV Accounts ", value: "" },
     { linkname: "Accounts", value: "/bankaccount" },
     { linkname: "Investments", value: "/bankinvestment" },
+    { linkname: "Other Bank Investments", value: "/otherbankinvestment" },
 
     { linkname: "Administration ", value: "" },
     { linkname: "Bank", value: "/bank" },

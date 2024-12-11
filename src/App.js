@@ -79,6 +79,7 @@ import TaxConfigForm from "./scenes/pricing/taxes/TaxConfigForm";
 import ViewOperationConfigDetails from "./scenes/pricing/operationConfig/ViewOperationConfigDetails";
 import ViewChargeDetails from "./scenes/pricing/charges/ViewChargeDetails";
 import ViewTaxConfigDetails from "./scenes/pricing/taxes/ViewTaxConfigDetails";
+import OtherBankInvestments from "./scenes/bankDetails/OtherBankInvestments";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -127,6 +128,7 @@ function App() {
                 <Route path="/bankaccount" element={<ProtectedRoute><BankAccounts /></ProtectedRoute>} />
                 <Route path="/bankaccount/view/:accountId" element={<ProtectedRoute><ViewAccountDetails /></ProtectedRoute>} />
                 <Route path="/bankinvestment" element={<ProtectedRoute><BankInvestments /></ProtectedRoute>} />
+                <Route path="/otherbankinvestment" element={<ProtectedRoute><OtherBankInvestments /></ProtectedRoute>} />
                 <Route path="/viewtransactions" element={<ProtectedRoute><ViewTransactions /></ProtectedRoute>} />
                 <Route path="/branches" element={<ProtectedRoute><Branches /></ProtectedRoute>} />
                 <Route path="/branches/add" element={<ProtectedRoute><BranchesForm /></ProtectedRoute>} />

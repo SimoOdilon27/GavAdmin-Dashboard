@@ -21,7 +21,7 @@ import CBS_Services from "../../services/api/GAV_Sercives";
 import Header from "../../components/Header";
 import { formatValue } from "../../tools/formatValue";
 
-const BankInvestments = () => {
+const OtherBankInvestments = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [capitalInvestmentData, setCapitalInvestmentData] = useState([]);
@@ -100,7 +100,6 @@ const BankInvestments = () => {
   const handleApproveInvestment = async (id) => {
     try {
       setLoadingRows((prevLoadingRows) => [...prevLoadingRows, id]);
-
       const submitData = {
         comment: `Approved via dashboard by ${userData?.userName}`, // You can customize this or make it optional
         investmentId: id,
@@ -110,13 +109,10 @@ const BankInvestments = () => {
       console.log("submitData====", submitData);
 
       const payload = {
-        serviceReference: "APPROVE_INVESTMENTS",
+        serviceReference: "SECOND_PERSON_APPROVE_INVESTMENT",
         requestBody: JSON.stringify(submitData),
         spaceId: spaceId,
       };
-
-      console.log("payload====", payload);
-
       const response = await CBS_Services(
         "GATEWAY",
         "gavClientApiService/request",
@@ -152,7 +148,7 @@ const BankInvestments = () => {
   const fetchAwaitingInvestmentApprovalData = async () => {
     try {
       const payload = {
-        serviceReference: "GET_ALL_AWAITING_INVESTMENT_APPROVAL",
+        serviceReference: "GET_ALL_SECOND_PERSON_AWAITING_INVESTMENT_APPROVAL",
         requestBody: "",
         spaceId: spaceId,
       };
@@ -213,37 +209,63 @@ const BankInvestments = () => {
       flex: 1,
       headerAlign: "center",
       align: "center",
-      renderCell: (params) =>
-        loadingRows.includes(params.row.id) ? (
-          <CircularProgress size={20} />
-        ) : (
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleShowConfirmationModal(params.row.id)}
-            disabled={
-              !awaitingInvestmentApprovalData.some(
-                (item) => item.id === params.row.id && !item.approved
-              )
-            }
-          >
-            {awaitingInvestmentApprovalData.some(
-              (item) => item.id === params.row.id && !item.approved
-            )
-              ? "Approve"
-              : "Approved"}
+      renderCell: (params) => {
+        const {
+          approved,
+          acceptSecondPersonValidation,
+          secondPersonValidation,
+        } = params.row;
+        const isLoading = loadingRows.includes(params.row.id);
+
+        if (isLoading) {
+          return <CircularProgress size={20} />;
+        }
+
+        if (!approved) {
+          return (
+            <Button variant="contained" color="error" disabled={true}>
+              Pending First Approval
+            </Button>
+          );
+        }
+
+        if (approved && !acceptSecondPersonValidation) {
+          return (
+            <Button variant="contained" color="warning" disabled={true}>
+              Awaiting Conditions
+            </Button>
+          );
+        }
+
+        if (
+          approved &&
+          acceptSecondPersonValidation &&
+          !secondPersonValidation
+        ) {
+          return (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => handleShowConfirmationModal(params.row.id)}
+            >
+              Approve
+            </Button>
+          );
+        }
+
+        return (
+          <Button variant="contained" color="success" disabled={true}>
+            Fully Approved
           </Button>
-        ),
+        );
+      },
     },
   ];
 
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header
-          title="BANK INVESTMENTS"
-          subtitle="Manage your Bank Investments"
-        />
+        <Header title="BGFI INVESTMENTS" subtitle="Approve BGFI Investments" />
         {/* <Button
                     variant="contained"
                     color="secondary"
@@ -342,4 +364,4 @@ const BankInvestments = () => {
   );
 };
 
-export default BankInvestments;
+export default OtherBankInvestments;

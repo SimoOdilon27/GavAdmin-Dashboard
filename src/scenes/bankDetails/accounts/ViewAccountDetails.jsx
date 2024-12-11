@@ -15,6 +15,8 @@ import {
   DialogTitle,
   Alert,
   Snackbar,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -42,6 +44,8 @@ import { useTheme } from "@mui/material/styles";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Header from "../../../components/Header";
 import CBS_Services from "../../../services/api/GAV_Sercives";
+import { formatValue } from "../../../tools/formatValue";
+import { FormFieldStyles } from "../../../tools/fieldValuestyle";
 
 const ViewAccountDetails = () => {
   const theme = useTheme();
@@ -71,6 +75,8 @@ const ViewAccountDetails = () => {
     accountId: "",
     amount: 0,
     investorName: userData?.userName,
+    acceptSecondPersonValidation: false,
+    description: "",
   });
 
   const [showModal, setShowModal] = useState(false);
@@ -318,59 +324,6 @@ const ViewAccountDetails = () => {
   ];
 
   if (!initialValues) return null;
-
-  const toPascalCase = (str) => {
-    return str
-      .split(" ") // Split string by spaces
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter and lowercase the rest
-      .join(" "); // Join back the words
-  };
-
-  const formatValue = (value) => {
-    if (typeof value === "boolean") {
-      return value ? "Yes" : "No";
-    }
-    if (value === null || value === undefined) {
-      return "N/A";
-    }
-    if (typeof value === "number") {
-      return value.toLocaleString(); // Format numbers with commas
-    }
-    if (typeof value === "string") {
-      // Check if it's an ISO 8601 date string and convert it to Date object
-      if (isISODateString(value)) {
-        const dateObj = new Date(value);
-        return `${dateObj.toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })} ${dateObj.toLocaleTimeString("en-GB", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })}`;
-      }
-      // For non-date strings, format to Pascal Case and replace underscores with spaces
-      return toPascalCase(value.replace(/_/g, " "));
-    }
-    if (value instanceof Date) {
-      return `${value.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })} ${value.toLocaleTimeString("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      })}`;
-    }
-    return value.toString();
-  };
-
-  // Helper function to check if the string is in ISO 8601 format
-  const isISODateString = (str) => {
-    return /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+/.test(str);
-  };
 
   return (
     <Box m="20px">
@@ -739,27 +692,8 @@ const ViewAccountDetails = () => {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>Add Investment</DialogTitle>
+        <DialogTitle>Add Investment for {initialValues.name}</DialogTitle>
         <DialogContent>
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Account ID"
-            name="accountId"
-            value={formData.accountId}
-            disabled
-            sx={{
-              "& .MuiInputLabel-root": {
-                color: theme.palette.mode === "light" ? "black" : "white", // Dark label for light mode, white for dark mode
-              },
-              "& .MuiFilledInput-root": {
-                color: theme.palette.mode === "light" ? "black" : "white", // Optional: input text color
-              },
-              "& .MuiInputLabel-root.Mui-focused": {
-                color: theme.palette.mode === "light" ? "black" : "white", // Same behavior when focused
-              },
-            }}
-          />
           <TextField
             fullWidth
             margin="normal"
@@ -768,26 +702,37 @@ const ViewAccountDetails = () => {
             type="number"
             value={formData.amount}
             onChange={handleChange}
-            sx={{
-              "& .MuiInputLabel-root": {
-                color: theme.palette.mode === "light" ? "black" : "white", // Dark label for light mode, white for dark mode
-              },
-              "& .MuiFilledInput-root": {
-                color: theme.palette.mode === "light" ? "black" : "white", // Optional: input text color
-              },
-              "& .MuiInputLabel-root.Mui-focused": {
-                color: theme.palette.mode === "light" ? "black" : "white", // Same behavior when focused
-              },
-            }}
+            sx={FormFieldStyles("span 4")}
           />
-          {/* <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Creator Name"
-                        name="investorName"
-                        value={formData.investorName}
-                        onChange={handleChange}
-                    /> */}
+          <TextField
+            fullWidth
+            type="text"
+            margin="normal"
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            sx={FormFieldStyles("span 4")}
+          />
+
+          <Box sx={FormFieldStyles("span 1")}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="secondary"
+                  checked={formData.acceptSecondPersonValidation}
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      acceptSecondPersonValidation: e.target.checked,
+                    });
+                  }}
+                  name="acceptSecondPersonValidation"
+                />
+              }
+              label="Double Validation"
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button
