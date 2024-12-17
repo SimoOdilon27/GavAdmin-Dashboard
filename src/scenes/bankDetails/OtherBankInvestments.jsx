@@ -308,7 +308,7 @@ const OtherBankInvestments = () => {
         }}
       >
         <DataGrid
-          rows={awaitingInvestmentApprovalData}
+          rows={capitalInvestmentData}
           columns={InvestmentColumns}
           components={{ Toolbar: GridToolbar }}
           // checkboxSelection
