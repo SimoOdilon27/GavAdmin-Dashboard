@@ -103,7 +103,7 @@ const OtherBankInvestments = () => {
       const submitData = {
         comment: `Approved via dashboard by ${userData?.userName}`, // You can customize this or make it optional
         investmentId: id,
-        userId: userData?.userId,
+        // userId: userData?.userId,
       };
 
       console.log("submitData====", submitData);
@@ -308,7 +308,7 @@ const OtherBankInvestments = () => {
         }}
       >
         <DataGrid
-          rows={capitalInvestmentData}
+          rows={awaitingInvestmentApprovalData}
           columns={InvestmentColumns}
           components={{ Toolbar: GridToolbar }}
           // checkboxSelection

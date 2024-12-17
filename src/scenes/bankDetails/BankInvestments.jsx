@@ -104,13 +104,13 @@ const BankInvestments = () => {
       const submitData = {
         comment: `Approved via dashboard by ${userData?.userName}`, // You can customize this or make it optional
         investmentId: id,
-        userId: userData?.userId,
+        // userId: userData?.userId,
       };
 
       console.log("submitData====", submitData);
 
       const payload = {
-        serviceReference: "APPROVE_INVESTMENTS",
+        serviceReference: "INVESTMENT_APPROVE",
         requestBody: JSON.stringify(submitData),
         spaceId: spaceId,
       };
