@@ -36,5 +36,25 @@ root.render(
         </BrowserRouter>
       </PersistGate>
     </Provider>
+    {/* <Provider store={store}>
+      <PersistGate loading={null} persistor={persitor}>
+        <BrowserRouter>
+          <ErrorBoundary>
+
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route element={<ProtectedComponent />}>
+                <Route path="*" element={<App />} />
+                <Route path="/updatepassword" element={<UpdatePassword />} />
+                <Route path="/select-space" element={<SpaceSelector />} />
+
+              </Route>
+
+
+            </Routes>
+          </ErrorBoundary>
+        </BrowserRouter>
+      </PersistGate>
+    </Provider> */}
   </React.StrictMode>
 );

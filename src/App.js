@@ -116,7 +116,7 @@ function App() {
                 <Route path="/createMenu" element={<ProtectedRoute><CreateMenuForm /></ProtectedRoute>} />
                 <Route path="/form" element={<ProtectedRoute><Form /></ProtectedRoute>} />
                 <Route path="/faq" element={<ProtectedRoute><FAQ /></ProtectedRoute>} />
-                <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+                <Route path="/calendar" element={<Calendar />} />
                 <Route path="/corporation" element={<ProtectedRoute><Corporation /></ProtectedRoute>} />
                 <Route path="/corporation/add" element={<ProtectedRoute><CorporationForm /></ProtectedRoute>} />
                 <Route path="/corporation/edit/:id" element={<ProtectedRoute><CorporationForm /></ProtectedRoute>} />
@@ -202,6 +202,99 @@ function App() {
                 <Route path="/partners/edit/:id" element={<ProtectedRoute><PartnerForm /></ProtectedRoute>} />
 
               </Routes>
+
+              {/* <Routes>
+                <Route path="*" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/team" element={<Team />} />
+                <Route path="/createMenu" element={<CreateMenuForm />} />
+                <Route path="/form" element={<Form />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/calendar" element={<Calendar />} />
+                <Route path="/corporation" element={<Corporation />} />
+                <Route path="/corporation/add" element={<CorporationForm />} />
+                <Route path="/corporation/edit/:id" element={<CorporationForm />} />
+                <Route path="/corporation/view/:accounts" element={<ViewCorporationDetails />} />
+                <Route path="/bank" element={<Bank />} />
+                <Route path="/bank/edit/:id" element={<BankForm />} />
+                <Route path="/bank/add" element={<BankForm />} />
+                <Route path="/bank/view/:accounts" element={<ViewBankDetails />} />
+                <Route path="/bankaccount" element={<BankAccounts />} />
+                <Route path="/bankaccount/view/:accountId" element={<ViewAccountDetails />} />
+                <Route path="/bankinvestment" element={<BankInvestments />} />
+                <Route path="/otherbankinvestment" element={<OtherBankInvestments />} />
+                <Route path="/viewtransactions" element={<ViewTransactions />} />
+                <Route path="/branches" element={<Branches />} />
+                <Route path="/branches/add" element={<BranchesForm />} />
+                <Route path="/branches/edit/:id" element={<BranchesForm />} />
+                <Route path="/branches/view/:accounts" element={<ViewBranchesDetails />} />
+                <Route path="/tellers" element={<Tellers />} />
+                <Route path="/tellers/add" element={<TellerForm />} />
+                <Route path="/tellers/edit/:id" element={<TellerForm />} />
+                <Route path="/tellers/view/:accountId" element={<ViewTellerDetails />} />
+                <Route path="/bankmapper" element={<BankMapper />} />
+                <Route path="/accounts" element={<AllAccounts />} />
+                <Route path="/menu-catalog" element={<MenuCatalog />} />
+                <Route path="/menu-catalog/add" element={<CatalogForm />} />
+                <Route path="/menu-catalog/edit/:id" element={<CatalogForm />} />
+                <Route path="/clientapproval" element={<ClientApproval />} />
+                <Route path="/client" element={<Clients />} />
+                <Route path="/client/add-client" element={<ClientForm />} />
+                <Route path="/client/edit/:msisdn" element={<ClientForm />} />
+                <Route path="/client/view/:msisdn" element={<ViewClientDetails />} />
+                <Route path="/cashtransactions" element={<CashOutnIn />} />
+                <Route path="/rolemanagement" element={<RoleManagement />} />
+                <Route path="/rolemanagement/addrole" element={<RoleForm />} />
+                <Route path="/rolemanagement/edit/:id" element={<RoleForm />} />
+                <Route path="/rolemanagement/assignmenu/:roleName" element={<AssignRoleMenu />} />
+                <Route path="/usermanagement" element={<UserManagement />} />
+                <Route path="/usermanagement/adduser" element={<UserForm />} />
+                <Route path="/usermanagement/userconfig/:userName" element={<AssignUsertoSpace />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/pricing/configure" element={<ChargesPricing />} />
+                <Route path="/pricing/configurecharges" element={<ConfigureCharges />} />
+                <Route path="/gimac-wallets" element={<GimacWallets />} />
+                <Route path="/gimac-wallets/add" element={<GimacWalletForm />} />
+                <Route path="/gimac-wallets/edit/:id" element={<GimacWalletForm />} />
+                <Route path="/gimac-countries" element={<GimacCountries />} />
+                <Route path="/gimac-countries/add" element={<GimacCountriesForm />} />
+                <Route path="/gimac-countries/edit/:id" element={<GimacCountriesForm />} />
+                <Route path="/accounttype" element={<AccountType />} />
+                <Route path="/accounttype/add" element={<AccountTypeForm />} />
+                <Route path="/accounttype/edit/:id" element={<AccountTypeForm />} />
+                <Route path="/space-management" element={<SpaceManagement />} />
+                <Route path="/space-management/add" element={<SpaceForm />} />
+                <Route path="/space-management/edit/:id" element={<SpaceForm />} />
+                <Route path="/type-management" element={<TypeManagement />} />
+                <Route path="/menus" element={<Menus />} />
+                <Route path="/menus/createmenu" element={<CreateMenuForm />} />
+                <Route path="/menus/submenuform" element={<UserSubMenuForm />} />
+                <Route path="/menus/submenuform/:id" element={<UserSubMenuForm />} />
+                <Route path="/menus/editmenu/:id" element={<CreateMenuForm />} />
+                <Route path="/bankservices" element={<BankServices />} />
+                <Route path="/bankservices/add" element={<BankServicesForm />} />
+                <Route path="/bankservices/edit/:serviceName" element={<BankServicesForm />} />
+                <Route path="/bankservicesconfigs" element={<BankServiceConfigs />} />
+                <Route path="/bankserviceconfigs/add" element={<BankServiceConfigForm />} />
+                <Route path="/bankservicesconfigs/edit/:id" element={<BankServiceConfigForm />} />
+                <Route path="/charges" element={<Charges />} />
+                <Route path="/charges/add" element={<ChargesForm />} />
+                <Route path="/charges/edit/:id" element={<ChargesForm />} />
+                <Route path="/charges/view/:id" element={<ViewChargeDetails />} />
+                <Route path="/operationconfigurations" element={<OperationConfig />} />
+                <Route path="/operationconfigurations/addoperationtype" element={<OperationConfigTypeForm />} />
+                <Route path="/operationconfigurations/addoperationconfig" element={<OperationConfigForm />} />
+                <Route path="/operationconfigurations/editoperationconfig/:id" element={<OperationConfigForm />} />
+                <Route path="/operationconfigurations/viewoperationconfig/:id" element={<ViewOperationConfigDetails />} />
+                <Route path="/operationconfigurations/editoperationtype/:id" element={<OperationConfigTypeForm />} />
+                <Route path="/taxconfigurations" element={<TaxesConfig />} />
+                <Route path="/taxconfigurations/add" element={<TaxConfigForm />} />
+                <Route path="/taxconfigurations/edit/:id" element={<TaxConfigForm />} />
+                <Route path="/taxconfigurations/view/:id" element={<ViewTaxConfigDetails />} />
+                <Route path="/partners" element={<Partners />} />
+                <Route path="/partners/add" element={<PartnerForm />} />
+                <Route path="/partners/edit/:id" element={<PartnerForm />} />
+              </Routes> */}
 
               {/* <Routes>
                 <Route path="*" element={<Dashboard />} />

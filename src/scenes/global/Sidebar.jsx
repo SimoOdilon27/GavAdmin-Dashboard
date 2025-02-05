@@ -22,7 +22,14 @@ import PublicIcon from "@mui/icons-material/Public";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import TagIcon from "@mui/icons-material/Tag";
 import { tokens } from "../../theme";
-import { AccountCircle, ManageAccounts, MapOutlined, Money, SettingsApplicationsOutlined, SupervisedUserCircleOutlined } from "@mui/icons-material";
+import {
+  AccountCircle,
+  ManageAccounts,
+  MapOutlined,
+  Money,
+  SettingsApplicationsOutlined,
+  SupervisedUserCircleOutlined,
+} from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { formatValue } from "../../tools/formatValue";
 import menuData from "./menumock";
@@ -30,13 +37,10 @@ import CBS_Services from "../../services/api/GAV_Sercives";
 import { AVAILABLE_ICONS } from "../settings/menucatalog/IconSelector";
 import FullscreenLoader from "../../tools/FullscreenLoader";
 
-
-
 const renderIcon = (iconName) => {
   const IconComponent = AVAILABLE_ICONS[iconName];
   return IconComponent ? <IconComponent /> : <MenuOutlinedIcon />; // Fallback icon
 };
-
 
 const Item = ({ title, route, icon, selected, setSelected, closeSubmenu }) => {
   const theme = useTheme();
@@ -45,12 +49,13 @@ const Item = ({ title, route, icon, selected, setSelected, closeSubmenu }) => {
     <MenuItem
       active={selected === title}
       style={{
-        color: theme.palette.mode === 'dark' ? colors.grey[100] : colors.primary[100],
-
+        color:
+          theme.palette.mode === "dark"
+            ? colors.grey[100]
+            : colors.primary[100],
       }}
       onClick={() => {
         setSelected(title);
-
       }}
       icon={renderIcon(icon)}
     >
@@ -74,7 +79,7 @@ const Sidebar = () => {
   const token = userData.token;
   const storeMenus = useSelector((state) => state.users.menus);
   const [menus, setMenus] = useState(storeMenus || []);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleSubMenuClick = (menuName) => {
     if (openSubmenu === menuName) {
@@ -95,26 +100,29 @@ const Sidebar = () => {
   const handleGetUserMenus = async () => {
     setLoading(true);
     try {
-
-      const response = await CBS_Services("GATEWAY", `clientGateWay/items/searchItems/${UserId}/${UserSpace}`, "GET", null, token)
+      const response = await CBS_Services(
+        "GATEWAY",
+        `clientGateWay/items/searchItems/${UserId}/${UserSpace}`,
+        "GET",
+        null,
+        token
+      );
       console.log("response", response);
 
       if (response.status === 200) {
         setMenus(response.body.data);
-      }
-      else {
+      } else {
         setMenus([]);
       }
-
     } catch (error) {
       console.log(error);
     }
     setLoading(false);
-  }
+  };
 
   useEffect(() => {
     handleGetUserMenus();
-  }, [])
+  }, []);
 
   useEffect(() => {
     setMenus(storeMenus);
@@ -140,8 +148,10 @@ const Sidebar = () => {
         },
         "& .pro-menu-item": {
           margin: "10px 0", // Add vertical margin
-          color: theme.palette.mode === 'dark' ? colors.grey[100] : colors.primary[100],
-
+          color:
+            theme.palette.mode === "dark"
+              ? colors.grey[100]
+              : colors.primary[100],
         },
         "& .pro-sub-menu .pro-inner-list-item div": {
           padding: "5px 5px 5px 20px !important", // Indent submenu items
@@ -155,7 +165,10 @@ const Sidebar = () => {
             icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
             style={{
               margin: "10px 0 20px 0",
-              color: theme.palette.mode === 'dark' ? colors.grey[100] : colors.primary[100],
+              color:
+                theme.palette.mode === "dark"
+                  ? colors.grey[100]
+                  : colors.primary[100],
             }}
           >
             {!isCollapsed && (
@@ -202,13 +215,12 @@ const Sidebar = () => {
             </Box>
           )}
 
-
-
-          {loading ? <FullscreenLoader /> :
-
+          {loading ? (
+            <FullscreenLoader />
+          ) : (
             <Box paddingLeft={isCollapsed ? undefined : "5%"}>
               {menus
-                .sort((a, b) => a.menuOrder - b.menuOrder)  // Sort main menus by descending menuOrder
+                .sort((a, b) => a.menuOrder - b.menuOrder) // Sort main menus by descending menuOrder
                 .map((menu) => {
                   if (menu.subItemList && menu.subItemList.length > 0) {
                     return (
@@ -219,18 +231,17 @@ const Sidebar = () => {
                         open={openSubmenu === menu.category}
                         onOpenChange={() => handleSubMenuClick(menu.category)}
                       >
-                        {menu.subItemList
-                          .map((subItem) => (
-                            <Item
-                              key={subItem.id}
-                              title={subItem.title}
-                              route={subItem.route}
-                              icon={subItem.icon}
-                              selected={selected}
-                              setSelected={setSelected}
-                              closeSubmenu={closeSubmenu}
-                            />
-                          ))}
+                        {menu.subItemList.map((subItem) => (
+                          <Item
+                            key={subItem.id}
+                            title={subItem.title}
+                            route={subItem.route}
+                            icon={subItem.icon}
+                            selected={selected}
+                            setSelected={setSelected}
+                            closeSubmenu={closeSubmenu}
+                          />
+                        ))}
                       </SubMenu>
                     );
                   } else {
@@ -248,10 +259,7 @@ const Sidebar = () => {
                   }
                 })}
             </Box>
-
-
-
-          }
+          )}
         </Menu>
       </ProSidebar>
     </Box>
@@ -259,4 +267,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
